@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NoahLi – Personal Site</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+  <link rel="icon" href="channels4_profile.jpg" type="image/jpeg" />
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+
+    .fade-in {
+      animation: fadeIn 1.2s ease-out forwards;
+      opacity: 0;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+
+    .file-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .file-card:hover {
+      transform: translateY(-5px) scale(1.03);
+      box-shadow: 0 10px 20px rgba(0, 255, 255, 0.2);
+    }
+
+    .btn {
+      background-color: #14b8a6; /* Tailwind teal-500 */
+      color: black;
+      font-weight: bold;
+      padding: 0.5rem 1.5rem;
+      border-radius: 9999px;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #2dd4bf; /* Tailwind teal-400 */
+    }
+
+    .border-main {
+      border-color: #14b8a6; /* teal border */
+    }
+
+    .text-main {
+      color: #14b8a6;
+    }
+
+    .hover-text-main:hover {
+      color: #2dd4bf;
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-white font-sans">
+
+  <nav class="bg-gray-800 shadow-lg fixed top-0 w-full z-50">
+  <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+    <a href="https://noahli404.pages.dev/#home/" class="text-xl font-bold hover-text-main transition">Noah Li</a>
+    <div class="space-x-6">
+      <a href="https://noahli404.pages.dev/#home/" class="hover-text-main transition">Home</a>
+      <a href="#downloads" class="hover-text-main transition">Downloads</a>
+      <a href="https://www.youtube.com/@noahliNotFound" target="_blank" class="hover-text-main transition">YouTube</a>
+    </div>
+  </div>
+</nav>
+
+  <div class="h-20"></div>
+
+  <section id="downloads" class="py-20 px-6 md:px-20 fade-in">
+    <h3 class="text-3xl font-bold text-center mb-10 text-main">📦 Download My Stuffs</h3>
+
+    <div id="loading" class="text-center text-main text-lg mb-6">Loading files...</div>
+
+    <div id="file-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto" style="display: none;"></div>
+
+    <div class="mt-12 text-center">
+      <button id="toggleDisclaimer" class="btn">Read Disclaimer</button>
+    </div>
+
+    <div id="disclaimer" class="bg-gray-800 p-6 mt-6 rounded-lg border-t-4 border-main max-w-3xl mx-auto text-sm text-gray-300 hidden">
+      <p class="mb-2"><span class="text-red-500 font-bold">@noahliNotFound is not responsible for any damage caused by using the files here.</span></p>
+      <p class="mb-2"><span class="text-red-500 font-bold">Some files, like "from 1 plus to 100000.txt", might crash your computer!</span></p>
+      <p>Subscribe to <strong>@noahliNotFound</strong> on YouTube 🚀</p>
+    </div>
+  </section>
+
+  <footer class="text-center py-6 bg-gray-800 text-gray-400 fade-in">
+    © 2025 @noahliNotFound. All rights reserved.
+  </footer>
+
+  <script>
+    const repoOwner = 'Noah-Li2012';
+    const repoName = 'mystuffs';
+    const folderPath = 'pgms';
+
+    const loadingDiv = document.getElementById('loading');
+    const fileListDiv = document.getElementById('file-list');
+    const disclaimerDiv = document.getElementById('disclaimer');
+    const toggleDisclaimerButton = document.getElementById('toggleDisclaimer');
+
+    fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`)
+      .then(response => response.json())
+      .then(data => {
+        loadingDiv.style.display = 'none';
+        fileListDiv.style.display = 'grid';
+
+        data.forEach((file) => {
+          if (file.type === 'file') {
+            let downloadUrl = file.download_url;
+            if (file.name.endsWith('.txt') || file.name.endsWith('.md') || file.name.endsWith('.html')) {
+              downloadUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${folderPath}/${file.name}`;
+            }
+
+            const fileElement = document.createElement('div');
+            fileElement.className = 'file-card bg-gray-800 border border-main p-4 rounded-lg text-center';
+            fileElement.innerHTML = `
+              <p class="text-white font-semibold mb-2 truncate">${file.name.replace(/^\d+\s*/, '')}</p>
+              <a href="${downloadUrl}" download="${file.name}" class="text-main hover:underline font-bold">Download</a>
+            `;
+            fileListDiv.appendChild(fileElement);
+          }
+        });
+      })
+      .catch(error => {
+        loadingDiv.textContent = 'Error loading files.';
+        console.error('Error fetching file list:', error);
+      });
+
+    toggleDisclaimerButton.addEventListener('click', () => {
+      const isVisible = disclaimerDiv.style.display === 'block';
+      disclaimerDiv.style.display = isVisible ? 'none' : 'block';
+      toggleDisclaimerButton.textContent = isVisible ? 'Read Disclaimer' : 'Hide Disclaimer';
+    });
+  </script>
+</body>
+</html>
