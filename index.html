@@ -48,16 +48,27 @@
     });
   </script>
 
+  <!-- Navbar with mobile support -->
   <nav class="bg-gray-800 shadow-lg fixed top-0 w-full z-50">
     <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
       <h1 class="text-xl font-bold">Noah Li</h1>
-      <div class="space-x-4">
+      <div class="md:hidden">
+        <button id="menu-toggle" class="text-white text-3xl focus:outline-none">&#9776;</button>
+      </div>
+      <div id="nav-links" class="hidden md:flex space-x-4">
         <a href="#home" class="hover:text-teal-400 transition">Home</a>
         <a href="#about" class="hover:text-teal-400 transition">About</a>
         <a href="https://noahli404.pages.dev/projects/" class="hover:text-teal-400 transition">Projects</a>
         <a href="https://www.youtube.com/@noahliNotFound" target="_blank" class="hover:text-teal-400 transition">YouTube</a>
         <a href="#contact" class="hover:text-teal-400 transition">Contact</a>
       </div>
+    </div>
+    <div id="mobile-menu" class="md:hidden hidden flex-col space-y-2 px-4 pb-4">
+      <a href="#home" class="block hover:text-teal-400 transition">Home</a>
+      <a href="#about" class="block hover:text-teal-400 transition">About</a>
+      <a href="https://noahli404.pages.dev/projects/" class="block hover:text-teal-400 transition">Projects</a>
+      <a href="https://www.youtube.com/@noahliNotFound" target="_blank" class="block hover:text-teal-400 transition">YouTube</a>
+      <a href="#contact" class="block hover:text-teal-400 transition">Contact</a>
     </div>
   </nav>
 
@@ -104,7 +115,15 @@
     © 2025 @noahliNotFound. All rights reserved.
   </footer>
 
+  <!-- Mobile nav toggle script -->
   <script>
+    const menuBtn = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    menuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
     const apiKey = 'AIzaSyAoCTK7GK9CeLh0i83Pga3FPS3YmNNFmIo';
     const channelId = 'UCmbrEF2TItb2VqInsxsI9zA';
 
