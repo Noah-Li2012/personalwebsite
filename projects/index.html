@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NoahLi – File Downloads</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <link rel="icon" href="channels4_profile.jpg" type="image/jpeg" />
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+
+    .fade-in {
+      animation: fadeIn 2s ease-in-out forwards;
+      opacity: 0;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+
+    #particles-js {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      opacity: 0.5;
+    }
+
+    nav, section, footer {
+      position: relative;
+      z-index: 2;
+    }
+
+    .navbar-glass {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+    }
+
+    .particles-js-canvas-el {
+      filter: blur(0.5px);
+    }
+
+    .gradient-text {
+      background: linear-gradient(45deg, #4fd1c5, #63b3ed);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .file-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .file-card:hover {
+      transform: translateY(-5px) scale(1.03);
+      box-shadow: 0 10px 20px rgba(0, 255, 255, 0.2);
+    }
+
+    .file-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, #4fd1c5, #63b3ed);
+    }
+
+    .btn {
+      background: linear-gradient(45deg, #4fd1c5, #63b3ed);
+      color: white;
+      font-weight: bold;
+      padding: 0.5rem 1.5rem;
+      border-radius: 9999px;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .text-main {
+      color: #4fd1c5;
+    }
+
+    .hover-text-main:hover {
+      color: #63b3ed;
+    }
+
+    .file-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .file-size {
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-white font-sans">
+  <div id="particles-js"></div>
+
+  <nav class="navbar-glass shadow-lg fixed top-0 w-full z-50">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <a href="https://noahli404.pages.dev/#home/" class="text-xl font-bold gradient-text">Noah Li</a>
+      <div class="space-x-6">
+        <a href="https://noahli404.pages.dev/#home/" class="hover-text-main transition">Home</a>
+        <a href="#downloads" class="hover-text-main transition">Downloads</a>
+        <a href="https://www.youtube.com/@noahliNotFound" target="_blank" class="hover-text-main transition">YouTube</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="h-20"></div>
+
+  <section id="downloads" class="py-20 px-6 md:px-20 fade-in">
+    <h3 class="text-4xl font-bold text-center mb-4 gradient-text">📦 File Downloads</h3>
+    <p class="text-center text-gray-400 mb-10 max-w-2xl mx-auto">Download various files, programs, and resources shared by Noah Li. All files are free to use and distribute.</p>
+
+    <div id="loading" class="text-center text-main text-lg mb-6">
+      <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-main"></div>
+      <p class="mt-2">Loading files...</p>
+    </div>
+
+    <div id="file-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto" style="display: none;"></div>
+
+    <div class="mt-12 text-center">
+      <button id="toggleDisclaimer" class="btn">Read Terms & Conditions</button>
+    </div>
+
+    <div id="disclaimer" class="glass-effect p-6 mt-6 rounded-lg max-w-3xl mx-auto text-sm text-gray-300 hidden">
+      <h4 class="text-xl font-bold mb-4 gradient-text">Terms & Conditions</h4>
+      <ul class="space-y-2">
+        <li>• All files are provided "as is" without any warranty.</li>
+        <li>• @noahliNotFound is not responsible for any damage caused by using these files.</li>
+        <li>• Some files may require specific system requirements or dependencies.</li>
+        <li>• Please ensure you have proper antivirus software before downloading.</li>
+        <li>• Files are free to use for personal and educational purposes.</li>
+      </ul>
+      <p class="mt-4">Subscribe to <strong>@noahliNotFound</strong> on YouTube for more content 🚀</p>
+    </div>
+  </section>
+
+  <footer class="text-center py-6 bg-gray-800 text-gray-400 fade-in">
+    <p>© 2025 @noahliNotFound. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const repoOwner = 'Noah-Li2012';
+    const repoName = 'mystuffs';
+    const folderPath = 'pgms';
+
+    const loadingDiv = document.getElementById('loading');
+    const fileListDiv = document.getElementById('file-list');
+    const disclaimerDiv = document.getElementById('disclaimer');
+    const toggleDisclaimerButton = document.getElementById('toggleDisclaimer');
+
+    function getFileIcon(filename) {
+      const ext = filename.split('.').pop().toLowerCase();
+      const icons = {
+        txt: '📄',
+        md: '📝',
+        html: '🌐',
+        py: '🐍',
+        js: '📜',
+        json: '⚙️',
+        zip: '📦',
+        exe: '⚡',
+        pdf: '📑',
+        default: '📁'
+      };
+      return icons[ext] || icons.default;
+    }
+
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`)
+      .then(response => response.json())
+      .then(data => {
+        loadingDiv.style.display = 'none';
+        fileListDiv.style.display = 'grid';
+
+        data.forEach((file) => {
+          if (file.type === 'file') {
+            let downloadUrl = file.download_url;
+            if (file.name.endsWith('.txt') || file.name.endsWith('.md') || file.name.endsWith('.html')) {
+              downloadUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${folderPath}/${file.name}`;
+            }
+
+            const fileElement = document.createElement('div');
+            fileElement.className = 'file-card glass-effect p-6 rounded-lg text-center';
+            fileElement.innerHTML = `
+              <div class="file-icon">${getFileIcon(file.name)}</div>
+              <p class="text-white font-semibold mb-2 truncate">${file.name.replace(/^\d+\s*/, '')}</p>
+              <p class="file-size mb-3">${formatFileSize(file.size)}</p>
+              <a href="${downloadUrl}" download="${file.name}" class="btn inline-block">Download</a>
+            `;
+            fileListDiv.appendChild(fileElement);
+          }
+        });
+      })
+      .catch(error => {
+        loadingDiv.innerHTML = '<p class="text-red-500">Error loading files. Please try again later.</p>';
+        console.error('Error fetching file list:', error);
+      });
+
+    toggleDisclaimerButton.addEventListener('click', () => {
+      const isVisible = disclaimerDiv.style.display === 'block';
+      disclaimerDiv.style.display = isVisible ? 'none' : 'block';
+      toggleDisclaimerButton.textContent = isVisible ? 'Read Terms & Conditions' : 'Hide Terms & Conditions';
+    });
+
+    // Initialize particles
+    particlesJS('particles-js', {
+      particles: {
+        number: {
+          value: 80,
+          density: {
+            enable: true,
+            value_area: 800
+          }
+        },
+        color: {
+          value: '#4fd1c5'
+        },
+        shape: {
+          type: 'circle'
+        },
+        opacity: {
+          value: 0.5,
+          random: false,
+          anim: {
+            enable: false
+          }
+        },
+        size: {
+          value: 3,
+          random: true
+        },
+        line_linked: {
+          enable: true,
+          distance: 150,
+          color: '#4fd1c5',
+          opacity: 0.4,
+          width: 1
+        },
+        move: {
+          enable: true,
+          speed: 2,
+          direction: 'none',
+          random: false,
+          straight: false,
+          out_mode: 'out',
+          bounce: false
+        }
+      },
+      interactivity: {
+        detect_on: 'canvas',
+        events: {
+          onhover: {
+            enable: true,
+            mode: 'grab'
+          },
+          onclick: {
+            enable: true,
+            mode: 'push'
+          },
+          resize: true
+        },
+        modes: {
+          grab: {
+            distance: 140,
+            line_linked: {
+              opacity: 1
+            }
+          },
+          push: {
+            particles_nb: 4
+          }
+        }
+      },
+      retina_detect: true
+    });
+  </script>
+</body>
+</html>
