@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Website</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" href="channels4_profile.jpg" type="image/jpeg" />
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .fade-in {
+            animation: fadeIn 2s ease-in-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .parallax-banner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.1;
+            z-index: 0;
+            will-change: transform;
+        }
+
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            opacity: 0.5;
+        }
+
+        nav, section, footer {
+            position: relative;
+            z-index: 2;
+        }
+        .navbar-glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .particles-js-canvas-el {
+            filter: blur(0.5px);
+        }
+
+        .gradient-text {
+            background: linear-gradient(45deg, #4fd1c5, #63b3ed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hover-scale {
+            transition: transform 0.3s ease;
+        }
+
+        .hover-scale:hover {
+            transform: scale(1.05);
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .skill-tag {
+            transition: all 0.3s ease;
+        }
+
+        .skill-tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .social-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .social-icon:hover {
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white font-sans">
+    <div id="particles-js"></div>
+
+        <!-- Navbar -->
+    <nav class="navbar-glass shadow-lg fixed top-0 w-full z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold gradient-text">Noah Li</h1>
+            <div class="md:hidden">
+                <button id="menu-toggle" class="text-white text-3xl focus:outline-none">&#9776;</button>
+            </div>
+            <div id="nav-links" class="hidden md:flex space-x-4">
+                <a href="#home" class="hover:text-teal-400 transition">Home</a>
+                <a href="#about" class="hover:text-teal-400 transition">About</a>
+                <a href="#projects" class="hover:text-teal-400 transition">Projects</a>
+                <a href="https://www.youtube.com/@noahliNotFound" target="_blank" class="hover:text-teal-400 transition">YouTube</a>
+                <a href="#contact" class="hover:text-teal-400 transition">Contact</a>
+            </div>
+        </div>
+        <div id="mobile-menu" class="md:hidden hidden flex-col space-y-2 px-4 pb-4">
+            <a href="#home" class="block hover:text-teal-400 transition">Home</a>
+            <a href="#about" class="block hover:text-teal-400 transition">About</a>
+            <a href="#projects" class="block hover:text-teal-400 transition">Projects</a>
+            <a href="#contact" class="block hover:text-teal-400 transition">Contact</a>
+        </div>
+    </nav>
+
+    <!-- Home Section -->
+    <section id="home" class="h-screen flex items-center justify-center text-center pt-24 fade-in relative overflow-hidden">
+        <div class="flex flex-col items-center space-y-4 z-10">
+            <div class="flex items-center space-x-4">
+                <img src="channels4_profile.jpg" alt="Profile Picture" class="w-20 h-20 rounded-full border-2 border-teal-400 hover-scale">
+                <h2 class="text-4xl md:text-6xl font-bold gradient-text">Hey, I'm <span class="text-teal-400">Noah</span> 👋</h2>
+            </div>
+            <p class="text-lg text-gray-300 max-w-xl">Noah —— That boi who codes for fun.</p>
+            <div class="flex space-x-4 mt-4">
+                <a href="#projects" class="bg-teal-500 hover:bg-teal-600 text-white px-6 py-3 rounded-full transition hover-scale">
+                    View Projects
+                </a>
+                <a href="#contact" class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-full transition hover-scale">
+                    Contact Me
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 px-6 md:px-20 bg-gray-800 fade-in relative">
+        <h3 class="text-3xl font-semibold mb-6 gradient-text">About Me</h3>
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="glass-effect p-6 rounded-lg">
+                <p class="text-gray-300">
+                    I'm Noah, I love programming and creating videos on YouTube. (So Subscribe to my Channel @noahliNotFound if you like my content!)
+                </p>
+            </div>
+            <div class="glass-effect p-6 rounded-lg">
+                <h4 class="text-xl font-semibold mb-4">Habits</h4>
+                <div class="flex flex-wrap gap-2">
+                    <span class="habit-tag bg-teal-500 px-3 py-1 rounded-full text-sm">Coding</span>
+                    <span class="habit-tag bg-teal-500 px-3 py-1 rounded-full text-sm">Study as a normal student</span>
+                    <span class="habit-tag bg-teal-500 px-3 py-1 rounded-full text-sm">Create a video on YouTube every week</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-20 px-6 md:px-20 fade-in relative">
+        <h3 class="text-3xl font-semibold mb-6 gradient-text">Projects</h3>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Project Card 1 -->
+            <div class="glass-effect p-6 rounded-lg hover-scale">
+                <h4 class="text-xl font-semibold mb-2">YouTube Channel</h4>
+                <p class="text-gray-300 mb-4">Sharing my programming adventure online!</p>
+                <div class="flex space-x-2">
+                    <a href="https://youtube.com/@noahliNotFound" target="_blank" class="text-teal-400 hover:underline">View Channel</a>
+                </div>
+            </div>
+            <!-- Project Card 2 -->
+            <div class="glass-effect p-6 rounded-lg hover-scale">
+                <h4 class="text-xl font-semibold mb-2">Personal Website</h4>
+                <p class="text-gray-300 mb-4">All my programs</p>
+                <div class="flex space-x-2">
+                    <a href="https://noahli404.pages.dev/projects" class="text-teal-400 hover:underline">Downloads</a>
+                </div>
+            </div>
+            <!-- Project Card 3 -->
+            <div class="glass-effect p-6 rounded-lg hover-scale">
+                <h4 class="text-xl font-semibold mb-2">Coming Soon</h4>
+                <p class="text-gray-300 mb-4">Waiting ideas to pop-up in my mind</p>
+                <div class="flex space-x-2">
+                    <a href="https://www.youtube.com/@noahliNotFound/community" class="text-teal-400 hover:underline">Comment ideas on YouTube</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 px-6 md:px-20 fade-in relative">
+        <h3 class="text-3xl font-semibold mb-6 gradient-text">Contact</h3>
+        <div class="glass-effect p-6 rounded-lg max-w-2xl mx-auto">
+            <ul class="space-y-4 text-gray-300">
+                <li class="flex items-center space-x-2">
+                    <i class="fas fa-envelope text-teal-400 social-icon"></i>
+                    <a href="mailto:importnoahli404@gmail.com" class="text-teal-400 hover:underline">importnoahli404@gmail.com</a>
+                </li>
+                <li class="flex items-center space-x-2">
+                    <i class="fab fa-discord text-teal-400 social-icon"></i>
+                    <a href="https://discord.com/users/noahlinotfound" target="_blank" class="text-teal-400 hover:underline">Discord: noahlinotfound</a>
+                </li>
+                <li class="flex items-center space-x-2">
+                    <i class="fab fa-youtube text-teal-400 social-icon"></i>
+                    <a href="https://youtube.com/@noahliNotFound" target="_blank" class="text-teal-400 hover:underline">YouTube: @noahliNotFound</a>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <footer class="text-center py-6 bg-gray-800 text-gray-400 fade-in relative">
+        © 2025 @noahliNotFound All rights reserved.
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        const menuBtn = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Parallax effect
+        document.addEventListener("mousemove", (e) => {
+            const banner = document.querySelector(".parallax-banner");
+            if (banner) {
+                const x = (e.clientX / window.innerWidth - 0.5) * 20;
+                const y = (e.clientY / window.innerHeight - 0.5) * 20;
+                banner.style.transform = `translate(${x}px, ${y}px)`;
+            }
+        });
+
+        // Initialize particles
+        particlesJS('particles-js', {
+            particles: {
+                number: {
+                    value: 80,
+                    density: {
+                        enable: true,
+                        value_area: 800
+                    }
+                },
+                color: {
+                    value: '#4fd1c5'
+                },
+                shape: {
+                    type: 'circle'
+                },
+                opacity: {
+                    value: 0.5,
+                    random: false,
+                    anim: {
+                        enable: false
+                    }
+                },
+                size: {
+                    value: 3,
+                    random: true
+                },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: '#4fd1c5',
+                    opacity: 0.4,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 2,
+                    direction: 'none',
+                    random: false,
+                    straight: false,
+                    out_mode: 'out',
+                    bounce: false
+                }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: {
+                    onhover: {
+                        enable: true,
+                        mode: 'grab'
+                    },
+                    onclick: {
+                        enable: true,
+                        mode: 'push'
+                    },
+                    resize: true
+                },
+                modes: {
+                    grab: {
+                        distance: 140,
+                        line_linked: {
+                            opacity: 1
+                        }
+                    },
+                    push: {
+                        particles_nb: 4
+                    }
+                }
+            },
+            retina_detect: true
+        });
+    </script>
+</body>
+</html>
