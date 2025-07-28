@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Loads of Hotkeys</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            transition: background 0.3s, color 0.3s;
+        }
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 210px;
+            height: 70vh;
+            background: #f8f9fa;
+            border-right: 1px solid #e0e0e0;
+            padding-top: 40px;
+            z-index: 100;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            transition: background 0.3s, color 0.3s;
+        }
+        .side-menu ul {
+            list-style: none;
+            padding: 0 0 0 0;
+            margin: 0;
+        }
+        .side-menu li {
+            margin: 0;
+        }
+        .side-menu a {
+            display: block;
+            padding: 12px 28px 12px 32px;
+            color: #333;
+            text-decoration: none;
+            font-size: 1em;
+            border-left: 4px solid transparent;
+            transition: background 0.2s, color 0.2s, border 0.2s;
+        }
+        .side-menu a.active, .side-menu a:hover {
+            background: #e6f0ff;
+            color: #2d6cdf;
+            border-left: 4px solid #2d6cdf;
+        }
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: #fff;
+            padding: 32px 24px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: background 0.3s, color 0.3s;
+            margin-left: 230px;
+        }
+        @media (max-width: 900px) {
+            .side-menu { display: none; }
+            .container { margin-left: 0; }
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        h2 {
+            margin-top: 32px;
+            color: #3b3b3b;
+        }
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        li {
+            margin-bottom: 10px;
+            padding: 6px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .hotkey {
+            font-weight: bold;
+            color: #2d6cdf;
+            margin-right: 10px;
+        }
+        .note {
+            color: #888;
+            font-size: 0.95em;
+        }
+        .search-bar {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+        .search-bar input {
+            width: 60%;
+            padding: 8px 12px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            outline: none;
+            transition: border 0.2s;
+        }
+        .search-bar input:focus {
+            border: 1.5px solid #2d6cdf;
+        }
+        /* Toggle button */
+        .toggle-mode-btn {
+            display: none; /* Hide the dark mode button */
+        }
+        .menu-title {
+          padding: 16px 32px;
+          font-weight: bold;
+          font-size: 1.2em;
+          color: #777;
+          cursor: default;
+        }
+        .top-bar {
+            display: none; /* Hide the top bar since it only had dark mode */
+        }
+        /* Remove all dark mode styles */
+    </style>
+</head>
+<body>
+    <nav class="side-menu" id="sideMenu">
+      <ul>
+          <li class="menu-title">Hotkeys</li>
+          <li><a href="#windows-hotkeys"><i class="fa-brands fa-windows"></i> Windows</a></li>
+          <li><a href="#whatsapp-hotkeys"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a></li>
+          <li><a href="#discord"><i class="fa-brands fa-discord"></i> Discord</a></li>
+          <li><a href="#pycharm"><i class="fa-solid fa-code"></i> PyCharm</a></li>
+          <li><a href="#vscode"><i class="fa-solid fa-terminal"></i> VS Code</a></li>
+          <li><a href="#chrome"><i class="fa-brands fa-chrome"></i> Chrome</a></li>
+          <li><a href="#edge"><i class="fa-brands fa-edge"></i> Edge</a></li>
+          <li><a href="#firefox"><i class="fa-brands fa-firefox-browser"></i> Firefox</a></li>
+          <li><a href="#opera"><i class="fa-brands fa-opera"></i> Opera</a></li>
+          <li><a href="#github"><i class="fa-brands fa-github"></i> GitHub</a></li>
+          <li><a href="#youtube"><i class="fa-brands fa-youtube"></i> YouTube</a></li>
+          <li><a href="#cmd"><i class="fa-solid fa-terminal"></i> CMD/PS</a></li>
+          <li>
+            <a href="#chatgpt"><i class="fa-solid fa-code"></i> ChatGPT</a>
+          </li>
+          <li><a href="#blender"><i class="fa-solid fa-sync"></i> Blender</a></li>
+          <li class="menu-title">Commands</li>
+          <li><a href="#windows-cmd-commands"><i class="fa-solid fa-terminal"></i> CMD/PS Windows commands</a></li>
+          <li><a href="#dev-commands"><i class="fa-solid fa-terminal"></i> CMD/PS Dev Commands</a></li>
+          <li class="menu-title">About</li>
+          <li><a href="#creditsabout"><i class="fa-solid fa-plus"></i> Credits/About</a></li>
+      </ul>
+    </nav>
+    <div class="container">
+        <h1>Loads of Hotkeys (Windows/Apps often used by me)</h1>
+        <div class="search-bar">
+            <input type="text" id="hotkeySearch" placeholder="Search hotkeys... (e.g. 'screenshot', 'Ctrl + D', 'YouTube')" />
+        </div>
+
+        <!-- Windows 10 & 11 Hotkeys -->
+        <h2 id="windows-hotkeys"><i class="fa-brands fa-windows"></i> Windows 10 & 11 Hotkeys</h2>
+        <ul>
+            <li class="note"><b>Basic Navigation</b></li>
+            <li><span class="hotkey"><i class="fa-brands fa-windows"></i> Win</span>Open/close Start menu</li>
+            <li><span class="hotkey">Win + D</span>Show desktop (minimize all windows)</li>
+            <li><span class="hotkey">Win + E</span>Open File Explorer</li>
+            <li><span class="hotkey">Win + L</span>Lock your PC</li>
+            <li><span class="hotkey">Win + I</span>Open Settings</li>
+            <li><span class="hotkey">Win + A</span>Open Action Center (notifications)</li>
+            <li><span class="hotkey">Win + S</span>Open Search</li>
+            <li class="note"><b>Window Management</b></li>
+            <li><span class="hotkey">Win + Left/Right Arrow</span>Snap window to left/right half of screen</li>
+            <li><span class="hotkey">Win + Up Arrow</span>Maximize window</li>
+            <li><span class="hotkey">Win + Down Arrow</span>Minimize window or restore if maximized</li>
+            <li><span class="hotkey">Win + Shift + Left/Right Arrow</span>Move window between monitors</li>
+            <li class="note"><b>Virtual Desktops</b></li>
+            <li><span class="hotkey">Win + Ctrl + D</span>Create new virtual desktop</li>
+            <li><span class="hotkey">Win + Ctrl + Left/Right Arrow</span>Switch between virtual desktops</li>
+            <li><span class="hotkey">Win + Ctrl + F4</span>Close current virtual desktop</li>
+            <li class="note"><b>Taskbar & Apps</b></li>
+            <li><span class="hotkey">Win + Number (1–9)</span>Open or switch to the app pinned in that position on the taskbar</li>
+            <li><span class="hotkey">Win + Tab</span>Open Task View (see all open windows and desktops)</li>
+            <li class="note"><b>Clipboard & Screenshots</b></li>
+            <li><span class="hotkey">Win + V</span>Open clipboard history</li>
+            <li><span class="hotkey">Win + Shift + S</span>Take screenshot with Snip & Sketch tool</li>
+            <li><span class="hotkey">PrtScn</span>Take screenshot of whole screen (saved to clipboard)</li>
+            <li><span class="hotkey">Win + PrtScn</span>Take screenshot and save as file (in Pictures folder)</li>
+            <li class="note"><b>Miscellaneous</b></li>
+            <li><span class="hotkey">Alt + Tab</span>Switch between open apps</li>
+            <li><span class="hotkey">Ctrl + Shift + Esc</span>Open Task Manager</li>
+            <li><span class="hotkey">Win + R</span>Open Run dialog</li>
+            <li><span class="hotkey">Win + X</span>Open Quick Link menu (power user menu)</li>
+        </ul>
+
+        <h2 id="whatsapp-hotkeys"><i class="fa-brands fa-whatsapp"></i> WhatsApp Desktop/Web Hotkeys</h2>
+        <ul>
+            <li class="note"><b>Basic Navigation</b></li>
+            <li><span class="hotkey">Ctrl + N</span>Start a new chat</li>
+            <li><span class="hotkey">Ctrl + Shift + ]</span>Next chat</li>
+            <li><span class="hotkey">Ctrl + Shift + [</span>Previous chat</li>
+            <li><span class="hotkey">Ctrl + Shift + =</span>Zoom in</li>
+            <li><span class="hotkey">Ctrl + -</span>Zoom out</li>
+            <li class="note"><b>Chat & Message Actions</b></li>
+            <li><span class="hotkey">Ctrl + F</span>Search within chat</li>
+            <li><span class="hotkey">Ctrl + Shift + M</span>Mute chat</li>
+            <li><span class="hotkey">Ctrl + E</span>Archive chat</li>
+            <li><span class="hotkey">Ctrl + Shift + U</span>Mark as unread</li>
+            <li><span class="hotkey">Ctrl + Backspace</span>Delete chat</li>
+            <li class="note"><b>App Navigation</b></li>
+            <li><span class="hotkey">Ctrl + P</span>Open profile/settings</li>
+            <li><span class="hotkey">Ctrl + ,</span>App settings</li>
+            <li><span class="hotkey">Ctrl + Shift + N</span>Create new group</li>
+            <li><span class="hotkey">Ctrl + Tab</span>Next open chat</li>
+            <li><span class="hotkey">Ctrl + Shift + Tab</span>Previous open chat</li>
+            <li class="note"><b>Messaging</b></li>
+            <li><span class="hotkey">Enter</span>Send message</li>
+            <li><span class="hotkey">Shift + Enter</span>New line in message</li>
+            <li><span class="hotkey">Ctrl + Shift + \</span>Open emoji panel</li>
+        </ul>
+
+        <h2 id="discord"><i class="fa-brands fa-discord"></i> Discord (Windows)</h2>
+        <ul>
+            <li><span class="hotkey">Ctrl + /</span> Show Keyboard Shortcuts</li>
+            <li><span class="hotkey">Ctrl + B</span> Bold text</li>
+            <li><span class="hotkey">Ctrl + I</span> Italic text</li>
+            <li><span class="hotkey">Ctrl + U</span> Underline text</li>
+            <li><span class="hotkey">Ctrl + Shift + M</span> Mute/unmute mic</li>
+            <li><span class="hotkey">Ctrl + Shift + D</span> Toggle deafen</li>
+            <li><span class="hotkey">Ctrl + K</span> Quick switcher (jump channels)</li>
+            <li><span class="hotkey">Alt + Up/Down Arrow</span> Jump between servers</li>
+            <li><span class="hotkey">Ctrl + E</span> Open Emoji Picker</li>
+            <li><span class="hotkey">Ctrl + Shift + U</span> Mark channel as read</li>
+            <li><span class="hotkey">Ctrl + Shift + N</span> Create a new server</li>
+            <li><span class="hotkey">Ctrl + Shift + T</span> Reopen closed DM</li>
+            <li><span class="hotkey">Ctrl + Tab</span> Switch between servers (in order)</li>
+            <li><span class="hotkey">Ctrl + Shift + Up/Down Arrow</span> Jump between unread channels</li>
+        </ul>
+
+
+        <h2 id="pycharm"><i class="fa-solid fa-code"></i> PyCharm (Windows)</h2>
+        <ul>
+            <li><span class="hotkey">Ctrl + Shift + A</span> Find Action (search commands)</li>
+            <li><span class="hotkey">Ctrl + N</span> Go to Class</li>
+            <li><span class="hotkey">Ctrl + Shift + N</span> Go to File</li>
+            <li><span class="hotkey">Ctrl + /</span> Comment/uncomment line</li>
+            <li><span class="hotkey">Ctrl + Shift + F10</span> Run</li>
+            <li><span class="hotkey">Shift + F9</span> Debug</li>
+            <li><span class="hotkey">Alt + Enter</span> Show intention actions (quick fixes)</li>
+            <li><span class="hotkey">Ctrl + Alt + L</span> Reformat code</li>
+            <li><span class="hotkey">Ctrl + D</span> Duplicate line</li>
+            <li><span class="hotkey">Ctrl + Y</span> Delete line</li>
+            <li><span class="hotkey">Ctrl + Shift + Up/Down</span> Move line up/down</li>
+            <li><span class="hotkey">Ctrl + Space</span> Basic code completion</li>
+            <li><span class="hotkey">Ctrl + Shift + Space</span> Smart code completion</li>
+            <li><span class="hotkey">Ctrl + P</span> Parameter info</li>
+            <li><span class="hotkey">Ctrl + Shift + Enter</span> Complete statement</li>
+            <li><span class="hotkey">Ctrl + F12</span> File structure popup</li>
+            <li><span class="hotkey">Ctrl + E</span> Recent files popup</li>
+            <li><span class="hotkey">Ctrl + Shift + E</span> Recently edited files popup</li>
+        </ul>
+
+
+        <h2 id="vscode"><i class="fa-solid fa-terminal"></i> VS Code (Windows)</h2>
+        <ul>
+            <li><span class="hotkey">Ctrl + P</span> Quick open file</li>
+            <li><span class="hotkey">Ctrl + Shift + P</span> Command Palette</li>
+            <li><span class="hotkey">Ctrl + /</span> Toggle line comment</li>
+            <li><span class="hotkey">Alt + Up/Down</span> Move line up/down</li>
+            <li><span class="hotkey">Ctrl + D</span> Select next occurrence</li>
+            <li><span class="hotkey">Ctrl + B</span> Toggle sidebar</li>
+            <li><span class="hotkey">F5</span> Start Debugging</li>
+            <li><span class="hotkey">Ctrl + `</span> Toggle Terminal</li>
+            <li><span class="hotkey">Ctrl + Shift + O</span> Go to Symbol</li>
+            <li><span class="hotkey">Ctrl + Shift + M</span> Show Problems panel</li>
+            <li><span class="hotkey">Ctrl + K Ctrl + S</span> Keyboard Shortcuts</li>
+            <li><span class="hotkey">Ctrl + Shift + F</span> Search across files</li>
+            <li><span class="hotkey">Ctrl + Enter</span> Insert line below</li>
+            <li><span class="hotkey">Ctrl + Shift + Enter</span> Insert line above</li>
+            <li><span class="hotkey">Ctrl + Space</span> Trigger suggestion</li>
+        </ul>
+
+
+        <h2 id="chrome"><i class="fa-brands fa-chrome"></i> Google Chrome (Windows)</h2>
+        <ul>
+            <li><span class="hotkey">Ctrl + T</span> New Tab</li>
+            <li><span class="hotkey">Ctrl + W</span> Close Tab</li>
+            <li><span class="hotkey">Ctrl + Shift + T</span> Reopen Closed Tab</li>
+            <li><span class="hotkey">Ctrl + Tab</span> Next Tab</li>
+            <li><span class="hotkey">Ctrl + Shift + Tab</span> Previous Tab</li>
+            <li><span class="hotkey">Ctrl + L</span> Focus address bar</li>
+            <li><span class="hotkey">Ctrl + Shift + I</span> Open Developer Tools</li>
+            <li><span class="hotkey">Ctrl + D</span> Bookmark page</li>
+        </ul>
+
+        <ul>
+            <li class="note"><b><i class="fa-solid fa-toolbox"></i> Chrome DevTools (Windows)</b></li>
+            <li><span class="hotkey">F12</span> Open/close DevTools</li>
+            <li><span class="hotkey">Ctrl + Shift + I</span> Open/close DevTools</li>
+            <li><span class="hotkey">Ctrl + Shift + C</span> Toggle element picker</li>
+            <li><span class="hotkey">Ctrl + P</span> Go to file</li>
+            <li><span class="hotkey">Ctrl + Shift + F</span> Search across all sources</li>
+            <li><span class="hotkey">Ctrl + /</span> Toggle comment in Sources panel</li>
+            <li><span class="hotkey">Ctrl + Shift + M</span> Toggle device toolbar (mobile view)</li>
+            <li><span class="hotkey">Esc</span> Show/hide console drawer</li>
+            <li><span class="hotkey">Ctrl + O</span> Go to line</li>
+            <li><span class="hotkey">Ctrl + Shift + J</span> Open DevTools and focus Console</li>
+            <li><span class="hotkey">Ctrl + Shift + D</span> Dock DevTools to different position</li>
+            <li><span class="hotkey">Ctrl + [</span> Go to previous panel</li>
+            <li><span class="hotkey">Ctrl + ]</span> Go to next panel</li>
+        </ul>
+
+
+        <h2 id="edge"><i class="fa-brands fa-edge"></i> Microsoft Edge (Windows)</h2>
+        <ul>
+            <li class="note">Same as Chrome (since it’s Chromium-based)</li>
+            <li><span class="hotkey">Ctrl + Shift + U</span> Open Collections</li>
+            <li><span class="hotkey">Ctrl + Shift + Y</span> Open Web Capture</li>
+        </ul>
+        <ul>
+            <li class="note"><b><i class="fa-solid fa-toolbox"></i> Edge DevTools (Windows)</b></li>
+            <li><span class="hotkey">F12</span> Open/close DevTools</li>
+            <li><span class="hotkey">Ctrl + Shift + I</span> Open/close DevTools</li>
+            <li><span class="hotkey">Ctrl + Shift + C</span> Toggle element picker</li>
+            <li><span class="hotkey">Ctrl + P</span> Go to file</li>
+            <li><span class="hotkey">Ctrl + Shift + F</span> Search across all sources</li>
+            <li><span class="hotkey">Ctrl + /</span> Toggle comment in Sources panel</li>
+            <li><span class="hotkey">Ctrl + Shift + M</span> Toggle device toolbar (mobile view)</li>
+            <li><span class="hotkey">Esc</span> Show/hide console drawer</li>
+            <li><span class="hotkey">Ctrl + O</span> Go to line</li>
+            <li><span class="hotkey">Ctrl + Shift + J</span> Open DevTools and focus Console</li>
+            <li><span class="hotkey">Ctrl + Shift + D</span> Dock DevTools to different position</li>
+            <li><span class="hotkey">Ctrl + [</span> Go to previous panel</li>
+            <li><span class="hotkey">Ctrl + ]</span> Go to next panel</li>
+        </ul>
+
+        <h2 id="firefox"><i class="fa-brands fa-firefox-browser"></i> Mozilla Firefox (Windows)</h2>
+        <ul>
+            <li><span class="hotkey">Ctrl + T</span> New Tab</li>
+            <li><span class="hotkey">Ctrl + W</span> Close Tab</li>
+            <li><span class="hotkey">Ctrl + Shift + T</span> Reopen Closed Tab</li>
+            <li><span class="hotkey">Ctrl + Tab</span> Next Tab</li>
+            <li><span class="hotkey">Ctrl + Shift + Tab</span> Previous Tab</li>
+            <li><span class="hotkey">Ctrl + L</span> Focus address bar</li>
+            <li><span class="hotkey">Ctrl + Shift + K</span> Open Web Console</li>
+            <li><span class="hotkey">Ctrl + D</span> Bookmark page</li>
+        </ul>
+        <ul>
+            <li class="note"><b><i class="fa-solid fa-toolbox"></i> Firefox DevTools (Windows)</b></li>
+            <li><span class="hotkey">F12</span> Open/close DevTools</li>
+            <li><span class="hotkey">Ctrl + Shift + I</span> Open/close DevTools</li>
+            <li><span class="hotkey">Ctrl + Shift + C</span> Toggle element picker</li>
+            <li><span class="hotkey">Ctrl + Shift + K</span> Open Web Console</li>
+            <li><span class="hotkey">Ctrl + Shift + Z</span> Toggle Responsive Design Mode</li>
+            <li><span class="hotkey">Ctrl + Shift + E</span> Open Network Monitor</li>
+            <li><span class="hotkey">Ctrl + Shift + D</span> Toggle split console</li>
+            <li><span class="hotkey">Ctrl + Shift + L</span> Open Accessibility panel</li>
+            <li><span class="hotkey">Ctrl + Shift + M</span> Toggle device toolbar (Responsive Design Mode)</li>
+            <li><span class="hotkey">Esc</span> Show/hide split console</li>
+        </ul>
+
+        <h2 id="opera"><i class="fa-brands fa-opera"></i> Opera Browser (Windows)</h2>
+        <ul>
+            <li><span class="hotkey">Ctrl + T</span> New Tab</li>
+            <li><span class="hotkey">Ctrl + W</span> Close Tab</li>
+            <li><span class="hotkey">Ctrl + Shift + T</span> Reopen Closed Tab</li>
+            <li><span class="hotkey">Ctrl + Tab</span> Next Tab</li>
+            <li><span class="hotkey">Ctrl + Shift + Tab</span> Previous Tab</li>
+            <li><span class="hotkey">Ctrl + Space</span> Activate Speed Dial search</li>
+            <li><span class="hotkey">Ctrl + Shift + E</span> Open sidebar</li>
+            <li><span class="hotkey">Ctrl + Shift + I</span> Open Developer Tools</li>
+        </ul>
+        <ul>
+            <li class="note"><b><i class="fa-solid fa-toolbox"></i> Opera DevTools (Windows)</b></li>
+            <li><span class="hotkey">F12</span> Open/close DevTools</li>
+            <li><span class="hotkey">Ctrl + Shift + I</span> Open/close DevTools</li>
+            <li><span class="hotkey">Ctrl + Shift + C</span> Toggle element picker</li>
+            <li><span class="hotkey">Ctrl + P</span> Go to file</li>
+            <li><span class="hotkey">Ctrl + Shift + F</span> Search across all sources</li>
+            <li><span class="hotkey">Ctrl + /</span> Toggle comment in Sources panel</li>
+            <li><span class="hotkey">Ctrl + Shift + M</span> Toggle device toolbar (mobile view)</li>
+            <li><span class="hotkey">Esc</span> Show/hide console drawer</li>
+            <li><span class="hotkey">Ctrl + O</span> Go to line</li>
+            <li><span class="hotkey">Ctrl + Shift + J</span> Open DevTools and focus Console</li>
+            <li><span class="hotkey">Ctrl + Shift + D</span> Dock DevTools to different position</li>
+            <li><span class="hotkey">Ctrl + [</span> Go to previous panel</li>
+            <li><span class="hotkey">Ctrl + ]</span> Go to next panel</li>
+        </ul>
+
+
+        <h2 id="github"><i class="fa-brands fa-github"></i> GitHub Hotkeys (Web)</h2>
+        <ul>
+            <li class="note"><b>Navigation</b></li>
+            <li><span class="hotkey">g + n</span> Go to Notifications</li>
+            <li><span class="hotkey">g + p</span> Go to Pull Requests</li>
+            <li><span class="hotkey">g + i</span> Go to Issues</li>
+            <li><span class="hotkey">g + b</span> Go to Your Profile</li>
+            <li><span class="hotkey">g + d</span> Go to Dashboard</li>
+            <li><span class="hotkey">s</span> Focus Search bar</li>
+
+            <li class="note"><b>Issue & PR Actions</b></li>
+            <li><span class="hotkey">c</span> Create a new issue or pull request</li>
+            <li><span class="hotkey">l</span> Open Labels menu</li>
+            <li><span class="hotkey">m</span> Open Assignees menu</li>
+            <li><span class="hotkey">a</span> Open Reviewers menu (PRs only)</li>
+
+            <li class="note"><b>Code Review & Diff View</b></li>
+            <li><span class="hotkey">r</span> Add a reaction to a comment</li>
+            <li><span class="hotkey">u</span> Collapse/expand all files in PR diff</li>
+            <li><span class="hotkey">t</span> Open file finder (search repo files)</li>
+            <li><span class="hotkey">y</span> Copy permalink to current file line</li>
+
+            <li class="note"><b>Markdown & Editor</b></li>
+            <li><span class="hotkey">Ctrl + B</span> Bold text in editor</li>
+            <li><span class="hotkey">Ctrl + I</span> Italic text in editor</li>
+
+            <li class="note"><b>Bonus</b></li>
+            <li><span class="hotkey">.</span> Open repo in web-based VS Code (github.dev)</li>
+            <li><span class="hotkey">?</span> Open GitHub's keyboard shortcuts cheat sheet</li>
+        </ul>
+
+
+        <h2 id="youtube"><i class="fa-brands fa-youtube"></i> YouTube Hotkeys</h2>
+        <ul>
+            <li class="note"><b>YouTube Playback Hotkeys</b></li>
+            <li><span class="hotkey">Spacebar</span>or <span class="hotkey">K</span>Play / Pause</li>
+            <li><span class="hotkey">J</span>Rewind 10 seconds</li>
+            <li><span class="hotkey">L</span>Fast forward 10 seconds</li>
+            <li><span class="hotkey">Left Arrow</span>Rewind 5 seconds</li>
+            <li><span class="hotkey">Right Arrow</span>Fast forward 5 seconds</li>
+            <li><span class="hotkey">Home</span>Go to beginning of video</li>
+            <li><span class="hotkey">End</span>Go to end of video</li>
+            <li><span class="hotkey">Up Arrow</span>Volume up</li>
+            <li><span class="hotkey">Down Arrow</span>Volume down</li>
+            <li><span class="hotkey">M</span>Mute / Unmute</li>
+            <li class="note"><b>Video View Modes</b></li>
+            <li><span class="hotkey">F</span>Fullscreen toggle</li>
+            <li><span class="hotkey">T</span>Theater mode toggle</li>
+            <li><span class="hotkey">C</span>Captions On/Off</li>
+            <li class="note"><b>Playlist Controls</b></li>
+            <li><span class="hotkey">Shift + N</span>Next video in playlist</li>
+            <li><span class="hotkey">Shift + P</span>Previous video in playlist</li>
+            <li class="note"><b>Search & Navigation</b></li>
+            <li><span class="hotkey">/</span>Focus search bar</li>
+            <li><span class="hotkey">Tab</span>Navigate buttons</li>
+            <li><span class="hotkey">Shift + &gt;</span>Increase playback speed</li>
+            <li><span class="hotkey">Shift + &lt;</span>Decrease playback speed</li>
+        </ul>
+        <h2 id="cmd"><i class="fa-solid fa-terminal"></i> CMD and PowerShell (Windows)</h2>
+        <ul>
+            <li><span class="hotkey">Ctrl + C</span>Stop the current running command</li>
+            <li><span class="hotkey">Ctrl + V</span>Paste (in PowerShell and newer CMD)</li>
+            <li><span class="hotkey">Ctrl + A</span>Select all text in the current line</li>
+            <li><span class="hotkey">Ctrl + Up/Down Arrow</span>Scroll through the command history</li>
+            <li><span class="hotkey">Up Arrow</span>Go back through previous commands</li>
+            <li><span class="hotkey">Down Arrow</span>Go forward through commands</li>
+            <li><span class="hotkey">Tab</span>Auto-complete file or folder names</li>
+            <li><span class="hotkey">Ctrl + Home</span>Clear the screen (PowerShell only)</li>
+            <li><span class="hotkey">Ctrl + End</span>Move cursor to the end of the line</li>
+            <li><span class="hotkey">Ctrl + Left/Right Arrow</span>Move cursor word by word</li>
+            <li><span class="hotkey">F7</span>Show command history in a popup</li>
+            <li><span class="hotkey">Alt + Enter</span>Toggle fullscreen mode</li>
+            <li><span class="hotkey">Ctrl + M</span>Enable/disable mark mode (for selecting text with arrows)</li>
+        </ul>
+
+        <h2 id="chatgpt"><i class="fa-solid fa-code"></i> ChatGPT (Web)</h2>
+        <ul>
+            <li><span class="hotkey">Enter</span> Send message</li>
+            <li><span class="hotkey">Shift + Enter</span> New line (insert line break)</li>
+            <li><span class="hotkey">Ctrl + K</span> Open quick switcher (jump to chats/search)</li>
+            <li><span class="hotkey">Ctrl + /</span> Open keyboard shortcuts help menu</li>
+            <li><span class="hotkey">Ctrl + N</span> Start a new chat</li>
+            <li><span class="hotkey">Ctrl + Shift + N</span> Open ChatGPT in a new window</li>
+            <li><span class="hotkey">/</span> Quick prompt command menu (at start of input)</li>
+        </ul>
+
+        <h2 id="blender"><i class="fa-solid fa-sync"></i> Blender Default Hotkeys (No Add-ons)</h2>
+        <ul>
+            <li class="note"><b>General Navigation</b></li>
+            <li><span class="hotkey">MMB drag</span>Rotate View</li>
+            <li><span class="hotkey">Shift + MMB drag</span>Pan View</li>
+            <li><span class="hotkey">Ctrl + MMB drag</span>Zoom View</li>
+            <li><span class="hotkey">Scroll Wheel</span>Zoom In/Out</li>
+            <li><span class="hotkey">Numpad 1</span>Front View</li>
+            <li><span class="hotkey">Ctrl + Numpad 1</span>Back View</li>
+            <li><span class="hotkey">Numpad 3</span>Right View</li>
+            <li><span class="hotkey">Ctrl + Numpad 3</span>Left View</li>
+            <li><span class="hotkey">Numpad 7</span>Top View</li>
+            <li><span class="hotkey">Ctrl + Numpad 7</span>Bottom View</li>
+            <li><span class="hotkey">Numpad 5</span>Toggle Perspective / Orthographic</li>
+            <li><span class="hotkey">Numpad 0</span>Camera View</li>
+            <li><span class="hotkey">Shift + C</span>Reset View / Center Cursor</li>
+            <li><span class="hotkey">Home</span>Frame All</li>
+            <li><span class="hotkey">Numpad .</span>Frame Selected</li>
+            <li class="note"><b>Object Mode</b></li>
+            <li><span class="hotkey">Right Click / Left Click</span>Select</li>
+            <li><span class="hotkey">Shift + Click</span>Multi-select</li>
+            <li><span class="hotkey">A</span>Select All / Deselect All</li>
+            <li><span class="hotkey">B</span>Box Select</li>
+            <li><span class="hotkey">C</span>Circle Select</li>
+            <li><span class="hotkey">G</span>Grab/Move</li>
+            <li><span class="hotkey">R</span>Rotate</li>
+            <li><span class="hotkey">S</span>Scale</li>
+            <li><span class="hotkey">Shift + D</span>Duplicate</li>
+            <li><span class="hotkey">Alt + D</span>Linked Duplicate</li>
+            <li><span class="hotkey">X / Delete</span>Delete Selected</li>
+            <li><span class="hotkey">Ctrl + A</span>Apply Transforms</li>
+            <li><span class="hotkey">Ctrl + J</span>Join Objects</li>
+            <li><span class="hotkey">Ctrl + P</span>Parent</li>
+            <li><span class="hotkey">Alt + P</span>Clear Parent</li>
+            <li><span class="hotkey">M</span>Move to Collection</li>
+            <li><span class="hotkey">Shift + S</span>Snap Menu</li>
+            <li><span class="hotkey">Shift + A</span>Add Object</li>
+            <li><span class="hotkey">Ctrl + L</span>Link Data</li>
+            <li><span class="hotkey">H</span>Hide Selected</li>
+            <li><span class="hotkey">Alt + H</span>Unhide All</li>
+            <li><span class="hotkey">Ctrl + Z</span>Undo</li>
+            <li><span class="hotkey">Ctrl + Shift + Z</span>Redo</li>
+            <li class="note"><b>Edit Mode</b></li>
+            <li><span class="hotkey">Tab</span>Toggle Edit/Object Mode</li>
+            <li><span class="hotkey">A</span>Select All / Deselect All</li>
+            <li><span class="hotkey">B</span>Box Select</li>
+            <li><span class="hotkey">C</span>Circle Select</li>
+            <li><span class="hotkey">Ctrl + Tab</span>Selection Mode Menu (Vertex/Edge/Face)</li>
+            <li><span class="hotkey">1 / 2 / 3</span>Vertex / Edge / Face Select</li>
+            <li><span class="hotkey">G</span>Grab/Move</li>
+            <li><span class="hotkey">R</span>Rotate</li>
+            <li><span class="hotkey">S</span>Scale</li>
+            <li><span class="hotkey">E</span>Extrude</li>
+            <li><span class="hotkey">I</span>Inset Faces</li>
+            <li><span class="hotkey">Ctrl + R</span>Loop Cut</li>
+            <li><span class="hotkey">F</span>Make Face/Edge</li>
+            <li><span class="hotkey">Ctrl + B</span>Bevel</li>
+            <li><span class="hotkey">M</span>Merge Vertices</li>
+            <li><span class="hotkey">Alt + M</span>Merge Menu</li>
+            <li><span class="hotkey">Ctrl + E</span>Edge Menu</li>
+            <li><span class="hotkey">Ctrl + F</span>Face Menu</li>
+            <li><span class="hotkey">Ctrl + V</span>Vertex Menu</li>
+            <li><span class="hotkey">X / Delete</span>Delete</li>
+            <li><span class="hotkey">Shift + R</span>Repeat Last Action</li>
+            <li><span class="hotkey">P</span>Separate Selection</li>
+            <li><span class="hotkey">U</span>Unwrap UVs</li>
+            <li><span class="hotkey">Alt + S</span>Shrink/Fatten Along Normals</li>
+            <li class="note"><b>Sculpt Mode</b></li>
+            <li><span class="hotkey">Shift</span>Smooth Brush (hold)</li>
+            <li><span class="hotkey">F</span>Adjust Brush Size</li>
+            <li><span class="hotkey">Shift + F</span>Adjust Brush Strength</li>
+            <li><span class="hotkey">Ctrl</span>Invert Brush Action (hold)</li>
+            <li><span class="hotkey">X / Y / Z</span>Lock Brush to Axis</li>
+            <li class="note"><b>Animation</b></li>
+            <li><span class="hotkey">I</span>Insert Keyframe</li>
+            <li><span class="hotkey">Alt + I</span>Delete Keyframe</li>
+            <li><span class="hotkey">Shift + Left Arrow</span>Go to First Frame</li>
+            <li><span class="hotkey">Shift + Right Arrow</span>Go to Last Frame</li>
+            <li><span class="hotkey">Left Arrow</span>Previous Frame</li>
+            <li><span class="hotkey">Right Arrow</span>Next Frame</li>
+            <li><span class="hotkey">Spacebar</span>Play/Pause Animation</li>
+            <li class="note"><b>Rendering & File Operations</b></li>
+            <li><span class="hotkey">F12</span>Render Image</li>
+            <li><span class="hotkey">Ctrl + F12</span>Render Animation</li>
+            <li><span class="hotkey">Esc</span>Cancel Render</li>
+            <li><span class="hotkey">Ctrl + S</span>Save File</li>
+            <li><span class="hotkey">Ctrl + Shift + S</span>Save As</li>
+            <li><span class="hotkey">Ctrl + O</span>Open File</li>
+            <li><span class="hotkey">Ctrl + N</span>New File</li>
+            <li><span class="hotkey">Ctrl + Q</span>Quit Blender</li>
+            <li class="note"><b>Panels & Menus</b></li>
+            <li><span class="hotkey">T</span>Toggle Tool Shelf</li>
+            <li><span class="hotkey">N</span>Toggle Sidebar (Properties Panel)</li>
+            <li><span class="hotkey">Ctrl + Space</span>Maximize Editor</li>
+            <li><span class="hotkey">Shift + Space</span>Play Animation / Toggle Fullscreen Editor</li>
+            <li><span class="hotkey">F3 / Spacebar</span>Search Menu (find operators)</li>
+        </ul>
+        <h1>Commands(Windows)-</h1>
+        <h2 id="windows-cmd-commands"><i class="fa-solid fa-terminal"></i> Windows PowerShell / CMD Commands</h2>
+        <ul>
+          <li class="note"><b>System Info & Management</b></li>
+
+          <li>
+            <span class="hotkey">ipconfig</span> Show IP and network config
+            <ul>
+              <li><span class="hotkey">ipconfig /all</span> Show detailed network info</li>
+              <li><span class="hotkey">ipconfig /release</span> Release current IP address</li>
+              <li><span class="hotkey">ipconfig /renew</span> Renew IP address</li>
+              <li><span class="hotkey">ipconfig /flushdns</span> Flush DNS resolver cache</li>
+              <li><span class="hotkey">ipconfig /displaydns</span> Display DNS resolver cache</li>
+            </ul>
+          </li>
+
+          <li>
+            <span class="hotkey">ping &lt;address&gt;</span> Check network connectivity
+            <ul>
+              <li><span class="hotkey">ping -t &lt;address&gt;</span> Ping continuously until stopped</li>
+              <li><span class="hotkey">ping -n &lt;count&gt; &lt;address&gt;</span> Ping with a specific number of requests</li>
+            </ul>
+          </li>
+
+          <li>
+            <span class="hotkey">tracert &lt;address&gt;</span> Trace route to address
+          </li>
+
+          <li>
+            <span class="hotkey">netstat</span> Show network stats and connections
+            <ul>
+              <li><span class="hotkey">netstat -a</span> Show all active connections and listening ports</li>
+              <li><span class="hotkey">netstat -n</span> Show addresses and ports numerically</li>
+              <li><span class="hotkey">netstat -o</span> Show owning process ID for each connection</li>
+              <li><span class="hotkey">netstat -ano</span> Show all with process IDs</li>
+            </ul>
+          </li>
+
+          <li class="note"><b>File & Disk Commands</b></li>
+
+          <li>
+            <span class="hotkey">dir</span> List files & folders
+            <ul>
+              <li><span class="hotkey">dir /p</span> List files one page at a time</li>
+              <li><span class="hotkey">dir /w</span> List files in wide format</li>
+              <li><span class="hotkey">dir /a</span> List all files including hidden</li>
+            </ul>
+          </li>
+
+          <li>
+            <span class="hotkey">chkdsk</span> Check disk for errors
+            <ul>
+              <li><span class="hotkey">chkdsk /f</span> Fix errors on the disk</li>
+              <li><span class="hotkey">chkdsk /r</span> Locate bad sectors and recover readable info</li>
+            </ul>
+          </li>
+
+          <li class="note"><b>System Utilities</b></li>
+
+          <li>
+            <span class="hotkey">sfc /scannow</span> Scan and repair system files
+          </li>
+
+          <li>
+            <span class="hotkey">msconfig</span> Open system configuration
+          </li>
+
+          <li>
+            <span class="hotkey">regedit</span> Open Registry Editor
+          </li>
+
+          <li>
+            <span class="hotkey">control</span> Open Control Panel
+          </li>
+
+          <li class="note"><b>Package & Software Management</b></li>
+
+          <li>
+            <span class="hotkey">winget search &lt;app&gt;</span> Search apps with Windows Package Manager
+          </li>
+
+          <li>
+            <span class="hotkey">winget install &lt;app&gt;</span> Install app via winget
+          </li>
+
+          <li>
+            <span class="hotkey">winget upgrade</span> Upgrade installed apps
+          </li>
+
+        </ul>
+
+        <h2 id="dev-commands"><i class="fa-solid fa-laptop-code"></i> Dev Commands (Git, Node.js, Python)</h2>
+        <ul>
+
+          <li class="note"><b>Git Commands</b></li>
+
+          <li>
+            <span class="hotkey">git clone &lt;repo-url&gt;</span> Clone a remote repository
+          </li>
+
+          <li>
+            <span class="hotkey">git status</span> Check current repo status
+          </li>
+
+          <li>
+            <span class="hotkey">git add &lt;file&gt;</span> Stage changes for commit
+          </li>
+
+          <li>
+            <span class="hotkey">git commit -m "message"</span> Commit staged changes with message
+          </li>
+
+          <li>
+            <span class="hotkey">git push</span> Push commits to remote
+          </li>
+
+          <li>
+            <span class="hotkey">git pull</span> Pull latest changes from remote
+          </li>
+
+          <li>
+            <span class="hotkey">git branch</span> List branches
+            <ul>
+              <li><span class="hotkey">git branch &lt;name&gt;</span> Create new branch</li>
+              <li><span class="hotkey">git checkout &lt;branch&gt;</span> Switch branch</li>
+              <li><span class="hotkey">git merge &lt;branch&gt;</span> Merge branch into current</li>
+            </ul>
+          </li>
+
+          <li class="note"><b>Node.js & npm</b></li>
+
+          <li>
+            <span class="hotkey">node --version</span> Check Node.js version
+          </li>
+
+          <li>
+            <span class="hotkey">npm init</span> Initialize new npm project
+          </li>
+
+          <li>
+            <span class="hotkey">npm install &lt;package&gt;</span> Install package locally
+            <ul>
+              <li><span class="hotkey">npm install -g &lt;package&gt;</span> Install package globally</li>
+              <li><span class="hotkey">npm uninstall &lt;package&gt;</span> Remove package</li>
+              <li><span class="hotkey">npm update</span> Update all packages</li>
+            </ul>
+          </li>
+
+          <li>
+            <span class="hotkey">npm run &lt;script&gt;</span> Run script defined in package.json
+          </li>
+
+          <li class="note"><b>Python</b></li>
+
+          <li>
+            <span class="hotkey">python --version</span> Show Python version
+          </li>
+
+          <li>
+            <span class="hotkey">python &lt;script.py&gt;</span> Run Python script
+          </li>
+
+          <li>
+            <span class="hotkey">pip install &lt;package&gt;</span> Install Python package
+            <ul>
+              <li><span class="hotkey">pip uninstall &lt;package&gt;</span> Uninstall package</li>
+              <li><span class="hotkey">pip list</span> List installed packages</li>
+            </ul>
+          </li>
+
+        </ul>
+
+
+        <h2 id="creditsabout"><i class="fa-solid fa-terminal"></i> Credits/About</h2>
+        <ul>
+            <li>This site has NO connections with all the listed sites,the icons are from Font Awesome,not official for the listed sites.</li>
+            <li>Here's their official sites</li>
+            <li><a href="https://www.microsoft.com/windows" target="_blank"><i class="fa-brands fa-windows"></i> Windows</a></li>
+            <li><a href="https://discord.com" target="_blank"><i class="fa-brands fa-discord"></i> Discord</a></li>
+            <li><a href="https://www.jetbrains.com/pycharm" target="_blank"><i class="fa-solid fa-code"></i> PyCharm</a></li>
+            <li><a href="https://code.visualstudio.com" target="_blank"><i class="fa-solid fa-terminal"></i> VS Code</a></li>
+            <li><a href="https://www.google.com/chrome" target="_blank"><i class="fa-brands fa-chrome"></i> Chrome</a></li>
+            <li><a href="https://www.microsoft.com/edge" target="_blank"><i class="fa-brands fa-edge"></i> Edge</a></li>
+            <li><a href="https://www.mozilla.org/firefox" target="_blank"><i class="fa-brands fa-firefox-browser"></i> Firefox</a></li>
+            <li><a href="https://www.opera.com" target="_blank"><i class="fa-brands fa-opera"></i> Opera</a></li>
+            <li><a href="https://github.com" target="_blank"><i class="fa-brands fa-github"></i> GitHub</a></li>
+            <li><a href="https://www.youtube.com" target="_blank"><i class="fa-brands fa-youtube"></i> YouTube</a></li>
+            <li><a href="https://docs.microsoft.com/windows-server/administration/windows-commands/cmd" target="_blank"><i class="fa-solid fa-terminal"></i> CMD/PS</a></li>
+            <li><a href="https://chat.openai.com" target="_blank"><i class="fa-solid fa-code"></i> ChatGPT</a></li>
+            <li><a href="https://www.blender.org" target="_blank"><i class="fa-solid fa-sync"></i> Blender</a></li>
+            <li><a href="https://www.youtube.com/@noahliNotFound?sub_confirmation=1" target="_blank"><i class="fa-solid fa-laugh"></i> Don't Click This!😈</a></li>
+            <li></li>
+        </ul>
+
+    </div>
+
+    <script>
+        // Side menu highlight on scroll
+        const sectionIds = [
+            'windows-hotkeys',
+            'whatsapp-hotkeys',
+            'discord',
+            'pycharm',
+            'vscode',
+            'chrome',
+            'edge',
+            'firefox',
+            'opera',
+            'github',
+            'youtube',
+            'cmd',
+            'chatgpt',
+            'blender',
+            'windows-cmd-commands',
+            'dev-commands',
+            'creditsabout'
+        ];
+        const menuLinks = Array.from(document.querySelectorAll('.side-menu a'));
+        function highlightMenu() {
+          let fromTop = window.scrollY + 80;
+          let current = sectionIds[0];
+          for (let id of sectionIds) {
+            const section = document.getElementById(id);
+            if (section && section.offsetTop <= fromTop) {
+              current = id;
+            }
+          }
+          menuLinks.forEach(link => {
+            link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+          });
+        }
+        window.addEventListener('scroll', highlightMenu);
+        window.addEventListener('resize', highlightMenu);
+        document.addEventListener('DOMContentLoaded', highlightMenu);
+        // Smooth scroll for menu
+        menuLinks.forEach(link => {
+          link.addEventListener('click', function(e) {
+            const targetId = this.getAttribute('href').slice(1);
+            const target = document.getElementById(targetId);
+            if (target) {
+              e.preventDefault();
+              window.scrollTo({
+                top: target.offsetTop - 20,
+                behavior: 'smooth'
+              });
+            }
+          });
+        });
+    </script>
+</body>
+</html>
