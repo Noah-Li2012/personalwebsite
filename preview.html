@@ -10,6 +10,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="icon" href="channels4_profile.jpg" type="image/jpeg" />
     <style>
+        /* Dark overlay for background. Change the rgba value below to adjust darkness/opacity. */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: rgba(0,0,0,0.35);
+        }
         html {
             scroll-behavior: smooth;
         }
@@ -61,10 +70,11 @@
         }
 
         .gradient-text {
-            background: linear-gradient(45deg, #4fd1c5, #63b3ed);
+            background: linear-gradient(45deg, #CCCCCC, #ffffff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+
 
         .hover-scale {
             transition: transform 0.3s ease;
@@ -98,7 +108,13 @@
         }
     </style>
 </head>
-<body class="bg-gray-900 text-white font-sans" style="background: url('bg-img.png') no-repeat center center fixed; background-size: cover; transition: background-position 0.3s cubic-bezier(0.4,0,0.2,1);">
+<body class="bg-gray-900 text-white font-sans"
+    style="
+        background: url('https://raw.githubusercontent.com/Noah-Li2012/personalwebsite/refs/heads/main/bg-img.png') no-repeat center center fixed;
+        /* Change the value below to adjust background image size (e.g. 108% = slightly bigger than screen) */
+        background-size: 108%;
+        transition: background-position 0.3s cubic-bezier(0.4,0,0.2,1);
+    ">
     <div id="particles-js"></div>
 
         <!-- Navbar -->
@@ -129,7 +145,10 @@
         <div class="flex flex-col items-center space-y-4 z-10">
             <div class="flex items-center space-x-4">
                 <img src="channels4_profile.jpg" alt="Profile Picture" class="w-20 h-20 rounded-full border-2 border-teal-400 hover-scale">
-                <h2 class="text-4xl md:text-6xl font-bold gradient-text">Hey, I'm <span class="text-teal-400">Noah</span> 👋</h2>
+                <h2 class="text-4xl md:text-6xl font-bold gradient-text">
+                  Hey, I'm <span class="text-gray-500">Noah</span>
+                </h2>
+
             </div>
             <p class="text-lg text-gray-300 max-w-xl">Noah —— That boi who codes for fun.</p>
             <div class="flex space-x-4 mt-4">
