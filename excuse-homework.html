@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Homework Excuse Generator</title>
+<style>
+  body {
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    background: #f0f8ff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+  }
+  #excuse {
+    margin: 20px;
+    font-size: 1.5rem;
+    max-width: 600px;
+    text-align: center;
+    color: #333;
+    padding: 20px;
+    border: 3px dashed #666;
+    border-radius: 10px;
+    background: #fff;
+  }
+  button {
+    padding: 15px 30px;
+    font-size: 1.3rem;
+    background-color: #4caf50;
+    border: none;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  button:hover {
+    background-color: #45a049;
+  }
+</style>
+</head>
+<body>
+
+<h2>Teacher: Where is your homework</h2>
+<div id="excuse">Click the button to get a homework excuse!</div>
+<button onclick="getExcuse()">Get Excuse</button>
+
+<div style="margin-top:20px;">
+  <label>
+    <input type="checkbox" id="translateToggle" onchange="toggleTranslate()"> Translate: Enable/Disable
+  </label>
+  <select id="languageSelect" style="display:none; margin-left:10px;">
+    <option value="zh-CN">Chinese (Simplified)</option>
+    <option value="en">English</option>
+    <option value="es">Spanish</option>
+    <option value="fr">French</option>
+    <option value="de">German</option>
+    <option value="ja">Japanese</option>
+    <option value="ru">Russian</option>
+    <option value="ko">Korean</option>
+    <option value="ar">Arabic</option>
+    <option value="hi">Hindi</option>
+  </select>
+</div>
+
+<script>
+  let lastExcuse = "Click the button to get a homework excuse!";
+  let lastOriginalExcuse = lastExcuse;
+  let isTranslating = false;
+
+  const subjects = [
+    "my dog who joined an intergalactic spy agency",
+    "my little brother who drank 3 cans of soda and went turbo",
+    "my socks who became sentient and started a rebellion",
+    "my cat who started a secret underground homework trading network",
+    "a ninja squirrel who sabotaged my backpack",
+    "my goldfish who hacked into my laptop again",
+    "a sneaky ghost who snuck into my room last night",
+    "the WiFi monster in my router who woke up angry",
+    "a raccoon from the dumpster broke into my room",
+  ];
+
+  const actions = [
+    "stole my homework for a top-secret mission",
+    "used my homework as a magical scroll and teleported away",
+    "accidentally turned my homework into glitter while hyper-dancing",
+    "shredded my homework in the great sock uprising",
+    "sold my homework in exchange for tuna and laser pointers",
+    "wrapped my homework around its vines and disappeared",
+    "launched my homework off the balcony like a ninja star",
+    "uploaded my homework to a secret goldfish-only internet",
+    "erased my homework because it reminded them of algebra",
+    "chewed through the router and zapped my homework into the cloud",
+    "used my homework to build a robot army",
+    "borrowed my homework as an ancient Earth artifact"
+  ];
+
+  const reasons = [
+    "Now the principal thinks I forged it with AI.",
+    "Apparently, it’s being studied in a squirrel lab.",
+    "No one knows where it went, but the plant looks happy.",
+    "He said he'll return it after saving the multiverse.",
+    "Now it’s classified under space law.",
+    "My goldfish says it’s stuck in crypto now.",
+    "I’m currently banned from turning in homework until Tuesday.",
+    "My teacher’s clone is holding it hostage.",
+    "It’s now encrypted in a haunted USB stick.",
+    "Long story short: raccoons really like geometry.",
+    "The janitor says he saw it floating through the vents.",
+    "The government told me not to speak about it ever again."
+  ];
+
+
+  function getExcuse() {
+    const subject = subjects[Math.floor(Math.random() * subjects.length)];
+    const action = actions[Math.floor(Math.random() * actions.length)];
+    const reason = reasons[Math.floor(Math.random() * reasons.length)];
+
+    const excuse = `I couldn't turn in my homework because ${subject} ${action}. ${reason}`;
+    lastExcuse = excuse;
+    lastOriginalExcuse = excuse;
+    if (isTranslating) {
+      translateExcuse();
+    } else {
+      document.getElementById('excuse').innerText = excuse;
+    }
+  }
+
+  function toggleTranslate() {
+    const toggle = document.getElementById('translateToggle');
+    const langSelect = document.getElementById('languageSelect');
+    isTranslating = toggle.checked;
+    if (isTranslating) {
+      langSelect.style.display = '';
+      translateExcuse();
+    } else {
+      langSelect.style.display = 'none';
+      document.getElementById('excuse').innerText = lastOriginalExcuse;
+    }
+  }
+
+  document.getElementById('languageSelect').addEventListener('change', function() {
+    if (isTranslating) {
+      translateExcuse();
+    }
+  });
+
+  function translateExcuse() {
+    const text = lastOriginalExcuse;
+    const targetLang = document.getElementById('languageSelect').value;
+    if (!text) return;
+    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && Array.isArray(data[0])) {
+          
+          const translated = data[0].map(seg => seg[0]).join("");
+          if (translated && translated.trim()) {
+            document.getElementById('excuse').innerText = translated;
+          } else {
+            baiduTranslate(text, targetLang);
+          }
+        } else {
+          
+          baiduTranslate(text, targetLang);
+        }
+      })
+      .catch(() => {
+  
+        baiduTranslate(text, targetLang);
+      });
+  }
+
+  function baiduTranslate(text, targetLang) {
+    const langMap = {
+      'zh-CN': 'zh',
+      'en': 'en',
+      'es': 'spa',
+      'fr': 'fra',
+      'de': 'de',
+      'ja': 'jp',
+      'ru': 'ru',
+      'ko': 'kor',
+      'ar': 'ara',
+      'hi': 'hi'
+    };
+    const toLang = langMap[targetLang] || 'en';
+    const baiduUrl = `https://fanyi-api.baidu.com/api/trans/vip/translate?q=${encodeURIComponent(text)}&from=auto&to=${toLang}&appid=20230607001694213&salt=1435660288&sign=demo`;
+    fetch(baiduUrl)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.trans_result && data.trans_result[0] && data.trans_result[0].dst) {
+          document.getElementById('excuse').innerText = data.trans_result[0].dst;
+        } else {
+          document.getElementById('excuse').innerText = text;
+        }
+      })
+      .catch(() => {
+        document.getElementById('excuse').innerText = text;
+      });
+  }
+</script>
+
+</body>
+</html>
