@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PreRecordium</title>
+<style>
+  /* Reset and base */
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: url('https://raw.githubusercontent.com/Noah-Li2012/PreRecordium/refs/heads/main/bg.png') no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    will-change: background-position;
+    transition: background-position 0.2s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* Navbar styles */
+  .navbar {
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    background: rgba(30,30,30,0.72);
+    box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+    display: flex;
+    align-items: center;
+    padding: 0 32px;
+    height: 56px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .navbar-logo {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.04em;
+    margin-right: 18px;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .navbar-noahli {
+    font-size: 1.08rem;
+    color: #6ca0ff;
+    margin-left: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+  }
+  .navbar-noahli:hover {
+    color: #fff;
+    text-shadow: 0 0 8px #6ca0ff;
+  }
+  .navbar-links {
+    display: flex;
+    gap: 18px;
+    margin-left: 24px;
+  }
+  .navbar-link {
+    color: #ccc;
+    font-size: 1.05rem;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 7px;
+    transition: background 0.18s, color 0.18s;
+  }
+  .navbar-link:hover, .navbar-link.active {
+    background: rgba(110,110,110,0.22);
+    color: #fff;
+  }
+
+  /* Overlay dimmer */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 0;
+  }
+
+  #app {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 60px 20px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  /* Title */
+  h1 {
+    font-size: 3.8rem;
+    margin: 0;
+    line-height: 1.1;
+    text-shadow: 0 0 12px rgba(0,0,0,0.8);
+    user-select: none;
+  }
+
+  /* Divider line */
+  .divider {
+    width: 140px;
+    height: 2.5px;
+    background: rgba(200, 200, 200, 0.6);
+    margin: 16px auto 32px auto;
+    border-radius: 2px;
+    box-shadow: 0 0 10px rgba(200, 200, 200, 0.35);
+  }
+
+  /* Subtitle */
+  h2 {
+    font-weight: 400;
+    font-size: 1.85rem;
+    max-width: 650px;
+    margin: 0 auto 48px auto;
+    color: #ddd;
+    text-shadow: 0 0 6px rgba(0,0,0,0.55);
+    user-select: none;
+  }
+
+  /* Glass blur button */
+  .btn-download {
+    padding: 20px 56px;
+    font-size: 1.5rem;
+    color: #ddd;
+    background: rgba(90, 90, 90, 0.4);
+    border: 1.8px solid rgba(220, 220, 220, 0.3);
+    border-radius: 18px;
+    cursor: pointer;
+    box-shadow: 0 10px 28px rgba(110, 110, 110, 0.45);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    white-space: pre-line;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+    font-weight: 700;
+    text-shadow: 0 0 8px rgba(0,0,0,0.55);
+    letter-spacing: 0.06em;
+    position: relative;
+  }
+
+  .btn-download:hover {
+    background: rgba(110, 110, 110, 0.7);
+    box-shadow: 0 14px 38px rgba(140, 140, 140, 0.75);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.65);
+    transform: translateY(-3px);
+  }
+
+  .btn-download:active {
+    transform: translateY(0);
+    box-shadow: 0 7px 20px rgba(100, 100, 100, 0.5);
+  }
+
+  /* Language toggle button */
+  #lang-toggle {
+    background: rgba(80, 80, 80, 0.45);
+    border: 1.5px solid rgba(200, 200, 200, 0.3);
+    border-radius: 12px;
+    padding: 10px 18px;
+    color: #ddd;
+    font-weight: 600;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    user-select: none;
+    box-shadow: 0 4px 14px rgba(100, 100, 100, 0.4);
+    transition: background 0.25s ease, border-color 0.25s ease;
+    margin-left: 24px;
+    margin-right: 0;
+    z-index: 10;
+  }
+
+  #lang-toggle:hover {
+    background: rgba(110, 110, 110, 0.65);
+    border-color: rgba(230, 230, 230, 0.55);
+  }
+
+  /* README container */
+  #readme-section {
+    margin-top: 60px;
+    background: rgba(30, 30, 30, 0.55);
+    border-radius: 14px;
+    max-width: 900px;
+    padding: 48px 44px;
+    color: #ccc;
+    font-size: 1rem;
+    line-height: 1.6;
+    box-shadow: 0 0 24px rgba(50, 50, 50, 0.6);
+    user-select: text;
+    opacity: 0;
+    transform: translateY(25px);
+    transition: opacity 1s ease, transform 1s ease;
+  }
+
+  #readme-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* README markdown styling basics */
+  #readme-section h1,
+  #readme-section h2,
+  #readme-section h3 {
+    color: #eee;
+    margin-top: 1.2em;
+    margin-bottom: 0.6em;
+    font-weight: 700;
+  }
+  #readme-section h1 { font-size: 1.6rem; }
+  #readme-section h2 { font-size: 1.4rem; }
+  #readme-section h3 { font-size: 1.2rem; }
+
+  #readme-section p {
+    margin: 0.5em 0 1em 0;
+  }
+
+  #readme-section a {
+    color: #6ca0ff;
+    text-decoration: underline;
+  }
+
+  #readme-section code {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Courier New', Courier, monospace;
+  }
+
+  #readme-section pre {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 12px 14px;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9rem;
+  }
+
+  /* Scrollbar styling */
+  #readme-section::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  #readme-section::-webkit-scrollbar-thumb {
+    background: rgba(150, 150, 150, 0.4);
+    border-radius: 6px;
+  }
+
+  #readme-section::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* Responsive tweaks */
+  @media (max-width: 600px) {
+    h1 {
+      font-size: 2.6rem;
+    }
+    h2 {
+      font-size: 1.4rem;
+    }
+    .btn-download {
+      font-size: 1.2rem;
+      padding: 14px 32px;
+    }
+    #readme-section {
+      padding: 24px 10px;
+      font-size: 0.9rem;
+    }
+  }
+</style>
+</head>
+<body>
+  <nav class="navbar">
+    <a class="navbar-logo" id="nav-home" href="#home">PreRecordium 1.7.4</a>
+    <a class="navbar-noahli" href="https://noahli404.pages.dev" target="_blank" rel="noopener">NoahLi</a>
+    <button id="lang-toggle">中</button>
+    <div class="navbar-links">
+      <a class="navbar-link" id="nav-about" href="#about">About</a>
+      <a class="navbar-link" id="nav-contact" href="#contact">Contact</a>
+    </div>
+  </nav>
+
+  <div id="app" style="padding-top:56px;">
+    <section id="home-section" class="main-section fade-section" tabindex="0" aria-label="Home" style="scroll-margin-top:220px; margin-bottom:180px; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:calc(100vh - 56px);">
+      <h1 id="title">PreRecordium</h1>
+      <div class="divider"></div>
+      <h2 id="subtitle">Catch the moment you miss</h2>
+      <button class="btn-download" id="download-btn" onclick="window.location.href='https://github.com/Noah-Li2012/PreRecordium/releases/download/1.7.4/PreRecordium.Release.1.7.4.exe'">
+        Download for Windows<br>---<br>.exe
+      </button>
+    </section>
+
+    <section id="readme-section" class="main-section fade-section visible" tabindex="0" aria-label="README content" style="scroll-margin-top:120px; margin-bottom:180px;">
+      <div id="readme-content"><!-- README will go here --></div>
+    </section>
+
+    <section id="contact-section" class="main-section fade-section" tabindex="0" aria-label="Contact info" style="margin-top:120px;background:rgba(30,30,30,0.55);border-radius:14px;max-width:900px;padding:32px 38px;color:#ccc;box-shadow:0 0 32px 4px rgba(50,50,50,0.7);font-size:1.13rem;line-height:1.7;scroll-margin-top:120px; margin-bottom:120px;">
+      <h2 style="color:#eee;font-size:1.3rem;margin-top:0;margin-bottom:0.7em;">Contact</h2>
+      <div>Email: <a href="mailto:importnoahli404@gmail.com" style="color:#6ca0ff;">importnoahli404@gmail.com</a></div>
+      <div>YouTube: <a id="yt-link" href="https://www.youtube.com/@noahliNotFound" target="_blank" rel="noopener" style="color:#6ca0ff;">@noahliNotFound</a></div>
+    </section>
+
+    <button id="scroll-top-btn" title="Back to top" style="position:fixed;right:32px;bottom:32px;z-index:200;display:none;background:rgba(40,40,40,0.7);color:#fff;border:none;border-radius:50%;width:48px;height:48px;box-shadow:0 4px 18px rgba(0,0,0,0.25);font-size:2rem;cursor:pointer;transition:background 0.2s,opacity 0.2s;backdrop-filter:blur(6px);">&#30;</button>
+  </div>
+
+<script>
+  // URLs for README files
+  const readmeURLs = {
+    en: 'https://raw.githubusercontent.com/Noah-Li2012/PreRecordium/main/README.md',
+    cn: 'https://raw.githubusercontent.com/Noah-Li2012/PreRecordium/main/README.zh-CN.md'
+  };
+
+  // Cache for fetched README content
+  const readmeCache = { en: null, cn: null };
+
+  // Initial language state
+  let lang = 'en';
+
+  // DOM references
+  const langToggle = document.getElementById('lang-toggle');
+  const title = document.getElementById('title');
+  const subtitle = document.getElementById('subtitle');
+  const downloadBtn = document.getElementById('download-btn');
+  const readmeSection = document.getElementById('readme-section');
+  const readmeContent = document.getElementById('readme-content');
+
+  // Fetch and display README content based on language
+  async function updateContent() {
+    if(lang === 'en') {
+      title.textContent = 'PreRecordium';
+      subtitle.textContent = 'Catch the moment you miss';
+      downloadBtn.innerHTML = 'Download for Windows<br>---<br>.exe';
+      langToggle.textContent = '中';
+    } else {
+      title.textContent = 'PreRecordium';
+      subtitle.textContent = '捕捉你错过的瞬间';
+      downloadBtn.innerHTML = 'Windows 下载<br>---<br>.exe';
+      langToggle.textContent = 'EN';
+    }
+    // Fetch README if not cached
+    if (!readmeCache[lang]) {
+      try {
+        const resp = await fetch(readmeURLs[lang]);
+        if (!resp.ok) throw new Error('Failed to fetch README');
+        readmeCache[lang] = await resp.text();
+      } catch (e) {
+        readmeCache[lang] = lang === 'en' ? '# README not found' : '# 未找到 README';
+      }
+    }
+    if (readmeContent) {
+      readmeContent.innerHTML = marked.parse(readmeCache[lang]);
+    }
+  }
+
+  // Language toggle button click
+  langToggle.addEventListener('click', async () => {
+    lang = (lang === 'en') ? 'cn' : 'en';
+    await updateContent();
+  });
+
+  // Section fade-in on scroll
+  function onScroll() {
+    document.querySelectorAll('.fade-section').forEach(section => {
+      const rect = section.getBoundingClientRect();
+      if(rect.top < window.innerHeight * 0.92) {
+        section.classList.add('visible');
+      }
+    });
+    // Show/hide scroll-to-top button
+    const btn = document.getElementById('scroll-top-btn');
+    if(window.scrollY > 200) {
+      btn.style.display = 'block';
+    } else {
+      btn.style.display = 'none';
+    }
+  }
+  // Scroll-to-top button logic
+  function setupScrollTopBtn() {
+    const btn = document.getElementById('scroll-top-btn');
+    btn.addEventListener('click', () => {
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
+  }
+
+  // Load marked.js for markdown parsing
+  function loadMarked() {
+    return new Promise((res) => {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
+      script.onload = () => res();
+      document.head.appendChild(script);
+    });
+  }
+
+  // Automatic slow background movement (no mouse parallax)
+  let bgAngle = 0;
+  function animateBgAuto() {
+    // Move in a slow circle
+    bgAngle += 0.0022; // speed
+    const radius = 18; // px, movement radius
+    const x = Math.cos(bgAngle) * radius;
+    const y = Math.sin(bgAngle) * radius;
+    document.body.style.backgroundPosition = `calc(50% + ${x}px) calc(50% + ${y}px)`;
+    requestAnimationFrame(animateBgAuto);
+  }
+
+  // Navbar scroll/active logic
+  function setActiveNav(id) {
+    document.querySelectorAll('.navbar-link').forEach(link => link.classList.remove('active'));
+    if (id) {
+      const el = document.getElementById('nav-' + id);
+      if (el) el.classList.add('active');
+    }
+  }
+
+  function scrollToSection(section) {
+    let el = null;
+    if (section === 'home') el = document.getElementById('home-section');
+    if (section === 'about') el = document.getElementById('readme-section');
+    if (section === 'contact') el = document.getElementById('contact-section');
+    if (el) {
+      el.scrollIntoView({behavior: 'smooth'});
+      setActiveNav(section === 'home' ? undefined : section);
+    }
+  }
+
+  async function init() {
+    await loadMarked();
+    await updateContent();
+    // Initial fade-in and scroll events
+    onScroll();
+    window.addEventListener('scroll', onScroll);
+    animateBgAuto();
+    // Navbar events
+    document.getElementById('nav-home').addEventListener('click', e => { e.preventDefault(); scrollToSection('home'); });
+    document.getElementById('nav-about').addEventListener('click', e => { e.preventDefault(); scrollToSection('about'); });
+    document.getElementById('nav-contact').addEventListener('click', e => { e.preventDefault(); scrollToSection('contact'); });
+    // Set About as active by default
+    setActiveNav('about');
+    // Scroll-to-top button
+    setupScrollTopBtn();
+  }
+
+  init();
+</script>
+</body>
+</html>
