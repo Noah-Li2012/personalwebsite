@@ -4,16 +4,37 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Homework Excuse Generator</title>
+<!-- Google Fonts for handwriting style -->
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Indie+Flower&family=Gloria+Hallelujah&display=swap" rel="stylesheet">
 <style>
   body {
-    font-family: 'Comic Sans MS', cursive, sans-serif;
-    background: #f0f8ff;
+    font-family: 'Patrick Hand', 'Comic Sans MS', 'Indie Flower', 'Gloria Hallelujah', cursive, sans-serif;
+    background: #fdf6e3;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 23px, #f5e9c6 24px, transparent 25px),
+      linear-gradient(120deg, rgba(255,255,255,0.08) 0%, rgba(205,205,205,0.04) 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    height: 100vh;
+    justify-content: flex-start;
+    min-height: 100vh;
     margin: 0;
+    padding-top: 40px;
+    /* Animate background position for a happy, lively effect */
+    animation: bgmove 12s linear infinite alternate;
+    background-size: 100% 100%, 100% 100%;
+  }
+
+  @keyframes bgmove {
+    0% {
+      background-position: 0 0, 0 0;
+    }
+    50% {
+      background-position: 10px 10px, 20px 20px;
+    }
+    100% {
+      background-position: -10px -10px, -20px -20px;
+    }
   }
   #excuse {
     margin: 20px;
@@ -21,30 +42,105 @@
     max-width: 600px;
     text-align: center;
     color: #333;
-    padding: 20px;
-    border: 3px dashed #666;
-    border-radius: 10px;
-    background: #fff;
+    padding: 24px 28px;
+    border: 2px dashed #b4975a;
+    border-radius: 14px;
+    background: #fff8dc;
+    box-shadow: 2px 3px 8px rgba(0,0,0,0.10), 0 1px 0 #e7d7b1 inset;
+    font-family: inherit;
+    position: relative;
+    /* subtle paper texture overlay */
+    background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png'), linear-gradient(120deg, rgba(255,255,255,0.08) 0%, rgba(205,205,205,0.04) 100%);
+    background-blend-mode: lighten;
   }
   button {
-    padding: 15px 30px;
+    padding: 15px 36px;
     font-size: 1.3rem;
-    background-color: #4caf50;
-    border: none;
-    color: white;
-    border-radius: 8px;
+    background-color: #fff8dc;
+    border: 2px solid #c19a6b;
+    color: #6b4f1d;
+    border-radius: 10px;
     cursor: pointer;
+    font-family: inherit;
+    box-shadow: 2px 3px 5px rgba(0,0,0,0.10);
+    transition: box-shadow 0.1s, transform 0.1s, background 0.2s;
+    outline: none;
+    margin-bottom: 10px;
+    position: relative;
   }
   button:hover {
-    background-color: #45a049;
+    background: #f5e9c6;
+    box-shadow: 1px 1.5px 2px rgba(0,0,0,0.13) inset, 2px 3px 5px rgba(0,0,0,0.10);
+    transform: translateY(2px);
+  }
+  button:active {
+    background: #f3e3b7;
+    box-shadow: 0 0 0 rgba(0,0,0,0.10);
+    transform: translateY(4px);
+  }
+
+  h2.smooth-line {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    color: #111;
+    margin-bottom: 10px;
+    margin-top: 0;
+    min-height: 60px;
+    font-family: 'Gloria Hallelujah', 'Patrick Hand', 'Comic Sans MS', cursive, sans-serif;
+    letter-spacing: 1px;
+    font-weight: normal;
+    z-index: 1;
+  }
+  h2.smooth-line span {
+    position: relative;
+    background: #fdf6e3;
+    padding: 0 18px;
+    z-index: 1;
+    border-radius: 6px;
+  }
+  h2.smooth-line::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 10%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 80%;
+    background: linear-gradient(to bottom, #bbb 0%, #eee 100%);
+    border-radius: 2px;
+    z-index: 0;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  /* horizontal line below h2 */
+  .h2-hr {
+    width: 100%;
+    max-width: 340px;
+    margin: 0 auto 24px auto;
+    border: none;
+    border-top: 2.5px solid #bbb;
+    border-radius: 2px;
+    background: linear-gradient(to right, #eee, #bbb 50%, #eee);
+    height: 0;
+    opacity: 0.7;
+    box-shadow: 0 1px 0 #fff8dc;
   }
 </style>
 </head>
 <body>
 
-<h2>Teacher: Where is your homework</h2>
+
+<h2 class="smooth-line"><span>Homework Excuse Generator</span></h2>
+<hr class="h2-hr" />
+
 <div id="excuse">Click the button to get a homework excuse!</div>
-<button onclick="getExcuse()">Get Excuse</button>
+<div style="display:flex; gap:12px; justify-content:center; align-items:center; margin-bottom:10px;">
+  <button onclick="getExcuse()">Get Excuse</button>
+  <button id="copyBtn" onclick="copyExcuse()" title="Copy to clipboard">Copy excuse</button>
+</div>
 
 <div style="margin-top:20px;">
   <label>
@@ -61,10 +157,26 @@
     <option value="ko">Korean</option>
     <option value="ar">Arabic</option>
     <option value="hi">Hindi</option>
+    <!-- Add more as needed -->
   </select>
 </div>
 
 <script>
+  // Copy excuse to clipboard
+  function copyExcuse() {
+    const excuseText = document.getElementById('excuse').innerText;
+    if (!excuseText) return;
+    navigator.clipboard.writeText(excuseText).then(() => {
+      const btn = document.getElementById('copyBtn');
+      const orig = btn.innerText;
+      btn.innerText = 'Copied!';
+      btn.disabled = true;
+      setTimeout(() => {
+        btn.innerText = orig;
+        btn.disabled = false;
+      }, 900);
+    });
+  }
   let lastExcuse = "Click the button to get a homework excuse!";
   let lastOriginalExcuse = lastExcuse;
   let isTranslating = false;
@@ -123,7 +235,7 @@
     if (isTranslating) {
       translateExcuse();
     } else {
-      document.getElementById('excuse').innerText = excuse;
+      typeExcuse(excuse);
     }
   }
 
@@ -136,7 +248,7 @@
       translateExcuse();
     } else {
       langSelect.style.display = 'none';
-      document.getElementById('excuse').innerText = lastOriginalExcuse;
+      typeExcuse(lastOriginalExcuse);
     }
   }
 
@@ -150,29 +262,32 @@
     const text = lastOriginalExcuse;
     const targetLang = document.getElementById('languageSelect').value;
     if (!text) return;
+    // Try Google Translate first
     fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`)
       .then(res => res.json())
       .then(data => {
         if (data && Array.isArray(data[0])) {
-          
+          // Join all translation segments to avoid unwanted commas
           const translated = data[0].map(seg => seg[0]).join("");
           if (translated && translated.trim()) {
-            document.getElementById('excuse').innerText = translated;
+            typeExcuse(translated);
           } else {
             baiduTranslate(text, targetLang);
           }
         } else {
-          
+          // If Google returns unexpected data, try Baidu
           baiduTranslate(text, targetLang);
         }
       })
       .catch(() => {
-  
+        // If Google fails, try Baidu
         baiduTranslate(text, targetLang);
       });
   }
 
+  // Baidu Translate fallback (demo, no API key, for real use you need to register and use your own credentials)
   function baiduTranslate(text, targetLang) {
+    // Map Google/Baidu language codes (simplified for demo)
     const langMap = {
       'zh-CN': 'zh',
       'en': 'en',
@@ -186,19 +301,36 @@
       'hi': 'hi'
     };
     const toLang = langMap[targetLang] || 'en';
+    // Baidu open API demo endpoint (for real use, replace with your own appid/signature)
+    // This is a public demo endpoint and may not always work. For production, use your own Baidu Translate API credentials.
     const baiduUrl = `https://fanyi-api.baidu.com/api/trans/vip/translate?q=${encodeURIComponent(text)}&from=auto&to=${toLang}&appid=20230607001694213&salt=1435660288&sign=demo`;
     fetch(baiduUrl)
       .then(res => res.json())
       .then(data => {
         if (data && data.trans_result && data.trans_result[0] && data.trans_result[0].dst) {
-          document.getElementById('excuse').innerText = data.trans_result[0].dst;
+          typeExcuse(data.trans_result[0].dst);
         } else {
-          document.getElementById('excuse').innerText = text;
+          typeExcuse(text);
         }
       })
       .catch(() => {
-        document.getElementById('excuse').innerText = text;
+        typeExcuse(text);
       });
+  }
+
+  // Typewriter animation for excuse text
+  function typeExcuse(text) {
+    const el = document.getElementById('excuse');
+    el.innerText = '';
+    let i = 0;
+    function typeNext() {
+      if (i <= text.length) {
+        el.innerText = text.slice(0, i);
+        i++;
+        setTimeout(typeNext, 7 + Math.random() * 10);
+      }
+    }
+    typeNext();
   }
 </script>
 
