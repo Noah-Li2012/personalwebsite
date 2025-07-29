@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<nav style="position:fixed;top:0;left:0;width:100vw;height:56px;background:rgba(0,0,40,0.85);box-shadow:0 2px 12px #0022ff,0 0 16px #0022ff;display:flex;align-items:center;justify-content:flex-start;padding:0 32px;z-index:10000;font-family:'Segoe UI',Arial,sans-serif;font-size:1.2rem;font-weight:bold;border-bottom:3px solid #0022ff;">
+  <div style="display:flex;align-items:center;gap:32px;">
+    <span style="color:#ffd700;text-shadow:0 0 8px #ffd700,0 0 16px #ffd700;letter-spacing:1px;">Noah's Clicker Game</span>
+    <a href="https://noahli404.pages.dev" target="_blank" style="color:#00fff7;text-shadow:0 0 8px #0022ff,0 0 16px #0022ff;text-decoration:none;font-weight:500;">More</a>
+  </div>
+</nav>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>random clicker game</title>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<style>
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    min-height: 100vh;
+    margin: 0;
+    overflow: hidden;
+  }
+  #bg {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    z-index: 0;
+    background: url('bg.png') center center/cover no-repeat;
+    filter: blur(2px) brightness(0.35);
+  }
+  .main-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  .scroll-paper {
+    background: rgba(20,20,30,0.85);
+    border-radius: 32px 32px 48px 48px;
+    box-shadow: 0 8px 32px rgba(0,255,255,0.15), 0 0 0 8px #00fff7 inset;
+    border: 2px solid #00fff7;
+    padding: 48px 36px 36px 36px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    margin: 0 auto;
+    overflow: hidden;
+    backdrop-filter: blur(2px);
+  }
+  .scroll-paper:before, .scroll-paper:after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 50%;
+    width: 80px;
+    height: 18px;
+    background: #00fff7;
+    border-radius: 50px;
+    filter: blur(2px);
+    transform: translateX(-50%);
+    z-index: 1;
+  }
+  .scroll-paper:before {
+    top: -12px;
+    box-shadow: 0 2px 8px #00fff7;
+  }
+  .scroll-paper:after {
+    bottom: -12px;
+    box-shadow: 0 -2px 8px #00fff7;
+  }
+  #score {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: #ff2222;
+    text-shadow: 0 0 8px #ff2222, 0 0 16px #ff2222;
+    transition: color 0.2s, transform 0.2s;
+  }
+  #clickBtn {
+    padding: 20px 40px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    background: linear-gradient(90deg, #00fff7 0%, #0022ff 100%);
+    border: none;
+    border-radius: 30px;
+    color: #fff;
+    font-weight: bold;
+    box-shadow: 0 4px 20px #00fff7, 0 0 16px #0022ff;
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    outline: none;
+    position: relative;
+    overflow: hidden;
+    text-shadow: 0 0 8px #00fff7, 0 0 16px #0022ff;
+  }
+  #clickBtn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 8px 32px #0022ff, 0 0 32px #00fff7;
+    background: linear-gradient(90deg, #0022ff 0%, #00fff7 100%);
+  }
+  #score.animated {
+    color: #ff2222;
+    text-shadow: 0 0 16px #ff2222, 0 0 32px #ff2222;
+    transform: scale(1.3);
+  }
+  #captchaModal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.7);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(2px);
+  }
+  #captchaContainer {
+    background: rgba(20,20,30,0.95);
+    border-radius: 16px;
+    box-shadow: 0 4px 32px #00fff7, 0 0 32px #0022ff;
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 320px;
+    min-height: 120px;
+    border: 2px solid #0022ff;
+  }
+  .closeBtn {
+    position: absolute;
+    top: 16px;
+    right: 24px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #0022ff;
+    text-shadow: 0 0 8px #0022ff, 0 0 16px #0022ff;
+    cursor: pointer;
+    z-index: 10001;
+    transition: color 0.2s;
+  }
+  .closeBtn:hover {
+    color: #00fff7;
+    text-shadow: 0 0 16px #00fff7, 0 0 32px #00fff7;
+  }
+</style>
+</head>
+<body>
+<div id="bg"></div>
+<div class="main-content">
+  <div class="scroll-paper">
+    <h3 style="color:#00fff7;text-shadow:0 0 8px #00fff7,0 0 16px #00fff7;">Bet you can't get 20 clicks!</h3>
+    <div id="score">Score: 0</div>
+    <button id="clickBtn">
+      <span style="position:relative;z-index:2;text-shadow:0 0 8px #00fff7,0 0 16px #0022ff;">✨ Click me! ✨</span>
+    </button>
+    <div id="banMsg" style="display:none;margin-top:24px;color:#ff2222;text-shadow:0 0 8px #ff2222,0 0 16px #ff2222;font-size:1.1rem;font-weight:bold;"></div>
+  </div>
+</div>
+
+<div id="captchaModal">
+  <button class="closeBtn" id="closeCaptchaBtn" title="Close">&times;</button>
+  <div id="captchaContainer">
+    <div style="font-size:1.1rem;color:#00fff7;text-shadow:0 0 8px #00fff7,0 0 16px #00fff7;margin-bottom:18px;font-family:'Segoe UI',Arial,sans-serif;font-weight:bold;">I knew you are auto clicking</div>
+    <div class="g-recaptcha" data-sitekey="6LeR3ZIrAAAAAIbdnObTt0Qx2p2VgPxXQuaoX1Wk" data-callback="onCaptchaSuccess"></div>
+  </div>
+</div>
+
+<script>
+  let score = 0;
+  const scoreDisplay = document.getElementById('score');
+  const clickBtn = document.getElementById('clickBtn');
+  const captchaModal = document.getElementById('captchaModal');
+  const closeCaptchaBtn = document.getElementById('closeCaptchaBtn');
+  const banMsg = document.getElementById('banMsg');
+
+  function getBanInfo() {
+    const banUntil = localStorage.getItem('banUntil');
+    return banUntil ? parseInt(banUntil) : null;
+  }
+  function setBanInfo(ts) {
+    localStorage.setItem('banUntil', ts);
+  }
+  function clearBanInfo() {
+    localStorage.removeItem('banUntil');
+  }
+  function getScore() {
+    const s = localStorage.getItem('score');
+    return s ? parseInt(s) : 0;
+  }
+  function setScore(s) {
+    localStorage.setItem('score', s);
+  }
+
+  function showBan() {
+    clickBtn.disabled = true;
+    banMsg.style.display = 'block';
+    banMsg.textContent = "Hi, I've banned you for 24 hours because you have high score, please try again tomorrow";
+    clickBtn.style.opacity = '0.5';
+    captchaModal.style.display = 'none';
+  }
+  function hideBan() {
+    clickBtn.disabled = false;
+    banMsg.style.display = 'none';
+    clickBtn.style.opacity = '1';
+  }
+
+  function animateScore() {
+    scoreDisplay.classList.add('animated');
+    setTimeout(() => {
+      scoreDisplay.classList.remove('animated');
+    }, 350);
+  }
+
+  function checkBan() {
+    const banUntil = getBanInfo();
+    if (banUntil && Date.now() < banUntil) {
+      showBan();
+      return true;
+    } else if (banUntil && Date.now() >= banUntil) {
+      // Ban expired, reset score to 10
+      score = 10;
+      setScore(score);
+      clearBanInfo();
+      scoreDisplay.textContent = `Score: ${score}`;
+      hideBan();
+      return false;
+    }
+    hideBan();
+    return false;
+  }
+
+  score = getScore();
+  scoreDisplay.textContent = `Score: ${score}`;
+  checkBan();
+
+  window.onCaptchaSuccess = function() {
+    if (checkBan()) return;
+    score++;
+    setScore(score);
+    scoreDisplay.textContent = `Score: ${score}`;
+    animateScore();
+    captchaModal.style.display = 'none';
+    grecaptcha.reset();
+    if (score > 10) {
+      // Ban for 24 hours
+      const banUntil = Date.now() + 24*60*60*1000;
+      setBanInfo(banUntil);
+      showBan();
+    }
+  }
+
+  clickBtn.addEventListener('click', () => {
+    if (checkBan()) return;
+    captchaModal.style.display = 'flex';
+  });
+
+  closeCaptchaBtn.addEventListener('click', () => {
+    captchaModal.style.display = 'none';
+    grecaptcha.reset();
+  });
+
+  captchaModal.addEventListener('click', (e) => {
+    if (e.target === captchaModal) {
+      captchaModal.style.display = 'none';
+      grecaptcha.reset();
+    }
+  });
+</script>
+
+</body>
+</html>
