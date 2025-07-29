@@ -75,7 +75,6 @@
             -webkit-text-fill-color: transparent;
         }
 
-
         .hover-scale {
             transition: transform 0.3s ease;
         }
@@ -105,6 +104,17 @@
 
         .social-icon:hover {
             transform: translateY(-3px);
+        }
+
+        /* Mobile background override */
+        @media only screen and (max-width: 768px) {
+            body {
+                background-position: left center !important;
+                background-size: cover !important;
+                background-repeat: no-repeat !important;
+                background-attachment: fixed !important;
+                min-height: 100vh !important;
+            }
         }
     </style>
 </head>
@@ -284,6 +294,7 @@
         // Smooth auto-moving background
         let bgAngle = 0;
         function animateBgAuto() {
+            if (window.innerWidth <= 768) return; // skip animation on mobile
             bgAngle += 0.0015; // speed
             const radius = 24; // px, movement radius
             const x = Math.cos(bgAngle) * radius;
@@ -295,16 +306,25 @@
 
         // Play Go brr.mp3 in a loop
         const goBrrAudio = document.getElementById('go-brr-audio');
-        function playGoBrr() {
+        function playGoBrr(force) {
             goBrrAudio.volume = 0.5;
-            goBrrAudio.play().catch(() => {
-                // If autoplay is blocked, play on user interaction
-                document.body.addEventListener('click', () => {
-                    goBrrAudio.play();
-                }, { once: true });
-            });
+            // Try to force play
+            if (force) {
+                goBrrAudio.muted = false;
+                goBrrAudio.play().catch(() => {});
+            } else {
+                goBrrAudio.play().catch(() => {
+                    // If autoplay is blocked, play on mousemove
+                    window.addEventListener('mousemove', () => {
+                        goBrrAudio.play();
+                    }, { once: true });
+                });
+            }
         }
-        playGoBrr();
+        // Try to force play immediately
+        playGoBrr(true);
+        // Fallback to mousemove if needed
+        playGoBrr(false);
 
         const messages = [
             "Noah —— That boi who codes for fun.",
@@ -355,8 +375,9 @@
             mobileMenu.classList.toggle('hidden');
         });
 
-        // Parallax effect
+        // Parallax effect (disabled on mobile)
         document.addEventListener("mousemove", (e) => {
+            if (window.innerWidth <= 768) return; // skip parallax on mobile
             const banner = document.querySelector(".parallax-banner");
             if (banner) {
                 const x = (e.clientX / window.innerWidth - 0.5) * 20;
