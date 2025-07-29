@@ -314,8 +314,8 @@
                 goBrrAudio.play().catch(() => {});
             } else {
                 goBrrAudio.play().catch(() => {
-                    // If autoplay is blocked, play on mousemove
-                    window.addEventListener('mousemove', () => {
+                    // If autoplay is blocked, play on click
+                    window.addEventListener('click', () => {
                         goBrrAudio.play();
                     }, { once: true });
                 });
@@ -323,7 +323,7 @@
         }
         // Try to force play immediately
         playGoBrr(true);
-        // Fallback to mousemove if needed
+        // Fallback to click if needed
         playGoBrr(false);
 
         const messages = [
