@@ -159,7 +159,7 @@
                 </h2>
             </div>
             <p id="rotating-message" class="text-lg text-gray-300 max-w-xl" style="overflow:hidden;white-space:nowrap;display:inline-block;"></p>
-            <audio id="go-brr-audio" src="Go brr.mp3" loop></audio>
+            <audio id="go-brr-audio" loop></audio>
             <div class="flex space-x-4 mt-4">
                 <a href="#projects" class="bg-teal-500 hover:bg-teal-600 text-white px-6 py-3 rounded-full transition hover-scale">
                     View Projects
@@ -306,6 +306,9 @@
 
         // Play Go brr.mp3 in a loop
         const goBrrAudio = document.getElementById('go-brr-audio');
+        // Randomly select audio source
+        const audioFiles = ["Go brr.mp3", "Go brr2.mp3"];
+        goBrrAudio.src = audioFiles[Math.floor(Math.random() * audioFiles.length)];
         function playGoBrr(force) {
             goBrrAudio.volume = 0.5;
             // Try to force play
