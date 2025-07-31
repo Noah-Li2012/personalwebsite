@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Noah’s YouTube Flex</title>
+  <title>Noah’s YouTube History</title>
   <style>
     * {
       margin: 0;
@@ -56,6 +56,19 @@
     }
 
     #intro {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 2rem;
+      background: #fff;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 0 50px rgba(0,0,0,0.05);
+    }
+    #outro {
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -191,6 +204,13 @@
   </main>
 
   <main id="videoSection"></main>
+
+  <main>
+    <section id="outro" class="scroll-section">
+      <h1 class="big-name">Subscribe (TYSM FOR 23 SUBSCRIBES)</h1>
+      <p  class="quote">"3 views = 3 views,not less views"</p>
+    </section>
+  </main>
 
   <script>
     const startBtn = document.getElementById('startBtn');
