@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Noah’s YouTube Flex</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: url('bg ig.png') no-repeat center center fixed;
+      background-size: cover;
+      color: #333;
+      overflow: hidden;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes smoothFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .big-name {
+      font-size: 5.5rem;
+      letter-spacing: 8px;
+      color: #333;
+      margin-bottom: 2rem;
+      text-shadow: 2px 2px 0 #fff,
+                   4px 4px 0 rgba(0,0,0,0.1);
+      animation: fadeIn 1.5s ease-out, smoothFloat 6s ease-in-out infinite;
+      background: linear-gradient(45deg, #333, #666);
+      -webkit-background-clip: text;
+      background-clip: text;
+      font-weight: 700;
+    }
+
+    .quote {
+      font-size: 1.6rem;
+      font-style: italic;
+      color: #666;
+      margin: 1.5rem 0;
+      max-width: 800px;
+      line-height: 1.8;
+      animation: fadeIn 2s ease-out;
+      font-weight: 300;
+      letter-spacing: 1px;
+    }
+
+    #intro {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 2rem;
+      background: #fff;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 0 50px rgba(0,0,0,0.05);
+    }
+
+    .hero {
+      height: 100vh;
+      background: linear-gradient(45deg, #fff, #f5f5f5);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.2) 100%);
+      pointer-events: none;
+    }
+
+    .hero h1 {
+      font-size: 4.2rem;
+      margin-bottom: 2rem;
+      letter-spacing: 3px;
+      color: #333;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+      animation: fadeIn 2s ease-out;
+      font-weight: 600;
+    }
+
+    .hero button {
+      padding: 1.2rem 2.5rem;
+      font-size: 1.2rem;
+      background: #fff;
+      color: #333;
+      border: 2px solid #eee;
+      cursor: pointer;
+      border-radius: 30px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+
+    .hero button:hover {
+      background: #333;
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+    }
+
+    #videoSection {
+      padding: 50px 0;
+    }
+
+    .video-block {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 50px;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+
+    .left .info {
+      order: 2;
+    }
+
+    .right .info {
+      order: 1;
+    }
+
+    .video-block iframe {
+      width: 560px;
+      height: 315px;
+      border: none;
+    }
+
+    .info h2 {
+      margin-bottom: 10px;
+      font-size: 1.5rem;
+    }
+
+    .info p {
+      margin: 5px 0;
+      color: #aaa;
+    }
+
+    @media (max-width: 768px) {
+      .video-block {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .left .info, .right .info {
+        order: 2;
+      }
+
+      .video-block iframe {
+        width: 90%;
+        height: auto;
+        aspect-ratio: 16/9;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <h1>Welcome to My World</h1>
+    <button id="startBtn">Get Deep into my YouTube channel</button>
+  </section>
+
+  <audio id="bgMusic" src="Go brr.mp3" loop autoplay></audio>
+  <main>
+    <section id="intro" class="scroll-section">
+      <h1 class="big-name">Noah Li (NoahLi404)</h1>
+      <p class="quote">"Every frame tells a story. Enjoy the journey."</p>
+      <p  class="quote">"Keep grinding, keep shining, every view counts."</p>
+    </section>
+  </main>
+
+  <main id="videoSection"></main>
+
+  <script>
+    const startBtn = document.getElementById('startBtn');
+    const bgMusic = document.getElementById('bgMusic');
+    const videoSection = document.getElementById('videoSection');
+
+    const apiKey = 'AIzaSyAoCTK7GK9CeLh0i83Pga3FPS3YmNNFmIo';
+    const channelId = 'UCmbrEF2TItb2VqInsxsI9zA';
+
+    startBtn.addEventListener('click', async () => {
+      bgMusic.play();
+      document.body.style.overflow = 'hidden';
+      document.querySelector('.hero').style.display = 'none';
+
+      const videoData = await fetchAllVideos();
+      await showVideos(videoData);
+      autoScroll();
+    });
+
+    async function fetchAllVideos() {
+      let videos = [];
+      let nextPageToken = '';
+      do {
+        const res = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${apiKey}&channelId=${channelId}&part=snippet,id&order=date&maxResults=50&pageToken=${nextPageToken}`);
+        const data = await res.json();
+        const videoItems = data.items.filter(item => item.id.kind === 'youtube#video');
+        videos = videos.concat(videoItems);
+        nextPageToken = data.nextPageToken || '';
+      } while (nextPageToken);
+      return videos;
+    }
+
+    async function showVideos(videoItems) {
+      const ids = videoItems.map(v => v.id.videoId).join(',');
+
+      // Get real stats (views, publish date)
+      const statsRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${apiKey}&id=${ids}&part=statistics,snippet`);
+      const statsData = await statsRes.json();
+
+      statsData.items.forEach(video => {
+        const layout = Math.random() > 0.5 ? 'left' : 'right';
+        const vidId = video.id;
+        const title = video.snippet.title;
+        const publishedAt = new Date(video.snippet.publishedAt).toDateString();
+        const views = Number(video.statistics.viewCount).toLocaleString();
+
+        const block = document.createElement('div');
+        block.className = `video-block ${layout}`;
+        block.innerHTML = `
+          <iframe src="https://www.youtube.com/embed/${vidId}?rel=0" allowfullscreen></iframe>
+          <div class="info">
+            <h2>${title}</h2>
+            <p>Uploaded: ${publishedAt}</p>
+            <p>Views: ${views}</p>
+          </div>
+        `;
+        videoSection.appendChild(block);
+      });
+    }
+
+    function autoScroll() {
+      let scrollY = 0;
+      const speed = 1.5;
+      function scrollStep() {
+        scrollY += speed;
+        window.scrollTo({ top: scrollY });
+        if (scrollY < document.body.scrollHeight) {
+          requestAnimationFrame(scrollStep);
+        }
+      }
+      scrollStep();
+    }
+  </script>
+</body>
+</html>
+
