@@ -146,7 +146,6 @@
     display: none;
   }
 
-  /* Enhanced Selection UI */
   .selection-box {
     position: absolute;
     border: 3px solid #00ffffff;
@@ -157,7 +156,6 @@
     backdrop-filter: blur(2px);
   }
 
-  /* Enhanced Control Handles */
   .control-handle {
     position: absolute;
     background: linear-gradient(135deg, #00ffffff 0%, #00ffffcc 100%);
@@ -181,7 +179,6 @@
     box-shadow: 0 0 30px #00ffffff, 0 0 60px #00ffffaa;
   }
 
-  /* Resize Handles */
   .resize-handle {
     width: 16px;
     height: 16px;
@@ -192,7 +189,6 @@
   .handle-bottom-left { bottom: -12px; left: -12px; cursor: nesw-resize; }
   .handle-bottom-right { bottom: -12px; right: -12px; cursor: nwse-resize; }
 
-  /* Rotation Handle - Made as a square */
   .rotation-handle {
     width: 20px;
     height: 20px;
@@ -212,7 +208,6 @@
     cursor: grabbing;
   }
 
-  /* Size Control Handles */
   .size-handle {
     width: 20px;
     height: 20px;
@@ -232,7 +227,6 @@
     background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
   }
 
-  /* Move Handle */
   .move-handle {
     width: 32px;
     height: 32px;
@@ -244,7 +238,6 @@
     border-radius: 8px;
   }
 
-  /* Enhanced Button Styles */
   .btn-group {
     display: flex;
     gap: 8px;
@@ -273,7 +266,6 @@
     color: #000;
   }
 
-  /* Advanced Features Panel */
   .advanced-panel {
     background: linear-gradient(135deg, #1a1a2a 0%, #2a2a3a 100%);
     border: 2px solid #00ffff33;
@@ -282,7 +274,6 @@
     margin: 15px 0;
   }
 
-  /* Smooth Animations */
   @keyframes pulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.7; }
@@ -296,7 +287,6 @@
   .pulse { animation: pulse 2s infinite; }
   .glow { animation: glow 2s infinite; }
 
-  /* Slider Styles */
   input[type=range] {
     -webkit-appearance: none;
     height: 8px;
@@ -315,7 +305,6 @@
     box-shadow: 0 0 10px #00ffffaa;
   }
 
-  /* Loading screen styles */
   .loading-screen {
     position: fixed;
     top: 0;
@@ -421,7 +410,6 @@
     text-shadow: 0 0 10px #00ffff44;
   }
 
-  /* Editor info section */
   .editor-info {
     margin-top: 20px;
     padding: 15px;
@@ -447,8 +435,7 @@
 </style>
 </head>
 <body>
-  <!-- Loading Screen -->
-  <div id="loadingScreen" class="loading-screen">
+<div id="loadingScreen" class="loading-screen">
     <div class="loading-title">Visual Editor for p5.js</div>
     <div class="loading-subtitle">Free forever.</div>
     <div class="loading-author">By NoahLi404, No connection with p5.js</div>
@@ -528,34 +515,28 @@
 
   <div class="status-indicator" id="statusIndicator">Ready</div>
 
-  <!-- Enhanced Selection UI -->
-  <div id="selectionBox" class="selection-box" style="display:none;">
-    <!-- Resize Handles -->
-    <div class="control-handle resize-handle handle-top-left"></div>
+<div id="selectionBox" class="selection-box" style="display:none;">
+  <div class="control-handle resize-handle handle-top-left"></div>
     <div class="control-handle resize-handle handle-top-right"></div>
     <div class="control-handle resize-handle handle-bottom-left"></div>
     <div class="control-handle resize-handle handle-bottom-right"></div>
 
-    <!-- Rotation Handle -->
-    <div class="control-handle rotation-handle" title="Drag to rotate">⟲</div>
+  <div class="control-handle rotation-handle" title="Drag to rotate">⟲</div>
 
-    <!-- Size Controls -->
-    <div class="control-handle size-handle size-increase" title="Increase size">+</div>
+  <div class="control-handle size-handle size-increase" title="Increase size">+</div>
     <div class="control-handle size-handle size-decrease" title="Decrease size">-</div>
 
-    <!-- Move Handle -->
-    <div class="control-handle move-handle" title="Drag to move">⬌</div>
+  <div class="control-handle move-handle" title="Drag to move">⬌</div>
   </div>
 
 <script>
-  // Enhanced shape management
   let shapes = [];
   let shapeHistory = [];
   let historyIndex = -1;
   let currentTool = 'rect';
   let fillColor, strokeColor, strokeWeightVal, fillOpacity;
   let startX, startY;
-  let selectedShapeIndices = []; // Support multiple selection
+  let selectedShapeIndices = [];
   let draggingShape = false;
   let dragOffsetX = 0;
   let dragOffsetY = 0;
@@ -574,7 +555,6 @@
   let isDrawing = false;
   let previewShape = null;
 
-  // UI elements
   const selectionBox = document.getElementById('selectionBox');
   const transformControls = document.getElementById('transformControls');
   const statusIndicator = document.getElementById('statusIndicator');
@@ -583,34 +563,28 @@
     let canvas = createCanvas(window.innerWidth - 380, window.innerHeight);
     canvas.parent(document.body);
 
-    // Initialize controls
     fillColor = document.getElementById('fillColor');
     strokeColor = document.getElementById('strokeColor');
     strokeWeightVal = document.getElementById('strokeWeight');
     fillOpacity = document.getElementById('fillOpacity');
 
-    // Update color previews
     updateColorPreviews();
 
-    // Event listeners
     setupEventListeners();
 
-    // Initialize with empty history
     saveToHistory();
     updateStatus('Ready - Select a tool to start');
 
-    // Hide loading screen after everything is loaded
     setTimeout(() => {
       const loadingScreen = document.getElementById('loadingScreen');
       loadingScreen.classList.add('fade-out');
       setTimeout(() => {
         loadingScreen.style.display = 'none';
       }, 500);
-    }, 2000); // Show loading screen for 2 seconds
+    }, 2000);
   }
 
   function setupEventListeners() {
-    // Tool selection
     document.getElementById('tool').addEventListener('change', e => {
       currentTool = e.target.value;
       selectedShapeIndices = [];
@@ -620,11 +594,9 @@
       updateStatus(`${currentTool} tool selected`);
     });
 
-    // Color updates
     fillColor.addEventListener('change', updateColorPreviews);
     strokeColor.addEventListener('change', updateColorPreviews);
 
-    // Transform buttons
     document.getElementById('increaseSizeBtn').onclick = () => changeSize(10);
     document.getElementById('decreaseSizeBtn').onclick = () => changeSize(-10);
     document.getElementById('rotateLeftBtn').onclick = () => rotateShape(-1);
@@ -635,7 +607,6 @@
     document.getElementById('copyShapeBtn').onclick = copyShape;
     document.getElementById('duplicateBtn').onclick = duplicateShape;
 
-    // Advanced features
     document.getElementById('undoBtn').onclick = undo;
     document.getElementById('redoBtn').onclick = redo;
 
@@ -648,12 +619,24 @@
       gridSize = parseInt(e.target.value);
     });
 
-    // Enhanced selection box interactions
     setupSelectionHandles();
+
+    setupCanvasEventListeners();
+  }
+
+  function setupCanvasEventListeners() {
+    document.addEventListener('contextmenu', e => {
+      e.preventDefault(); // Prevent context menu
+    });
+
+    document.addEventListener('mousedown', e => {
+      if (e.target.tagName === 'CANVAS') {
+        mousePressed(e);
+      }
+    });
   }
 
   function setupSelectionHandles() {
-    // Rotation handle - Fixed to work properly
     const rotationHandle = selectionBox.querySelector('.rotation-handle');
     let isRotating = false;
     let rotationStartMouseX = 0;
@@ -695,7 +678,6 @@
       document.addEventListener('mouseup', handleMouseUp);
     });
 
-    // Size handles
     selectionBox.querySelector('.size-increase').addEventListener('mousedown', e => {
       e.stopPropagation();
       changeSize(10);
@@ -705,11 +687,9 @@
       changeSize(-10);
     });
 
-    // Move handle
     const moveHandle = selectionBox.querySelector('.move-handle');
     moveHandle.addEventListener('mousedown', startMove);
 
-    // Resize handles
     const resizeHandles = selectionBox.querySelectorAll('.resize-handle');
     resizeHandles.forEach(handle => {
       handle.addEventListener('mousedown', e => startResize(e, handle));
@@ -727,13 +707,17 @@
     setTimeout(() => statusIndicator.classList.remove('pulse'), 1000);
   }
 
-  function mousePressed() {
+  function mousePressed(event) {
     if (mouseX < 0 || mouseY < 0 || mouseX > width || mouseY > height) return;
 
-    // Check if clicking on handles first
+    if (event && event.button === 2) {
+      handleRightClickSelection();
+      return;
+    }
+
     if (currentTool === 'select' && selectedShapeIndices.length > 0) {
       if (checkHandleClick(mouseX, mouseY)) {
-        return; // Handle was clicked, don't proceed with selection
+        return;
       }
     }
 
@@ -744,13 +728,33 @@
     }
   }
 
+  function handleRightClickSelection() {
+    let clickedShapeIndex = -1;
+    for (let i = shapes.length - 1; i >= 0; i--) {
+      if (isPointInShape(mouseX, mouseY, shapes[i])) {
+        clickedShapeIndex = i;
+        break;
+      }
+    }
+
+    if (clickedShapeIndex !== -1) {
+      selectedShapeIndices = [clickedShapeIndex];
+      updateTransformUI();
+      updateSelectionBox();
+      updateStatus(`Right-clicked: Selected shape ${clickedShapeIndex + 1}`);
+    } else {
+      selectedShapeIndices = [];
+      updateTransformUI();
+      selectionBox.style.display = 'none';
+      updateStatus('Right-clicked: No shapes selected');
+    }
+  }
+
   function checkHandleClick(px, py) {
-    // Convert canvas coordinates to screen coordinates
     const canvasRect = document.querySelector('canvas').getBoundingClientRect();
     const screenX = canvasRect.left + px;
     const screenY = canvasRect.top + py;
 
-    // Check all handles
     const handles = selectionBox.querySelectorAll('.control-handle');
     for (let handle of handles) {
       const rect = handle.getBoundingClientRect();
@@ -763,23 +767,21 @@
   }
 
   function handleSelection() {
-    // Check for touching/overlapping shapes and group them
-    let clickedShapes = [];
+    let clickedShapeIndex = -1;
     for (let i = shapes.length - 1; i >= 0; i--) {
       if (isPointInShape(mouseX, mouseY, shapes[i])) {
-        clickedShapes.push(i);
+        clickedShapeIndex = i;
+        break;
       }
     }
 
-    if (clickedShapes.length > 0) {
-      // Get all touching shapes starting from the clicked shape
-      selectedShapeIndices = getTouchingGroup(clickedShapes[0]);
+    if (clickedShapeIndex !== -1) {
+      selectedShapeIndices = [clickedShapeIndex];
       setupDragging();
       updateTransformUI();
       updateSelectionBox();
-      updateStatus(`Selected ${selectedShapeIndices.length} shape(s)`);
+      updateStatus(`Selected shape ${clickedShapeIndex + 1}`);
     } else {
-      // Clicked on empty space - deselect
       selectedShapeIndices = [];
       draggingShape = false;
       updateTransformUI();
@@ -788,43 +790,35 @@
     }
   }
 
-  function getTouchingGroup(shapeIndex) {
-    let group = [shapeIndex];
-    let toCheck = [shapeIndex];
-    let checked = new Set([shapeIndex]);
 
-    // Find all shapes that touch any shape in the group
-    while (toCheck.length > 0) {
-      let currentIndex = toCheck.pop();
-      let currentShape = shapes[currentIndex];
 
-      for (let i = 0; i < shapes.length; i++) {
-        if (!checked.has(i) && shapesTouch(currentShape, shapes[i])) {
-          group.push(i);
-          toCheck.push(i);
-          checked.add(i);
-        }
-      }
-    }
 
-    return group;
-  }
-
-  function shapesTouch(shape1, shape2) {
-    let s1 = getBounds(shape1);
-    let s2 = getBounds(shape2);
-
-    // Check if shapes overlap or touch (including edges)
-    return !(s1.right < s2.left || s2.right < s1.left ||
-             s1.bottom < s2.top || s2.bottom < s1.top);
-  }
 
   function getBounds(shape) {
+    let w = Math.abs(shape.w);
+    let h = Math.abs(shape.h);
+    let centerX = shape.x + w / 2;
+    let centerY = shape.y + h / 2;
+
+    if (shape.rotation && shape.rotation !== 0) {
+      let cos = Math.abs(Math.cos(shape.rotation));
+      let sin = Math.abs(Math.sin(shape.rotation));
+      let rotatedW = w * cos + h * sin;
+      let rotatedH = w * sin + h * cos;
+
+      return {
+        left: centerX - rotatedW / 2,
+        right: centerX + rotatedW / 2,
+        top: centerY - rotatedH / 2,
+        bottom: centerY + rotatedH / 2
+      };
+    }
+
     return {
       left: shape.x,
-      right: shape.x + Math.abs(shape.w),
+      right: shape.x + w,
       top: shape.y,
-      bottom: shape.y + Math.abs(shape.h)
+      bottom: shape.y + h
     };
   }
 
@@ -845,7 +839,6 @@
     draggingShape = false;
   }
 
-  // Rotation function for buttons
   function rotateShape(degrees) {
     if (selectedShapeIndices.length === 0) return;
 
@@ -868,7 +861,6 @@
 
     draggingShape = true;
     let firstShape = shapes[selectedShapeIndices[0]];
-    // Convert client coordinates to canvas coordinates
     const canvasRect = document.querySelector('canvas').getBoundingClientRect();
     const canvasX = e.clientX - canvasRect.left;
     const canvasY = e.clientY - canvasRect.top;
@@ -905,8 +897,6 @@
       updatePreview();
     }
   }
-
-  // This function is no longer needed since we fixed rotation in setupSelectionHandles
 
   function handleResize() {
     let dx = mouseX - (resizeStartX - document.querySelector('canvas').getBoundingClientRect().left);
@@ -950,7 +940,6 @@
     let deltaX = newX - firstShape.x;
     let deltaY = newY - firstShape.y;
 
-    // Move all selected shapes by the same delta
     selectedShapeIndices.forEach(index => {
       shapes[index].x += deltaX;
       shapes[index].y += deltaY;
@@ -966,7 +955,6 @@
     let endX = snapToGrid ? Math.round(mouseX / gridSize) * gridSize : mouseX;
     let endY = snapToGrid ? Math.round(mouseY / gridSize) * gridSize : mouseY;
 
-    // Enhanced preview with proper positioning
     previewShape = {
       tool: currentTool,
       x: Math.min(startX, endX),
@@ -1006,7 +994,6 @@
   }
 
   function isPointInShape(px, py, shape) {
-    // Enhanced point-in-shape detection with rotation support
     let cx = shape.x + Math.abs(shape.w) / 2;
     let cy = shape.y + Math.abs(shape.h) / 2;
     let angle = shape.rotation || 0;
@@ -1039,7 +1026,6 @@
       return;
     }
 
-    // Calculate bounding box for all selected shapes
     let bounds = getSelectionBounds();
     selectionBox.style.display = 'block';
 
@@ -1054,7 +1040,6 @@
     selectionBox.style.left = left + 'px';
     selectionBox.style.top = top + 'px';
 
-    // Reset transform for proper positioning
     selectionBox.style.transform = 'none';
     selectionBox.style.transformOrigin = 'center center';
   }
@@ -1081,7 +1066,6 @@
     };
   }
 
-  // Enhanced transform functions
   function changeSize(delta) {
     if (selectedShapeIndices.length === 0) return;
 
@@ -1101,45 +1085,37 @@
   }
 
   function flipHorizontal() {
-    if (selectedShapeIndices.length === 0) return;
-
-    // Get the bounding box of all selected shapes
-    let bounds = getSelectionBounds();
-    let centerX = bounds.left + bounds.width / 2;
+    if (selectedShapeIndices.length === 0) {
+      updateStatus('No shapes selected for flip');
+      return;
+    }
 
     selectedShapeIndices.forEach(index => {
       let s = shapes[index];
-      // Flip the shape around the group center
-      let shapeCenter = s.x + Math.abs(s.w) / 2;
-      let distFromCenter = shapeCenter - centerX;
-      s.x = centerX - distFromCenter - Math.abs(s.w);
       s.flipH = !s.flipH;
     });
 
     updateSelectionBox();
     updateCodeBox();
     saveToHistory();
+    updateStatus(`Flipped ${selectedShapeIndices.length} shape(s) horizontally`);
   }
 
   function flipVertical() {
-    if (selectedShapeIndices.length === 0) return;
-
-    // Get the bounding box of all selected shapes
-    let bounds = getSelectionBounds();
-    let centerY = bounds.top + bounds.height / 2;
+    if (selectedShapeIndices.length === 0) {
+      updateStatus('No shapes selected for flip');
+      return;
+    }
 
     selectedShapeIndices.forEach(index => {
       let s = shapes[index];
-      // Flip the shape around the group center
-      let shapeCenter = s.y + Math.abs(s.h) / 2;
-      let distFromCenter = shapeCenter - centerY;
-      s.y = centerY - distFromCenter - Math.abs(s.h);
       s.flipV = !s.flipV;
     });
 
     updateSelectionBox();
     updateCodeBox();
     saveToHistory();
+    updateStatus(`Flipped ${selectedShapeIndices.length} shape(s) vertically`);
   }
 
   function copyShape() {
@@ -1173,7 +1149,6 @@
   function deleteSelected() {
     if (selectedShapeIndices.length === 0) return;
 
-    // Sort indices in descending order to avoid index shifting issues
     selectedShapeIndices.sort((a, b) => b - a);
     selectedShapeIndices.forEach(index => shapes.splice(index, 1));
 
@@ -1185,13 +1160,11 @@
     updateStatus('Deleted selected shape(s)');
   }
 
-  // History management
   function saveToHistory() {
     shapeHistory = shapeHistory.slice(0, historyIndex + 1);
     shapeHistory.push(JSON.parse(JSON.stringify(shapes)));
     historyIndex++;
 
-    // Limit history size
     if (shapeHistory.length > 50) {
       shapeHistory.shift();
       historyIndex--;
@@ -1228,7 +1201,6 @@
     } else {
       transformControls.style.display = 'block';
 
-      // Update UI with first selected shape's properties
       let s = shapes[selectedShapeIndices[0]];
       fillColor.value = s.fill;
       strokeColor.value = s.stroke;
@@ -1244,23 +1216,18 @@
     for (let s of shapes) {
       code += `  push();\n`;
 
-      // Translate to shape center for proper rotation and scaling
       code += `  translate(${(s.x + Math.abs(s.w)/2).toFixed(1)}, ${(s.y + Math.abs(s.h)/2).toFixed(1)});\n`;
 
-      // Apply transformations in correct order
       if (s.rotation && s.rotation !== 0) {
         code += `  rotate(${s.rotation.toFixed(3)});\n`;
       }
       if (s.flipH) code += `  scale(-1, 1);\n`;
       if (s.flipV) code += `  scale(1, -1);\n`;
 
-      // Set drawing properties
       code += `  stroke("${s.stroke}");\n`;
       code += `  strokeWeight(${s.strokeWeight});\n`;
 
-      // Handle fill with opacity
       if (s.fillOpacity !== undefined && s.fillOpacity < 255) {
-        // Convert hex color to RGB and add alpha
         let r = parseInt(s.fill.substr(1,2), 16);
         let g = parseInt(s.fill.substr(3,2), 16);
         let b = parseInt(s.fill.substr(5,2), 16);
@@ -1269,7 +1236,6 @@
         code += `  fill("${s.fill}");\n`;
       }
 
-      // Draw shape with correct mode and coordinates
       switch (s.tool) {
         case 'rect':
           code += `  rectMode(CENTER);\n`;
@@ -1314,42 +1280,34 @@
   }
 
   function draw() {
-    // Enhanced background with subtle grid
     background(34, 34, 51);
 
     if (snapToGrid) {
       drawGrid();
     }
 
-    // Draw all shapes with enhanced rendering
     for (let i = 0; i < shapes.length; i++) {
       drawShape(shapes[i], selectedShapeIndices.includes(i));
     }
 
-    // Draw enhanced preview shape while drawing
     if (previewShape && isDrawing) {
       push();
 
-      // Position preview at exact location where it will be created
       translate(previewShape.x + Math.abs(previewShape.w) / 2, previewShape.y + Math.abs(previewShape.h) / 2);
 
-      // Semi-transparent preview styling
       stroke(255, 255, 255, 180);
-      strokeWeight(previewShape.strokeWeight + 1); // Slightly thicker for visibility
+      strokeWeight(previewShape.strokeWeight + 1);
 
-      // Semi-transparent fill with original color
       let previewFill = color(previewShape.fill);
-      previewFill.setAlpha(80); // More transparent
+      previewFill.setAlpha(80);
       fill(previewFill);
 
-      // Draw preview shape geometry
       drawShapeGeometry(previewShape);
 
-      // Add dashed border effect for better preview visibility
       noFill();
-      stroke(0, 255, 255, 200); // Cyan dashed outline
+      stroke(0, 255, 255, 200);
       strokeWeight(1);
-      drawDot(0, 0, 4); // Center dot
+      drawDot(0, 0, 4);
 
       pop();
     }
@@ -1358,11 +1316,11 @@
   function drawShape(s, isSelected) {
     push();
     translate(s.x + Math.abs(s.w) / 2, s.y + Math.abs(s.h) / 2);
+
+    if (s.rotation && s.rotation !== 0) rotate(s.rotation);
     if (s.flipH) scale(-1, 1);
     if (s.flipV) scale(1, -1);
-    rotate(s.rotation || 0);
 
-    // Enhanced color with opacity support
     let fillAlpha = s.fillOpacity !== undefined ? s.fillOpacity : 255;
     let fillCol = color(s.fill);
     fillCol.setAlpha(fillAlpha);
@@ -1373,7 +1331,6 @@
 
     drawShapeGeometry(s);
 
-    // Highlight selected shapes
     if (isSelected) {
       noFill();
       stroke(0, 255, 255);
@@ -1422,9 +1379,10 @@
     updateSelectionBox();
   }
 
-  // Keyboard shortcuts
   function keyPressed() {
     if (keyCode === 8 || keyCode === 46) { // Backspace or Delete
+      deleteSelected();
+    } else if (key === 'x' && (keyIsPressed && key === 'Control')) { // Ctrl+X
       deleteSelected();
     } else if (key === 'c' && (keyIsPressed && key === 'Control')) {
       copyShape();
