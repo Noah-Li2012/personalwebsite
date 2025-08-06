@@ -1,80 +1,287 @@
 <!DOCTYPE html>
-<html>
-<head><title>Virtual Touchpad</title></head>
-<body style="background:#222; color:white; font-family: sans-serif;">
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Virtual Touchpad Client</title>
+<style>
+  /* Dark theme vibes */
+  body {
+    margin: 0; padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #121212;
+    color: #eee;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    box-sizing: border-box;
+  }
 
-  <label>PC IP: <input id="ipInput" type="text" placeholder="e.g. 192.168.1.10"></label>
-  <button id="connectBtn">Connect</button>
-  <div id="status">Not connected</div>
+  h2 {
+    margin-bottom: 10px;
+  }
 
-  <div id="touchpad" style="width: 100vw; height: 80vh; background: #333; margin-top: 10px; touch-action:none; display:none;"></div>
+  label {
+    font-size: 14px;
+    margin-top: 10px;
+  }
 
-  <script>
-    let ws;
-    const status = document.getElementById('status');
-    const touchpad = document.getElementById('touchpad');
+  input {
+    width: 100%;
+    max-width: 280px;
+    padding: 8px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
+    margin-top: 4px;
+    background: #333;
+    color: #eee;
+  }
 
-    document.getElementById('connectBtn').onclick = () => {
-      const ip = document.getElementById('ipInput').value.trim();
-      if (!ip) {
-        alert('Please enter PC IP');
-        return;
-      }
-      ws = new WebSocket(`ws://${ip}:8765`);
-      status.textContent = 'Connecting...';
+  button {
+    margin: 15px 0 10px;
+    padding: 15px 30px;
+    font-size: 18px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    background: #1e88e5;
+    color: white;
+    user-select: none;
+    transition: background 0.3s ease;
+    width: 100%;
+    max-width: 320px;
+  }
+  button:active {
+    background: #1565c0;
+  }
+  button:disabled {
+    background: #555;
+    cursor: not-allowed;
+  }
 
-      ws.onopen = () => {
-        status.textContent = 'Connected! Waiting for confirmation...';
-      };
+  #status {
+    margin-top: 10px;
+    font-weight: 600;
+  }
 
-      ws.onmessage = (msg) => {
-        if (msg.data === 'CONFIRMED') {
-          status.textContent = 'Connection confirmed! You can use the touchpad.';
-          touchpad.style.display = 'block';
-        } else {
-          status.textContent = `Server: ${msg.data}`;
-        }
-      };
+  #touchpad {
+    margin-top: 20px;
+    background: #222;
+    border-radius: 20px;
+    box-shadow: inset 0 0 15px #444;
+    width: 90vw;
+    max-width: 400px;
+    height: 350px;
+    touch-action: none;
+    user-select: none;
+    position: relative;
+  }
 
-      ws.onclose = () => {
-        status.textContent = 'Disconnected';
-        touchpad.style.display = 'none';
-      };
+  /* Visual indicator of drag */
+  #drag-indicator {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #1e88e5cc;
+    pointer-events: none;
+    display: none;
+    transform: translate(-50%, -50%);
+  }
 
-      ws.onerror = () => {
-        status.textContent = 'Connection error';
-      };
+  .click-buttons {
+    display: flex;
+    gap: 25px;
+    width: 90vw;
+    max-width: 400px;
+    justify-content: center;
+    margin-top: 15px;
+  }
+
+  .click-buttons button {
+    flex: 1;
+    max-width: 180px;
+  }
+
+</style>
+</head>
+<body>
+
+<h2>Virtual Touchpad Client</h2>
+
+<label for="host">WebSocket Host:</label>
+<input id="host" type="text" value="0.tcp.ngrok.io" autocomplete="off" />
+
+<label for="port">Port:</label>
+<input id="port" type="number" value="XXXXX" autocomplete="off" />
+
+<button id="connectBtn">Connect</button>
+<p id="status">Disconnected</p>
+
+<div id="touchpad">
+  <div id="drag-indicator"></div>
+</div>
+
+<div class="click-buttons">
+  <button id="leftClickBtn">Left Click</button>
+  <button id="rightClickBtn">Right Click</button>
+</div>
+
+<script>
+  const connectBtn = document.getElementById('connectBtn');
+  const statusP = document.getElementById('status');
+  const hostInput = document.getElementById('host');
+  const portInput = document.getElementById('port');
+  const touchpad = document.getElementById('touchpad');
+  const dragIndicator = document.getElementById('drag-indicator');
+  const leftClickBtn = document.getElementById('leftClickBtn');
+  const rightClickBtn = document.getElementById('rightClickBtn');
+
+  let ws;
+  let isConnected = false;
+  let lastX = null;
+  let lastY = null;
+  let dragActive = false;
+
+  // Throttle sending move events to ~30 FPS
+  let lastMoveTime = 0;
+  const MOVE_INTERVAL = 33; // ms
+
+  function logStatus(msg) {
+    statusP.textContent = msg;
+  }
+
+  function connect() {
+    if (isConnected) {
+      ws.close();
+      return;
+    }
+
+    const host = hostInput.value.trim();
+    const port = portInput.value.trim();
+    if (!host || !port) {
+      alert('Enter host and port!');
+      return;
+    }
+
+    const url = `ws://${host}:${port}`;
+    ws = new WebSocket(url);
+
+    connectBtn.textContent = 'Connecting...';
+    connectBtn.disabled = true;
+
+    ws.onopen = () => {
+      isConnected = true;
+      logStatus('Connected. Waiting for PC confirmation...');
+      connectBtn.textContent = 'Disconnect';
+      connectBtn.disabled = false;
     };
 
-    let lastX = 0, lastY = 0;
-
-    touchpad.addEventListener('touchstart', e => {
-      const touch = e.touches[0];
-      lastX = touch.clientX;
-      lastY = touch.clientY;
-      if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ type: 'click', button: 'left', action: 'down' }));
+    ws.onmessage = (event) => {
+      if (event.data === "Please wait for confirmation...") {
+        logStatus("Connected. Waiting for PC confirmation...");
+      } else if (event.data === "CONFIRMED") {
+        logStatus("Connection confirmed! Control enabled.");
+      } else {
+        console.log("Server says:", event.data);
       }
-    });
+    };
 
-    touchpad.addEventListener('touchend', e => {
-      if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ type: 'click', button: 'left', action: 'up' }));
-      }
-    });
+    ws.onerror = (e) => {
+      logStatus('Connection error');
+      console.error('WebSocket error:', e);
+      connectBtn.textContent = 'Connect';
+      connectBtn.disabled = false;
+      isConnected = false;
+    };
 
-    touchpad.addEventListener('touchmove', e => {
-      e.preventDefault();
-      const touch = e.touches[0];
-      const deltaX = touch.clientX - lastX;
-      const deltaY = touch.clientY - lastY;
-      lastX = touch.clientX;
-      lastY = touch.clientY;
+    ws.onclose = () => {
+      logStatus('Disconnected');
+      connectBtn.textContent = 'Connect';
+      connectBtn.disabled = false;
+      isConnected = false;
+    };
+  }
 
-      if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ type: 'move', deltaX, deltaY }));
-      }
-    });
-  </script>
+  function sendMove(dx, dy) {
+    if (isConnected && ws.readyState === WebSocket.OPEN) {
+      const now = Date.now();
+      if (now - lastMoveTime < MOVE_INTERVAL) return;
+      lastMoveTime = now;
+
+      ws.send(JSON.stringify({ type: "move", deltaX: dx, deltaY: dy }));
+    }
+  }
+
+  function sendClick(button, action) {
+    if (isConnected && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({ type: "click", button: button, action: action }));
+    }
+  }
+
+  function updateDragIndicator(x, y) {
+    dragIndicator.style.display = 'block';
+    dragIndicator.style.left = `${x}px`;
+    dragIndicator.style.top = `${y}px`;
+  }
+  function hideDragIndicator() {
+    dragIndicator.style.display = 'none';
+  }
+
+  touchpad.addEventListener('touchstart', e => {
+    e.preventDefault();
+    const touch = e.touches[0];
+    lastX = touch.clientX;
+    lastY = touch.clientY;
+    dragActive = true;
+    updateDragIndicator(lastX, lastY);
+  });
+
+  touchpad.addEventListener('touchmove', e => {
+    e.preventDefault();
+    if (!dragActive) return;
+
+    const touch = e.touches[0];
+    const dx = touch.clientX - lastX;
+    const dy = touch.clientY - lastY;
+
+    lastX = touch.clientX;
+    lastY = touch.clientY;
+
+    updateDragIndicator(lastX, lastY);
+    sendMove(dx, dy);
+  });
+
+  touchpad.addEventListener('touchend', e => {
+    e.preventDefault();
+    dragActive = false;
+    lastX = null;
+    lastY = null;
+    hideDragIndicator();
+  });
+
+  leftClickBtn.addEventListener('touchstart', e => {
+    e.preventDefault();
+    sendClick('left', 'down');
+  });
+  leftClickBtn.addEventListener('touchend', e => {
+    e.preventDefault();
+    sendClick('left', 'up');
+  });
+
+  rightClickBtn.addEventListener('touchstart', e => {
+    e.preventDefault();
+    sendClick('right', 'down');
+  });
+  rightClickBtn.addEventListener('touchend', e => {
+    e.preventDefault();
+    sendClick('right', 'up');
+  });
+
+  connectBtn.addEventListener('click', connect);
+</script>
+
 </body>
 </html>
