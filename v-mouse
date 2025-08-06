@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head><title>Virtual Touchpad</title></head>
+<body style="background:#222; color:white; font-family: sans-serif;">
+
+  <label>PC IP: <input id="ipInput" type="text" placeholder="e.g. 192.168.1.10"></label>
+  <button id="connectBtn">Connect</button>
+  <div id="status">Not connected</div>
+
+  <div id="touchpad" style="width: 100vw; height: 80vh; background: #333; margin-top: 10px; touch-action:none; display:none;"></div>
+
+  <script>
+    let ws;
+    const status = document.getElementById('status');
+    const touchpad = document.getElementById('touchpad');
+
+    document.getElementById('connectBtn').onclick = () => {
+      const ip = document.getElementById('ipInput').value.trim();
+      if (!ip) {
+        alert('Please enter PC IP');
+        return;
+      }
+      ws = new WebSocket(`ws://${ip}:8765`);
+      status.textContent = 'Connecting...';
+
+      ws.onopen = () => {
+        status.textContent = 'Connected! Waiting for confirmation...';
+      };
+
+      ws.onmessage = (msg) => {
+        if (msg.data === 'CONFIRMED') {
+          status.textContent = 'Connection confirmed! You can use the touchpad.';
+          touchpad.style.display = 'block';
+        } else {
+          status.textContent = `Server: ${msg.data}`;
+        }
+      };
+
+      ws.onclose = () => {
+        status.textContent = 'Disconnected';
+        touchpad.style.display = 'none';
+      };
+
+      ws.onerror = () => {
+        status.textContent = 'Connection error';
+      };
+    };
+
+    let lastX = 0, lastY = 0;
+
+    touchpad.addEventListener('touchstart', e => {
+      const touch = e.touches[0];
+      lastX = touch.clientX;
+      lastY = touch.clientY;
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'click', button: 'left', action: 'down' }));
+      }
+    });
+
+    touchpad.addEventListener('touchend', e => {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'click', button: 'left', action: 'up' }));
+      }
+    });
+
+    touchpad.addEventListener('touchmove', e => {
+      e.preventDefault();
+      const touch = e.touches[0];
+      const deltaX = touch.clientX - lastX;
+      const deltaY = touch.clientY - lastY;
+      lastX = touch.clientX;
+      lastY = touch.clientY;
+
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'move', deltaX, deltaY }));
+      }
+    });
+  </script>
+</body>
+</html>
