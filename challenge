@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ultimate CPS Challenge</title>
+<style>
+    body {
+      font-family: 'Comic Sans MS', sans-serif;
+      text-align: center;
+      background: linear-gradient(135deg, #00f0ff, #0077ff);
+      color: #fff;
+      transition: background 0.5s, color 0.5s;
+    }
+
+    h1 {
+      margin-top: 50px;
+      font-size: 2.5em;
+      text-shadow: 2px 2px #000;
+    }
+
+    #clickBtn, #retryBtn {
+      padding: 30px 60px;
+      font-size: 28px;
+      cursor: pointer;
+      margin-top: 30px;
+      border: none;
+      border-radius: 15px;
+      background: #00ffff;
+      color: #000;
+      box-shadow: 0 6px #0077aa;
+      transition: all 0.1s;
+    }
+
+    #clickBtn:active, #retryBtn:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px #0077aa;
+    }
+
+    #stats {
+      margin-top: 30px;
+      font-size: 1.5em;
+    }
+
+    #punishment {
+      margin-top: 40px;
+      font-weight: bold;
+      font-size: 1.8em;
+      transition: color 0.5s;
+    }
+</style>
+</head>
+<body>
+
+<h1>Ultimate CPS Challenge: 1200 Clicks!</h1>
+<button id="clickBtn">CLICK ME!</button>
+
+<div id="stats">
+  <p>Clicks: <span id="clickCount">0</span> / 1200</p>
+  <p>Time: <span id="timeLeft">120</span> seconds</p>
+</div>
+
+<p id="punishment"></p>
+<button id="retryBtn" style="display:none;">Try again, if you got balls</button>
+
+<audio id="vineBoom" src="vine-boom.mp3"></audio>
+<audio id="witherSpawn" src="wither-spawn.mp3"></audio>
+
+<script>
+let clicks = 0;
+let timeLeft = 120;
+let timerStarted = false;
+let interval;
+let gameOver = false;
+
+const firstSection = [
+  "Eat a", "Drink a", "Smell a", "Touch a", "Lick a", "Jump into a",
+  "Balance on", "Run across", "Stand on", "Climb", "Hold", "Breathe in"
+];
+
+const secondSection = [
+  "volcano lava", "a swarm of bees", "ghost pepper", "raw onion",
+  "extreme sour candy", "wasabi", "a cactus", "molten metal",
+  "ice-cold liquid nitrogen", "spicy mustard", "lava lamp wax",
+  "tabasco sauce", "giant cactus spikes", "firework sparks", "chemicals",
+  "a pit of snakes", "broken glass", "sharp thorns",
+  "a bucket of snakes", "a tank of piranhas", "boiling soup",
+  "giant wasps", "hot coals", "super spicy chili", "a tornado simulator"
+];
+
+const thirdSection = [
+  "while playing Minecraft", "while watching Skibidi Toilet", "while hopping on one foot",
+  "while singing the alphabet backwards", "blindfolded", "standing on one chair",
+  "while dancing", "while spinning around", "with one hand tied", "while reciting pi",
+  "while juggling", "while humming", "while squatting", "while balancing a book",
+  "while standing on tiptoe", "while doing push-ups", "while wearing sunglasses",
+  "while clapping", "while spinning in circles", "while whispering",
+  "while balancing on a tightrope", "while dodging flying objects",
+  "while walking on hot coals", "while holding your breath", "while running blindfolded",
+  "while balancing a chair on your head", "while standing in a spinning cage",
+  "while hopping on lava", "while crawling through spikes",
+  "while riding a rollercoaster upside down", "while dodging paintball bullets",
+  "while holding ice cubes in your hands", "while standing on a shaky ladder",
+  "while jumping over fire", "while dodging water balloons", "while balancing a tray of knives"
+];
+
+const clickBtn = document.getElementById('clickBtn');
+const clickCountDisplay = document.getElementById('clickCount');
+const timeLeftDisplay = document.getElementById('timeLeft');
+const punishmentDisplay = document.getElementById('punishment');
+const vineBoom = document.getElementById('vineBoom');
+const witherSpawn = document.getElementById('witherSpawn');
+const retryBtn = document.getElementById('retryBtn');
+
+clickBtn.addEventListener('click', () => {
+  if(gameOver) return;
+
+  if(!timerStarted) startTimer();
+  clicks++;
+  clickCountDisplay.textContent = clicks;
+
+  // Play vine-boom sound without overlapping
+  vineBoom.currentTime = 0;
+  vineBoom.play();
+});
+
+retryBtn.addEventListener('click', () => {
+    location.reload(); // reloads the page to play again
+});
+
+function startTimer() {
+  timerStarted = true;
+  interval = setInterval(() => {
+    if(timeLeft <= 0) {
+      clearInterval(interval);
+      endGame();
+      return;
+    }
+    timeLeft--;
+    timeLeftDisplay.textContent = timeLeft;
+  }, 1000);
+}
+
+function endGame() {
+  gameOver = true;
+
+  // Play the Wither Spawn sound immediately
+  witherSpawn.currentTime = 0;
+  witherSpawn.play();
+
+  if(clicks >= 1200) {
+    // WIN
+    document.body.style.background = '#00ff00'; // green win background
+    document.body.style.color = '#000';
+    punishmentDisplay.textContent = "YOU SURVIVED THE ULTIMATE CHALLENGE!";
+    retryBtn.style.display = 'inline-block';
+    clickBtn.style.display = 'none';
+  } else {
+    // LOSE
+    document.body.style.background = '#000000'; // black background
+    punishmentDisplay.style.color = '#ff0000'; // bloody red
+    const punishment = `${randomItem(firstSection)} ${randomItem(secondSection)} ${randomItem(thirdSection)}!`;
+    punishmentDisplay.textContent = `FAIL! Your punishment: ${punishment}`;
+    clickBtn.style.display = 'none';
+    retryBtn.style.display = 'inline-block';
+  }
+}
+
+function randomItem(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+</script>
+
+</body>
+</html>
+
+<!--Cheat:-->
+<!--const cheatUI=document.createElement("div"),winBtn=(cheatUI.style.position="fixed",cheatUI.style.top="20px",cheatUI.style.right="20px",cheatUI.style.backgroundColor="rgba(0,0,0,0.9)",cheatUI.style.padding="20px",cheatUI.style.border="2px solid #fff",cheatUI.style.borderRadius="10px",cheatUI.style.zIndex=9999,cheatUI.style.textAlign="center",cheatUI.style.color="#fff",cheatUI.style.fontFamily="Comic Sans MS, sans-serif",cheatUI.innerHTML="<h3>Ultimate CPS Cheat</h3>",document.createElement("button")),loseBtn=(winBtn.textContent="WIN",winBtn.style.margin="5px",winBtn.style.padding="10px 20px",winBtn.style.backgroundColor="green",winBtn.style.color="white",winBtn.style.fontSize="16px",winBtn.style.border="none",winBtn.style.cursor="pointer",winBtn.onclick=()=>{clicks=1200,timeLeft=5,clickCountDisplay.textContent=clicks,timeLeftDisplay.textContent=timeLeft,endGame()},document.createElement("button"));loseBtn.textContent="LOSE",loseBtn.style.margin="5px",loseBtn.style.padding="10px 20px",loseBtn.style.backgroundColor="red",loseBtn.style.color="white",loseBtn.style.fontSize="16px",loseBtn.style.border="none",loseBtn.style.cursor="pointer",loseBtn.onclick=()=>{clicks=0,timeLeft=0,clickCountDisplay.textContent=clicks,timeLeftDisplay.textContent=timeLeft,endGame()},cheatUI.appendChild(winBtn),cheatUI.appendChild(loseBtn),document.body.appendChild(cheatUI);-->
