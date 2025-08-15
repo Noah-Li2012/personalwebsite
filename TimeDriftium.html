@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TickDriftium — Life Timer • © NoahLi404</title>
+  <meta name="description" content="Live age calculator, days survived, and countdown to any target age. © NoahLi404. All rights reserved." />
+  <style>
+    :root{
+      --bg:#f4fbf4;
+      --panel:#ffffff;
+      --ink:#132015;
+      --muted:#4a5b4e;
+      --accent:#1fc36b;
+      --accent-2:#14a85a;
+      --danger:#e14a4a;
+      --ring: 0 8px 30px rgba(0,0,0,.08);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --round: 18px;
+    }
+    html,body{height:100%;}
+    body{
+      margin:0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--ink); background: radial-gradient(80% 60% at 50% 0%, #e7f8ec 0%, var(--bg) 55%);
+    }
+    .wrap{max-width:980px; margin:32px auto; padding:0 16px;}
+    header{display:flex; align-items:center; gap:10px; margin-bottom:18px;}
+    .logo{display:inline-flex; align-items:center; gap:10px; font-weight:700;}
+    .logo-badge{width:28px; height:28px; border-radius:8px; background:linear-gradient(145deg,#1fc36b,#10b36c); color:#fff; display:grid; place-items:center; box-shadow: var(--ring);}
+    h1{margin:0; font-size:clamp(22px,4vw,32px); letter-spacing:.2px;}
+    main{background:var(--panel); border-radius:24px; box-shadow: var(--ring); padding:24px;}
+
+    .grid{display:grid; grid-template-columns: 1fr; gap:18px;}
+    @media (min-width: 860px){ .grid{grid-template-columns: 1.2fr .8fr;} }
+
+    .card{background:#fff; border:1px solid #e8efe8; border-radius: var(--round); padding:18px 16px; box-shadow: 0 1px 0 rgba(0,0,0,.03);}
+    .card h3{margin:0 0 8px 0; font-size:1.05rem;}
+    .muted{color:var(--muted);}
+
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+    label{font-size:.9rem; color:var(--muted);}
+    input[type="number"], input[type="datetime-local"], input[type="text"]{
+      width:100%; padding:12px 14px; border-radius:12px; border:1px solid #dfe8e1; background:#fbfdfb; outline:none; font-size:15px; transition:.15s;
+    }
+    input:focus{border-color:#b8e6c9; box-shadow:0 0 0 4px rgba(31,195,107,.1);}
+
+    button{border:0; background:var(--accent); color:#fff; padding:12px 16px; border-radius:14px; font-weight:700; letter-spacing:.3px; cursor:pointer; transition:transform .06s ease, background .2s;}
+    button:hover{background:var(--accent-2);}
+    button:active{transform:translateY(1px);}
+
+    .stat{
+      display:flex; align-items:center; justify-content:space-between; gap:14px; padding:12px 14px; border:1px dashed #e4efe7; background:#fbfefb; border-radius:14px; font-variant-numeric: tabular-nums; font-family: var(--mono);
+    }
+    .stat .label{color:var(--muted); font-family:inherit;}
+    .big{font-size: clamp(18px, 2.4vw, 22px);}
+
+    .progress{height:14px; background:#edf5ef; border-radius:999px; overflow:hidden; border:1px solid #e0ece3;}
+    .bar{height:100%; width:0%; background: linear-gradient(90deg, #1fc36b, #15b86d 60%, #0fa469); transition: width .8s cubic-bezier(.2,.7,0,1);}
+
+    .footer{margin-top:18px; display:flex; justify-content:space-between; align-items:center; gap:10px; color:#5d6b60; font-size:.9rem;}
+    .link{color:#16794b; text-decoration:none; border-bottom:1px dotted #16794b33;}
+    .caps{font-variant-caps: all-small-caps; letter-spacing:.5px;}
+
+    .chips{display:flex; gap:8px; flex-wrap:wrap;}
+    .chip{padding:6px 10px; border-radius:999px; background:#f0faf3; border:1px solid #dff0e6; font-size:.85rem; cursor:pointer}
+
+    .danger{background:var(--danger);}
+    .center{display:flex; align-items:center; justify-content:center;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <span class="logo-badge">T</span>
+      <div class="logo">
+        <h1>TickDriftium — Check the shocking info</h1>
+      </div>
+    </header>
+
+    <main>
+      <div class="grid">
+        <section class="card">
+          <h3>Start from entering your age <span class="muted">(YYYY/MM/DD HH:MM)</span></h3>
+          <div class="row" style="margin-top:10px">
+            <label for="bday">Birthdate (with time):</label>
+            <input id="bday" type="datetime-local" step="1" />
+          </div>
+          <div class="row" style="margin-top:10px">
+            <button id="use-now">Use now as current time</button>
+            <button id="set-example" class="" title="Fill with an example">Sample value</button>
+            <button id="share" title="Copy a link that remembers your inputs">Share link</button>
+          </div>
+
+          <div style="height:10px"></div>
+
+          <div class="stat big"><span class="label">Current time</span><span id="now">—</span></div>
+          <div class="stat big"><span class="label">Your exact age</span><span id="age">—</span></div>
+          <div class="stat big"><span class="label">Days survived</span><span id="days">—</span></div>
+
+          <div style="height:8px"></div>
+
+          <h3 style="margin-top:10px">Calculate: <span class="muted">When will I reach…</span></h3>
+          <div class="row">
+            <input id="targetAge" type="number" min="1" max="150" value="90" />
+            <button id="calc">OK</button>
+            <button id="reset" class="danger">Reset</button>
+          </div>
+
+          <div style="height:10px"></div>
+          <div class="stat big"><span class="label">Time until you reach <span id="targetAgeLabel">90.0</span> years old</span><span id="countdown">—</span></div>
+
+          <div style="height:12px"></div>
+          <div class="progress" title="Progress to target age">
+            <div id="bar" class="bar"></div>
+          </div>
+          <div class="row" style="justify-content:space-between; margin-top:6px">
+            <span class="muted">0%</span>
+            <span class="muted">Progress to target age</span>
+            <span id="pct" class="muted">0%</span>
+          </div>
+
+          <div style="height:14px"></div>
+          <div class="chips">
+            <span class="chip" data-preset="65">Preset 65</span>
+            <span class="chip" data-preset="75">Preset 75</span>
+            <span class="chip" data-preset="90">Preset 90</span>
+            <span class="chip" data-preset="100">Preset 100</span>
+          </div>
+        </section>
+
+        <aside class="card">
+          <h3>About</h3>
+          <p class="muted">
+            Enter your birthdate and time. This app shows a live clock, your exact age (to many decimals), the total days you've survived, and a countdown to any target age you pick. Your inputs never leave your browser.
+          </p>
+          <ul class="muted">
+            <li>Live updates ~10× per second</li>
+            <li>Accurate fractional years using the mean tropical year (365.2425 days)</li>
+            <li>Shareable links via URL parameters</li>
+            <li>Mobile friendly and accessible</li>
+          </ul>
+          <h3>Disclaimer</h3>
+          <p class="muted"> <li>The calculation can be true or false,do not use it seriously.</li></p>
+          <h3>Tips</h3>
+          <p class="muted">Click a preset, or type any target age (1–150). Use “Share link” to copy a URL that pre-fills your birthdate and target age.</p>
+
+          <div class="stat" style="margin-top:8px">
+            <span class="label">Mean year used</span>
+            <span>365.2425 days</span>
+          </div>
+
+          <div class="footer">
+            <div>© <strong>NoahLi404</strong>. All rights reserved.</div>
+            <div class="caps">TickDriftium</div>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <script>
+
+    const $ = (s)=>document.querySelector(s);
+    const pad = (n)=> String(Math.floor(Math.abs(n))).padStart(2,'0');
+    const clamp = (v,min,max)=> Math.min(max, Math.max(min,v));
+    const MS_DAY = 24*60*60*1000;
+    const YEAR_DAYS = 365.2425;
+    const MS_YEAR = YEAR_DAYS * MS_DAY;
+
+    function formatDateTime(d){
+      const y=d.getFullYear();
+      const m=pad(d.getMonth()+1);
+      const dd=pad(d.getDate());
+      const hh=pad(d.getHours());
+      const mm=pad(d.getMinutes());
+      const ss=pad(d.getSeconds());
+      const ms=String(d.getMilliseconds()).padStart(3,'0');
+      return `${y}/${m}/${dd} ${hh}:${mm}:${ss}.${ms}`;
+    }
+
+    function addYears(date, years){
+      const t = new Date(date.getTime());
+      t.setFullYear(t.getFullYear()+years);
+      return t;
+    }
+
+    function parseInput(dtValue){
+
+      if(!dtValue) return null;
+
+      const normalized = dtValue.length===16 ? dtValue+":00" : dtValue;
+      const d = new Date(normalized);
+      return isNaN(d.getTime()) ? null : d;
+    }
+
+    function toDatetimeLocal(d){
+      const off = d.getTimezoneOffset();
+      const d2 = new Date(d.getTime() - off*60000);
+      return d2.toISOString().slice(0,19);
+    }
+
+    function formatCountdown(ms){
+      if(ms <= 0) return 'Reached!';
+      const days = Math.floor(ms/MS_DAY);
+      const rest = ms - days*MS_DAY;
+      const h = Math.floor(rest/ (60*60*1000));
+      const m = Math.floor((rest - h*60*60*1000)/(60*1000));
+      const s = Math.floor((rest - h*3600000 - m*60000)/1000);
+      const frac = (rest - h*3600000 - m*60000 - s*1000)/1000;
+      const fracStr = frac.toFixed(3).slice(1); // ".123"
+      return `${days.toLocaleString()} days, ${pad(h)} hours, ${pad(m)} minutes, ${pad(s)}${fracStr} seconds`;
+    }
+
+    function pct(n){ return (n*100).toFixed(2)+"%"; }
+
+    const state = {
+      birth: null,
+      targetAge: 90,
+    };
+
+    const elNow = $('#now');
+    const elAge = $('#age');
+    const elDays = $('#days');
+    const elCountdown = $('#countdown');
+    const elTargetAgeLabel = $('#targetAgeLabel');
+    const elBar = $('#bar');
+    const elPct = $('#pct');
+
+    function initFromURL(){
+      const p = new URLSearchParams(location.search);
+      const b = p.get('b');
+      const t = parseFloat(p.get('t'));
+      if(b){
+        const d = new Date(b);
+        if(!isNaN(d)){
+          state.birth = d;
+          $('#bday').value = toDatetimeLocal(d);
+        }
+      }
+      if(!isNaN(t)){
+        state.targetAge = clamp(t,1,150);
+        $('#targetAge').value = String(state.targetAge);
+        elTargetAgeLabel.textContent = Number(state.targetAge).toFixed(1);
+      }
+    }
+
+    function pushURL(){
+      if(!state.birth) return;
+      const p = new URLSearchParams();
+      p.set('b', state.birth.toISOString());
+      p.set('t', String(state.targetAge));
+      history.replaceState(null, '', '?' + p.toString());
+    }
+
+    function tick(){
+      const now = new Date();
+      elNow.textContent = formatDateTime(now);
+
+      if(state.birth){
+        const diff = now - state.birth;
+        const ageYears = diff / MS_YEAR;
+        elAge.textContent = ageYears.toFixed(9) + ' years';
+        elDays.textContent = Math.floor(diff / MS_DAY).toLocaleString() + ' days';
+
+        const targetDate = addYears(state.birth, Math.round(state.targetAge));
+        const exactTarget = addYears(state.birth, state.targetAge);
+        const msLeft = exactTarget - now;
+        elCountdown.textContent = formatCountdown(msLeft);
+
+        const progress = clamp(ageYears / state.targetAge, 0, 1);
+        elBar.style.width = (progress*100).toFixed(2) + '%';
+        elPct.textContent = pct(progress);
+      } else {
+        elAge.textContent = '—';
+        elDays.textContent = '—';
+        elCountdown.textContent = '—';
+        elBar.style.width = '0%';
+        elPct.textContent = '0%';
+      }
+    }
+
+    $('#use-now').addEventListener('click', ()=>{
+      const d = new Date();
+      $('#bday').value = toDatetimeLocal(d);
+      state.birth = d;
+      pushURL();
+    });
+
+    $('#set-example').addEventListener('click', ()=>{
+      const d = new Date(2012,11,27,2,20,0);
+      $('#bday').value = toDatetimeLocal(d);
+      state.birth = d;
+      pushURL();
+    });
+
+    $('#share').addEventListener('click', async ()=>{
+      if(!state.birth){ alert('Set your birthdate first.'); return; }
+      pushURL();
+      try{
+        await navigator.clipboard.writeText(location.href);
+        alert('Link copied to clipboard!');
+      }catch(e){
+        prompt('Copy this link:', location.href);
+      }
+    });
+
+    $('#bday').addEventListener('change', (e)=>{
+      const d = parseInput(e.target.value);
+      if(!d){ alert('Invalid date/time.'); return; }
+      state.birth = d;
+      pushURL();
+    });
+
+    $('#targetAge').addEventListener('input', (e)=>{
+      const v = clamp(parseFloat(e.target.value||'0'),1,150);
+      state.targetAge = v;
+      elTargetAgeLabel.textContent = v.toFixed(1);
+      pushURL();
+    });
+
+    $('#calc').addEventListener('click', tick);
+    $('#reset').addEventListener('click', ()=>{
+      state.birth = null;
+      $('#bday').value = '';
+      state.targetAge = 90;
+      $('#targetAge').value = '90';
+      elTargetAgeLabel.textContent = '90.0';
+      history.replaceState(null,'', location.pathname);
+      tick();
+    });
+
+    document.querySelectorAll('.chip').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const n = parseFloat(el.dataset.preset);
+        state.targetAge = n;
+        $('#targetAge').value = String(n);
+        elTargetAgeLabel.textContent = n.toFixed(1);
+        pushURL();
+        tick();
+      })
+    });
+
+    initFromURL();
+    tick();
+    setInterval(tick, 100);
+  </script>
+</body>
+</html>
