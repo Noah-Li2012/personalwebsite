@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Wormhole Player</title>
+  <style>
+    :root{
+      --bg:#05060a;
+      --card:#0b0f17;
+      --text:#e8f0ff;
+      --muted:#9bb0ff;
+      --accent:#6c9eff;
+      --glow: 0 0 20px rgba(108,158,255,.35), 0 0 60px rgba(108,158,255,.15);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; overflow:hidden; background: radial-gradient(1200px 800px at 10% 10%, #0a0f1e 0%, var(--bg) 50%, #000 100%);
+      color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+    }
+
+    .screen{
+      position:fixed; inset:0; display:grid; place-items:center; padding:24px;
+    }
+    .hidden{display:none !important}
+
+    .card{
+      width:min(760px, 92vw); background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:24px; padding:28px; box-shadow: 0 20px 60px rgba(0,0,0,.45);
+      backdrop-filter: blur(10px);
+      position:relative;
+    }
+    .card::before{
+      content:""; position:absolute; inset:-2px; border-radius:26px; padding:2px;
+      background: conic-gradient(from 180deg at 50% 50%, #6c9eff33, transparent 30%, #00e7ff33 60%, transparent 85%, #6c9eff33);
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude; pointer-events:none;
+      filter: blur(8px); opacity:.7;
+    }
+
+    h1{
+      margin:0 0 6px; font-size: clamp(28px, 5vw, 56px); letter-spacing:.2px; line-height:1.05;
+      background: linear-gradient(90deg, #c7d8ff, #9bb0ff 40%, #9ff1ff 60%, #c7d8ff);
+      -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow: var(--glow);
+    }
+    p.subtitle{margin:0 0 18px; color:var(--muted)}
+
+    .drop{
+      margin-top:12px; border:1.5px dashed rgba(255,255,255,.2); border-radius:18px; padding:22px; text-align:center;
+      transition:.2s border-color, .2s background-color, .2s transform;
+      background: rgba(255,255,255,.02);
+    }
+    .drop.dragover{ border-color:#9ff1ff; background: rgba(159,241,255,.06); transform: translateY(-2px);}
+
+    .actions{display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-top:16px}
+
+    .btn{
+      appearance:none; border:1px solid rgba(255,255,255,.14); background: linear-gradient(180deg, #162033, #0f1524);
+      padding:12px 16px; border-radius:14px; color:var(--text); cursor:pointer; font-weight:600; letter-spacing:.2px;
+      box-shadow: var(--glow); transition: .15s transform, .2s box-shadow, .2s background-color;
+    }
+    .btn:hover{ transform: translateY(-1px); box-shadow: 0 0 0 2px rgba(159,241,255,.25), var(--glow)}
+    .btn:active{ transform: translateY(0)}
+
+    .hint{font-size:13px; color:#c9d6ffb0; margin-top:10px}
+
+    footer{
+      text-align:center; margin-top:16px; font-size:12px; color:#93a6ff90;
+    }
+
+    canvas{ display:block; width:100vw; height:100vh; }
+
+    .hud{ position:fixed; top:12px; left:12px; padding:8px 12px; border-radius:12px; font-size:13px; color:#d9e6ff;
+      background:rgba(10,15,30,.35); border:1px solid rgba(255,255,255,.12); backdrop-filter: blur(6px); pointer-events:none; }
+
+    /* Watermark */
+    #watermark{
+      position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+      font-size:32px; color:#fff; text-shadow:0 0 10px #00f0ff, 0 0 20px #00f0ff;
+      opacity:0; pointer-events:none; transition:opacity .2s;
+    }
+
+    /* Color selector */
+    .color-selector{
+      position:fixed; top:12px; right:12px; display:flex; gap:6px;
+    }
+    .color-btn{
+      padding:6px 12px; border-radius:6px; border:none; cursor:pointer; font-size:12px;
+      font-weight:600;
+    }
+  </style>
+</head>
+<body>
+  <section id="start" class="screen">
+    <div class="card">
+      <h1>Wormhole Player</h1>
+      <p class="subtitle">Drop a track into the void and ride the star tunnel. When it starts, we’ll jump in the <strong>Wormhole</strong>. Press <strong>Esc</strong> to stop and return.</p>
+      <p class="subtitle"><strong>Fullscreen for the best experience</strong></p>
+
+      <div id="drop" class="drop">
+        <div>Drag & drop an audio file here</div>
+        <div class="hint">MP3, WAV, AAC… Most formats work</div>
+      </div>
+
+      <div class="actions">
+        <label class="btn" for="file">Choose an audio file</label>
+        <input id="file" type="file" hidden />
+      </div>
+
+      <footer>Tip: Some browsers block audio until you interact — picking a file counts.</footer>
+    </div>
+  </section>
+
+  <canvas id="wormhole"></canvas>
+  <div id="hud" class="hud hidden">Esc to exit • Space to pause/resume</div>
+  <div id="watermark">© NoahLi404</div>
+
+  <div class="color-selector">
+    <button class="color-btn" data-mode="default">Default</button>
+    <button class="color-btn" data-mode="neon">Neon</button>
+    <button class="color-btn" data-mode="rainbow">Rainbow</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/web-audio-beat-detector"></script>
+  <script>
+    const startScreen = document.getElementById('start');
+    const dropZone = document.getElementById('drop');
+    const fileInput = document.getElementById('file');
+    const canvas = document.getElementById('wormhole');
+    const ctx = canvas.getContext('2d');
+    const hud = document.getElementById('hud');
+    const watermark = document.getElementById('watermark');
+    const colorBtns = document.querySelectorAll('.color-btn');
+
+    let audioCtx, audio, source, analyser, dataArray, bpm = 120;
+    let stars = [], numStars = 900;
+    let animId = null;
+    let playing = false;
+    let colorMode = 'default';
+
+    function resize(){
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    function initStars(){
+      stars = [];
+      for(let i=0;i<numStars;i++){
+        stars.push({
+          x: Math.random()*canvas.width - canvas.width/2,
+          y: Math.random()*canvas.height - canvas.height/2,
+          z: Math.random()*canvas.width,
+          pz: 0
+        });
+      }
+    }
+    initStars();
+
+    colorBtns.forEach(btn=>{
+      btn.addEventListener('click', ()=> colorMode = btn.dataset.mode);
+    });
+
+    fileInput.addEventListener('change', e=>{
+      const file = e.target.files?.[0];
+      if(file) startVisualizer(file);
+    });
+
+    ['dragenter','dragover'].forEach(evt=>dropZone.addEventListener(evt,e=>{
+      e.preventDefault(); e.stopPropagation(); dropZone.classList.add('dragover');
+    }));
+    ['dragleave','drop'].forEach(evt=>dropZone.addEventListener(evt,e=>{
+      e.preventDefault(); e.stopPropagation(); dropZone.classList.remove('dragover');
+    }));
+    dropZone.addEventListener('drop', e=>{
+      const file = e.dataTransfer.files?.[0];
+      if(file) startVisualizer(file);
+    });
+
+    async function startVisualizer(file){
+      try{
+        if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if(audio){ audio.pause(); audio.src=''; }
+        audio = new Audio(URL.createObjectURL(file));
+        audio.crossOrigin = 'anonymous';
+        audio.loop = false;
+
+        if(source) try{ source.disconnect(); }catch{}
+        if(analyser) try{ analyser.disconnect(); }catch{}
+
+        source = audioCtx.createMediaElementSource(audio);
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 256;
+        source.connect(analyser);
+        analyser.connect(audioCtx.destination);
+        const bufferLength = analyser.frequencyBinCount;
+        dataArray = new Uint8Array(bufferLength);
+
+        try{
+          const arrBuf = await file.arrayBuffer();
+          const decoded = await audioCtx.decodeAudioData(arrBuf.slice(0));
+          const result = await webAudioBeatDetector.guess(decoded);
+          if(result && result.bpm) bpm = result.bpm;
+        }catch(err){}
+
+        await goFullscreen();
+        startScreen.classList.add('hidden');
+        hud.classList.remove('hidden');
+        playing = true;
+
+        await audio.play();
+        if(audioCtx.state==='suspended') await audioCtx.resume();
+
+        initStars();
+        animate();
+
+        // Show watermark at 15 seconds
+        setTimeout(()=>{
+          watermark.style.opacity = '1';
+          setTimeout(()=> watermark.style.opacity='0', 1000);
+        },15000);
+
+        audio.onended = exitToTitle;
+      }catch(err){
+        console.error(err);
+        alert('Could not start playback.');
+        exitToTitle();
+      }
+    }
+
+    function animate(){
+      if(!playing) return;
+      animId = requestAnimationFrame(animate);
+      analyser.getByteFrequencyData(dataArray);
+
+      let sum = 0; for(let i=0;i<dataArray.length;i++) sum+=dataArray[i];
+      const loudness = sum/dataArray.length;
+
+      ctx.fillStyle = 'rgba(0,0,0,0.3)';
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+
+      const speed = 2 + (loudness/5) + (bpm/50);
+
+      for(let i=0;i<stars.length;i++){
+        const s = stars[i];
+        s.z -= speed;
+        if(s.z < 1){
+          s.x = Math.random()*canvas.width - canvas.width/2;
+          s.y = Math.random()*canvas.height - canvas.height/2;
+          s.z = canvas.width;
+          s.pz = s.z;
+        }
+        const sx = (s.x/s.z)*canvas.width/2 + canvas.width/2;
+        const sy = (s.y/s.z)*canvas.height/2 + canvas.height/2;
+        const px = (s.x/s.pz)*canvas.width/2 + canvas.width/2;
+        const py = (s.y/s.pz)*canvas.height/2 + canvas.height/2;
+        s.pz = s.z;
+
+        let color;
+        switch(colorMode){
+          case 'neon': color = `hsl(${(loudness*4)%360}, 100%, 60%)`; break;
+          case 'rainbow': color = `hsl(${i%360}, 100%, 70%)`; break;
+          default: color = `hsl(${(loudness*3) % 360}, 100%, 70%)`;
+        }
+
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(px,py);
+        ctx.lineTo(sx,sy);
+        ctx.stroke();
+      }
+    }
+
+    function exitToTitle(){
+      if(audio){ audio.pause(); audio.src=''; audio=null; }
+      if(animId) cancelAnimationFrame(animId);
+      startScreen.classList.remove('hidden');
+      hud.classList.add('hidden');
+    }
+
+    async function goFullscreen(){
+      if(!document.fullscreenElement) await document.documentElement.requestFullscreen().catch(()=>{});
+    }
+
+    document.addEventListener('keydown', e=>{
+      if(e.key==='Escape') exitToTitle();
+      if(e.key===' ' && audio) { e.preventDefault(); audio.paused? audio.play(): audio.pause(); }
+    });
+  </script>
+</body>
+</html>
