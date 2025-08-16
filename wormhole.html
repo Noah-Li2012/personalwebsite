@@ -303,7 +303,7 @@
 
         setTimeout(()=>{
           watermark.style.opacity = '1';
-          setTimeout(()=> watermark.style.opacity='0', 1000);
+          setTimeout(()=> watermark.style.opacity='0', 3000);
         },15000);
 
         audio.onended = exitToTitle;
@@ -408,10 +408,6 @@ function drawFlash3DShake() {
       ctx.fillStyle = 'rgba(0,0,0,0.3)';
       ctx.fillRect(0,0,canvas.width,canvas.height);
 
-      // ...existing code...
-
-
-
       // Detect sudden energy change
       let sudden = Math.abs(loudness - lastLoudness) > 6;
       if(sudden) triggerFlashEffect();
@@ -423,7 +419,7 @@ function drawFlash3DShake() {
       if(shakeTimer > 0) { ctx.restore(); }
       lastLoudness = loudness;
 
-      const speed = 2 + (loudness/5) + (bpm/50);
+      const speed = 2 + (loudness/2) + (bpm/50);
 
       for(let i=0;i<stars.length;i++){
         const s = stars[i];
