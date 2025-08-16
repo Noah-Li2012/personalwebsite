@@ -172,6 +172,11 @@
     <button class="color-btn" data-mode="rainbow">Rainbow</button>
   </div>
 
+      <div id="star-count-container" style="position:fixed; bottom:18px; right:18px; background:rgba(10,15,30,.35); border-radius:12px; padding:10px 16px; border:1px solid rgba(255,255,255,.12); box-shadow: var(--glow); z-index:10; display:flex; align-items:center; gap:8px;">
+        <label for="star-count" style="color:var(--muted); font-size:14px;">Stars:</label>
+        <input id="star-count" type="number" min="10" max="10000" value="900" style="width:70px; border-radius:6px; border:1px solid #6c9eff44; padding:4px 8px; font-size:14px; background:rgba(255,255,255,.07); color:var(--text); outline:none;" />
+      </div>
+
   <script src="https://cdn.jsdelivr.net/npm/web-audio-beat-detector"></script>
   <script>
     const startScreen = document.getElementById('start');
@@ -208,6 +213,17 @@
       }
     }
     initStars();
+
+    // Star count input handler
+    const starCountInput = document.getElementById('star-count');
+    starCountInput.addEventListener('change', ()=>{
+      let val = parseInt(starCountInput.value, 10);
+      if(isNaN(val) || val < 10) val = 10;
+      if(val > 10000) val = 10000;
+      numStars = val;
+      starCountInput.value = val;
+      initStars();
+    });
 
     colorBtns.forEach(btn=>{
       btn.addEventListener('click', ()=> colorMode = btn.dataset.mode);
