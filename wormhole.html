@@ -314,6 +314,80 @@
       }
     }
 
+let lastLoudness = 0;
+let flashTimer = 0;
+let shakeTimer = 0;
+
+function triggerFlashEffect() {
+  flashTimer = 7;
+  shakeTimer = 10;
+}
+
+function drawFlash3DShake() {
+  // Fullscreen white background while shining, with shining burst overlay
+  ctx.save();
+  let cx = canvas.width/2, cy = canvas.height/2;
+  let shineAlpha = 0.7 * (flashTimer/7);
+
+  // 1. Fullscreen solid white background
+  ctx.globalAlpha = shineAlpha;
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  // 2. Overlay: white radial gradient burst
+  let grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(canvas.width, canvas.height)/1.1);
+  grad.addColorStop(0, 'rgba(255,255,255,1)');
+  grad.addColorStop(0.18, 'rgba(255,255,255,0.85)');
+  grad.addColorStop(0.45, 'rgba(255,255,255,0.35)');
+  grad.addColorStop(1, 'rgba(255,255,255,0.01)');
+  ctx.globalAlpha = shineAlpha;
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  // 3. Intense white center burst
+  ctx.globalAlpha = 0.32 * (flashTimer/7);
+  ctx.beginPath();
+  ctx.arc(cx, cy, 120 + (7-flashTimer)*8, 0, 2*Math.PI);
+  ctx.fillStyle = 'white';
+  ctx.shadowColor = '#fff';
+  ctx.shadowBlur = 80;
+  ctx.fill();
+
+  // 4. White burst lines
+  ctx.save();
+  ctx.globalAlpha = 0.13 * (flashTimer/7);
+  ctx.strokeStyle = 'white';
+  ctx.shadowColor = '#fff';
+  ctx.shadowBlur = 18;
+  for(let i=0;i<32;i++){
+    let angle = (i/32)*2*Math.PI + Math.random()*0.08;
+    let len = Math.max(canvas.width, canvas.height) * (0.45 + Math.random()*0.18);
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.lineTo(cx+Math.cos(angle)*len, cy+Math.sin(angle)*len);
+    ctx.lineWidth = 2 + Math.random()*2;
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // 5. Soft white ripple circles
+  ctx.save();
+  ctx.globalAlpha = 0.08 * (flashTimer/7);
+  ctx.strokeStyle = '#fff';
+  ctx.shadowColor = '#fff';
+  ctx.shadowBlur = 10;
+  for(let r=100; r<Math.max(canvas.width,canvas.height)*0.8; r+=90){
+    ctx.beginPath();
+    ctx.arc(cx, cy, r + (7-flashTimer)*10, 0, 2*Math.PI);
+    ctx.lineWidth = 2 + Math.random()*1.5;
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.restore();
+}
+
     function animate(){
       if(!playing) return;
       animId = requestAnimationFrame(animate);
@@ -323,8 +397,31 @@
       for(let i=0;i<dataArray.length;i++) sum+=dataArray[i];
       const loudness = sum/dataArray.length;
 
+
+      // Pure screen shake
+      if(shakeTimer > 0) {
+        const shakeMag = 12 * (shakeTimer/10);
+        ctx.save();
+        ctx.translate((Math.random()-0.5)*shakeMag, (Math.random()-0.5)*shakeMag);
+      }
+
       ctx.fillStyle = 'rgba(0,0,0,0.3)';
       ctx.fillRect(0,0,canvas.width,canvas.height);
+
+      // ...existing code...
+
+
+
+      // Detect sudden energy change
+      let sudden = Math.abs(loudness - lastLoudness) > 6;
+      if(sudden) triggerFlashEffect();
+      if(flashTimer > 0) {
+        drawFlash3DShake();
+        flashTimer--;
+      }
+      if(shakeTimer > 0) shakeTimer--;
+      if(shakeTimer > 0) { ctx.restore(); }
+      lastLoudness = loudness;
 
       const speed = 2 + (loudness/5) + (bpm/50);
 
@@ -357,6 +454,19 @@
         ctx.lineTo(sx,sy);
         ctx.stroke();
       }
+
+      // Draw energy bar last so it's always on top
+      ctx.save();
+      ctx.font = '18px monospace';
+      ctx.fillStyle = '#fff';
+      ctx.globalAlpha = 0.85;
+      let barX = 24, barY = canvas.height - 48;
+      ctx.fillText('Energy: ' + loudness.toFixed(2), barX, barY);
+      // Draw a bar
+      ctx.fillStyle = '#6c9eff';
+      ctx.globalAlpha = 0.5;
+      ctx.fillRect(barX, barY+8, Math.min(loudness*3, canvas.width-60), 12);
+      ctx.restore();
     }
 
     function exitToTitle(){
