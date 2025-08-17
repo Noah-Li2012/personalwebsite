@@ -425,11 +425,15 @@ function drawFlash3DShake() {
         const s = stars[i];
         s.z -= speed;
         if(s.z < 1){
-          s.x = Math.random()*canvas.width - canvas.width/2;
-          s.y = Math.random()*canvas.height - canvas.height/2;
-          s.z = canvas.width;
-          s.pz = s.z;
+            // Spawn star in a circle around the center
+            let angle = Math.random() * 2 * Math.PI;
+            let radius = Math.random() * canvas.width/2;
+            s.x = radius * Math.cos(angle);
+            s.y = radius * Math.sin(angle);
+            s.z = canvas.width;
+            s.pz = s.z;
         }
+
         const sx = (s.x/s.z)*canvas.width/2 + canvas.width/2;
         const sy = (s.y/s.z)*canvas.height/2 + canvas.height/2;
         const px = (s.x/s.pz)*canvas.width/2 + canvas.width/2;
