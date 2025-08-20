@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hexadamn - Binary Editor</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  html { scroll-behavior: smooth; }
+  body { font-family:'Segoe UI', sans-serif; background-color:#121212; color:white; margin:0; }
+
+  /* Fade-in animation */
+  .fadeIn { opacity:0; animation: fadeIn 1s forwards; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(20px);} to { opacity:1; transform: translateY(0);} }
+
+  /* Button style */
+  .btn {
+    background: linear-gradient(90deg, #6b5bff, #ff5b99);
+    color:white;
+    border:none;
+    padding:0.75rem 1.5rem;
+    border-radius:0.5rem;
+    font-weight:600;
+    cursor:pointer;
+    transition: all 0.3s;
+  }
+  .btn:hover {
+    transform: scale(1.05);
+    box-shadow:0 0 15px rgba(255,91,153,0.5), 0 0 15px rgba(107,91,255,0.5);
+  }
+
+  /* Gradient hero text */
+  .hero-title {
+    background: linear-gradient(90deg, #6b5bff, #ff5b99);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 5px rgba(0,0,0,0.5);
+  }
+
+  /* Feature card */
+  .feature-card {
+    background-color: #1c1c1c;
+    border: 2px solid #3a3a3a;
+    padding:1.5rem;
+    border-radius:0.5rem;
+    text-align:center;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .feature-card:hover { transform: translateY(-4px); box-shadow:0 0 15px rgba(107,91,255,0.5); }
+
+  /* System badge */
+  .sys-badge {
+    display:inline-block;
+    background:#2d2d2d;
+    border:2px solid #555;
+    padding:0.25rem 0.75rem;
+    margin:0.25rem;
+    border-radius:0.25rem;
+    font-weight:600;
+  }
+
+  /* Hero section rainbow sweep permanently behind */
+  .hero-section {
+    position: relative;
+    overflow: hidden;
+    z-index: 0;
+  }
+  .hero-section::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 200%; /* wider for smooth animation */
+    height: 100%;
+    background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet, red);
+    mix-blend-mode: overlay;
+    opacity: 0.15; /* barely visible */
+    z-index: 0;
+    animation: rainbowMove 20s linear infinite; /* slow subtle movement */
+    filter: blur(60px); /* soft glow */
+  }
+  @keyframes rainbowMove {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* Hero content above rainbow */
+  .hero-content { position: relative; z-index: 1; }
+
+  /* Optional: faint rainbow glow for buttons */
+  .btn::after {
+    content: '';
+    position: absolute;
+    top:0; left:0; right:0; bottom:0;
+    border-radius:0.5rem;
+    background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet, red);
+    opacity:0.2;
+    filter: blur(20px);
+    z-index:-1;
+  }
+</style>
+</head>
+<body>
+
+  <!-- Hero Section -->
+  <section class="hero-section flex flex-col md:flex-row items-center justify-center h-screen px-6">
+    <div class="md:w-1/2 text-center md:text-left hero-content">
+      <h1 class="text-5xl font-bold mb-4 fadeIn hero-title">Hexadamn</h1>
+      <p class="text-lg mb-6 fadeIn" style="animation-delay:0.2s;">The lightweight hexadecimal editor for binary files.</p>
+      <a href="https://noahli404.pages.dev/" class="btn fadeIn relative inline-block" style="animation-delay:0.4s;">Download for Windows</a>
+    </div>
+    <div class="md:w-1/2 mt-8 md:mt-0 flex justify-center fadeIn hero-content" style="animation-delay:0.6s;">
+      <img src="hex.png" alt="Hex preview" class="w-64 h-auto rounded-lg shadow-lg">
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="py-20 px-6">
+    <h2 class="text-4xl font-bold text-center mb-12 fadeIn">Features</h2>
+    <div class="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+      <div class="feature-card fadeIn" style="animation-delay:0.2s;">
+        <h3 class="text-xl font-bold mb-2">Hex Editing</h3>
+        <p>Modify files directly in hexadecimal for precise editing.</p>
+      </div>
+      <div class="feature-card fadeIn" style="animation-delay:0.4s;">
+        <h3 class="text-xl font-bold mb-2">Fast & Lightweight</h3>
+        <p>Minimal memory usage and lightning-fast operations.</p>
+      </div>
+      <div class="feature-card fadeIn" style="animation-delay:0.6s;">
+        <h3 class="text-xl font-bold mb-2">Smooth Interface</h3>
+        <p>Simple, clean UI with fade-in effects and responsive layout.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Supported Systems -->
+  <section class="py-10 px-6 text-center fadeIn" style="animation-delay:0.8s;">
+    <h2 class="text-3xl font-bold mb-4">Supported Systems</h2>
+    <div>
+      <span class="sys-badge">Windows ONLY lol BOZO mac/linux users hahaha</span>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 py-6 text-center text-gray-400 mt-10">
+    &copy; 2025 Hexadamn. All rights reserved.
+  </footer>
+
+</body>
+</html>
