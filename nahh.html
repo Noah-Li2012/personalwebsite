@@ -74,8 +74,12 @@
     const status = document.getElementById("status");
     const SOUND_FILE = "999.mp3"; // put 999.mp3 in the same folder
 
+    // Preload audio once
+    const audio = new Audio(SOUND_FILE);
+    audio.preload = "auto";
+
     function playSound() {
-      const audio = new Audio(SOUND_FILE);
+      audio.currentTime = 0; // restart from beginning
       audio.play().catch(() => {
         console.warn("Audio play was blocked!");
       });
@@ -101,7 +105,6 @@
         }
         output.textContent = transcript;
 
-        // Only play sound once per transcript if a swear is detected
         let detected = false;
         swears.forEach(word => {
           if (transcript.toLowerCase().includes(word) && !detected) {
@@ -119,12 +122,15 @@
       };
 
       recognition.onend = () => {
-        // Automatically restart recognition
         recognition.start();
       };
 
-      // Start listening **after user interaction**
+      // Start listening after first click (also unlocks audio for autoplay)
       document.body.addEventListener('click', () => {
+        audio.play().then(() => {
+          audio.pause();
+          audio.currentTime = 0;
+        }); // buffer audio quietly
         recognition.start();
       }, { once: true });
     }
