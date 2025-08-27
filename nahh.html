@@ -6,7 +6,7 @@
 </head>
 <body>
   <h1>🎤 Live Swear Detector</h1>
-  <p id="status">Status: idle</p>
+  <p id="status">Click anywhere to start listening...</p>
   <p id="output"></p>
 
   <script>
@@ -22,7 +22,9 @@
 
     function playSound() {
       const audio = new Audio(SOUND_FILE);
-      audio.play().catch(()=>{}); // ignore play errors
+      audio.play().catch(() => {
+        console.warn("Audio play was blocked!");
+      });
     }
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -45,11 +47,14 @@
         }
         output.textContent = transcript;
 
+        // Only play sound once per transcript if a swear is detected
+        let detected = false;
         swears.forEach(word => {
-          if (transcript.toLowerCase().includes(word)) {
+          if (transcript.toLowerCase().includes(word) && !detected) {
             console.log(`⚠️ Detected swear: ${word}`);
             output.textContent += ` ⚠️ Detected: ${word}`;
-            playSound(); // play once
+            playSound();
+            detected = true;
           }
         });
       };
@@ -59,9 +64,15 @@
         status.textContent = "Error: " + event.error;
       };
 
-      // keep listening forever
-      recognition.onend = () => recognition.start();
-      recognition.start();
+      recognition.onend = () => {
+        // Automatically restart recognition
+        recognition.start();
+      };
+
+      // Start listening **after user interaction**
+      document.body.addEventListener('click', () => {
+        recognition.start();
+      }, { once: true });
     }
   </script>
 </body>
