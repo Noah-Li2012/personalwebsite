@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Live Swear Detector</title>
+</head>
+<body>
+  <h1>🎤 Live Swear Detector</h1>
+  <p id="status">Status: idle</p>
+  <p id="output"></p>
+
+  <script>
+    const swears = [
+      "shit","fuck","bitch","bastard","asshole","damn","crap",
+      "dick","piss","bollocks","bugger","arse","hell","cock",
+      "slut","whore","twat","fag","nigga","motherfucker"
+    ];
+
+    const output = document.getElementById("output");
+    const status = document.getElementById("status");
+    const SOUND_FILE = "999.mp3"; // put 999.mp3 in the same folder
+
+    function playSound() {
+      const audio = new Audio(SOUND_FILE);
+      audio.play().catch(()=>{}); // ignore play errors
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      status.textContent = "Your browser does not support Speech Recognition!";
+    } else {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+
+      recognition.onstart = () => {
+        status.textContent = "Listening...";
+      };
+
+      recognition.onresult = (event) => {
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+        }
+        output.textContent = transcript;
+
+        swears.forEach(word => {
+          if (transcript.toLowerCase().includes(word)) {
+            console.log(`⚠️ Detected swear: ${word}`);
+            output.textContent += ` ⚠️ Detected: ${word}`;
+            playSound(); // play once
+          }
+        });
+      };
+
+      recognition.onerror = (event) => {
+        console.error("Speech recognition error:", event.error);
+        status.textContent = "Error: " + event.error;
+      };
+
+      // keep listening forever
+      recognition.onend = () => recognition.start();
+      recognition.start();
+    }
+  </script>
+</body>
+</html>
