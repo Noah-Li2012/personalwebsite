@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NoahLi404</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg,#fefefe,#e0e0ff);
+    color: #222;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+  }
+
+  header {
+    position: sticky;
+    top: 0;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(15px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    z-index: 100;
+    transition: background 0.3s ease;
+  }
+
+  header h1 { margin:0; font-size: 1.5rem; }
+
+  nav { display: flex; align-items: center; position: relative; }
+  nav button {
+    background: none; border: none;
+    font-size: 1.5rem; cursor: pointer; padding: 0.5rem;
+    transition: transform 0.3s ease;
+  }
+  nav button:hover { transform: rotate(90deg); }
+  .menu {
+    display: none;
+    flex-direction: column;
+    gap: 0.5rem;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: rgba(255,255,255,0.95);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+  }
+  .menu a { text-decoration: none; color: #7b61ff; font-weight: 500; }
+
+  .year-section { margin: 3rem 2rem; opacity:0; transform: translateY(40px); transition: all 0.8s ease; }
+
+  .month-box {
+    background: rgba(255,255,255,0.85);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.5s ease;
+    opacity:0; transform: translateY(30px);
+  }
+  .month-box:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.1); }
+
+  .month-box h2 {
+    margin-top: 0;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 0.5rem;
+  }
+
+  pre, code, blockquote, a {
+    transition: all 0.3s ease;
+  }
+
+  pre { background: #f5f5f5; padding: 1rem; overflow-x: auto; border-radius: 10px; }
+  code { background: #f5f5f5; padding: 0.3rem 0.6rem; border-radius: 6px; }
+  blockquote { border-left: 4px solid #ccc; padding-left: 1rem; color: #555; margin-left:0; font-style: italic; }
+  a { color: #7b61ff; text-decoration: none; }
+
+  /* === Loader === */
+  #loader {
+    position: fixed;
+    top:0; left:0; width:100%; height:100%;
+    background: linear-gradient(135deg,#222,#444);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index:999;
+  }
+  .spinner {
+    width: 80px;
+    height: 80px;
+    border: 10px solid #ccc;
+    border-top: 10px solid #7b61ff;
+    border-radius: 50%;
+    animation: spin 1.2s linear infinite;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg);}
+    100% { transform: rotate(360deg);}
+  }
+
+  /* === Modal Styles === */
+  #modal {
+    display:none;
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:rgba(0,0,0,0.8);
+    justify-content:center;
+    align-items:center;
+    z-index:1000;
+    overflow:auto;
+    padding:2rem;
+  }
+  #modal-content {
+    background:#fff;
+    border-radius:12px;
+    max-width:800px;
+    width:100%;
+    padding:2rem;
+    position:relative;
+    transform: scale(0.8);
+    opacity:0;
+    transition: all 0.3s ease;
+  }
+  #modal.show #modal-content {
+    transform: scale(1);
+    opacity:1;
+  }
+  #modal-close {
+    position:absolute; top:10px; right:10px;
+    background:none; border:none; font-size:1.5rem; cursor:pointer;
+  }
+</style>
+</head>
+<body>
+
+<div id="loader">
+  <div class="spinner"></div>
+</div>
+
+<header>
+  <h1>My Posts</h1>
+  <nav>
+    <button id="hamburger">☰</button>
+    <div class="menu" id="menu"></div>
+  </nav>
+</header>
+
+<main id="content"></main>
+
+<!-- Modal for full view -->
+<div id="modal">
+  <div id="modal-content">
+    <button id="modal-close">✖</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+const user = "Noah-Li2012";
+const repo = "itypehereeverydaylol";
+const folder = "blogs";
+
+const contentEl = document.getElementById('content');
+const menuEl = document.getElementById('menu');
+const loaderEl = document.getElementById('loader');
+
+function revealOnScroll() {
+  const sections = document.querySelectorAll('.year-section, .month-box');
+  const triggerBottom = window.innerHeight * 0.85;
+  sections.forEach(el=>{
+    const top = el.getBoundingClientRect().top;
+    if(top < triggerBottom){
+      el.style.opacity=1;
+      el.style.transform='translateY(0)';
+    }
+  });
+}
+window.addEventListener('scroll', revealOnScroll);
+
+document.getElementById('hamburger').onclick = ()=>{
+  if(menuEl.style.display==='flex'){
+    menuEl.style.display='none';
+  }else{
+    menuEl.style.display='flex';
+    menuEl.style.flexDirection='column';
+  }
+}
+
+async function loadBlogs() {
+  const apiUrl = `https://api.github.com/repos/${user}/${repo}/contents/${folder}`;
+  const res = await fetch(apiUrl);
+  const files = await res.json();
+  const blogsByYear = {};
+
+  files.forEach(file=>{
+    if(file.name.endsWith('.md')){
+      const name = file.name.replace('.md','');
+      const [year, month, day] = name.split('-');
+      if(!blogsByYear[year]) blogsByYear[year]=[];
+      blogsByYear[year].push({file: file.name, month, day});
+    }
+  });
+
+  for(const year of Object.keys(blogsByYear).sort((a,b)=>b-a)){
+    const section = document.createElement('section');
+    section.className = 'year-section';
+    section.id = year;
+    const yearTitle = document.createElement('h1');
+    yearTitle.textContent = year;
+    section.appendChild(yearTitle);
+
+    blogsByYear[year].sort((a,b)=>b.file.localeCompare(a.file));
+
+    for(const blog of blogsByYear[year]){
+      const box = document.createElement('div');
+      box.className = 'month-box';
+      const monthName = new Date(`${blog.month}/01/2020`).toLocaleString('default',{month:'long'});
+      const title = document.createElement('h2');
+      title.textContent = `${monthName} ${blog.day}`;
+      box.appendChild(title);
+
+      const mdContainer = document.createElement('div');
+      mdContainer.textContent = 'Loading...';
+      box.appendChild(mdContainer);
+
+      const rawUrl = `https://raw.githubusercontent.com/${user}/${repo}/main/${folder}/${blog.file}`;
+      fetch(rawUrl)
+        .then(r=>r.text())
+        .then(md=>{
+          mdContainer.innerHTML = marked.parse(md);
+          revealOnScroll();
+        })
+        .catch(e=>mdContainer.textContent='Failed to load');
+
+      section.appendChild(box);
+    }
+
+    contentEl.appendChild(section);
+
+    const a = document.createElement('a');
+    a.href = `#${year}`;
+    a.textContent = year;
+    menuEl.appendChild(a);
+  }
+
+  // Hide loader
+  loaderEl.style.display = 'none';
+  revealOnScroll();
+}
+
+// === Modal Functionality ===
+const modal = document.getElementById('modal');
+const modalBody = document.getElementById('modal-body');
+const modalClose = document.getElementById('modal-close');
+
+modalClose.onclick = () => modal.style.display = 'none';
+modal.onclick = e => { if(e.target===modal) modal.style.display='none'; };
+
+function enableModalForBoxes() {
+  document.querySelectorAll('.month-box').forEach(box => {
+    box.style.cursor = 'pointer';
+    box.onclick = () => {
+      const content = box.querySelector('div').innerHTML;
+      modalBody.innerHTML = content;
+      modal.style.display = 'flex';
+      modal.classList.add('show');
+    }
+  });
+}
+
+// Load blogs and enable modal
+loadBlogs().then(enableModalForBoxes);
+</script>
+
+</body>
+</html>
