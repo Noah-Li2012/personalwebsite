@@ -61,10 +61,10 @@
   <title>Never</title>
 </head>
 <body>
-  <h1>If I hear you swear again...</h1>
+  <h1>If I hear you %@&*#! again...</h1>
   <p id="status">Click anywhere to start listening...</p>
   <p id="output"></p>
-
+    <h4>DISCLAIMERS,NoahLi404 will not be responsible to issues caused by via site</h4>
   <script>
     const swears = [
       "shit","fuck","bitch","bastard","asshole","damn","crap","motherfucker","nigga"
@@ -108,7 +108,7 @@
         let detected = false;
         swears.forEach(word => {
           if (transcript.toLowerCase().includes(word) && !detected) {
-            console.log(`⚠️ Detected swear: ${word}`);
+            console.log(`⚠️ Detected: ${word}`);
             output.textContent += ` ⚠️ Detected: ${word}`;
             playSound();
             detected = true;
