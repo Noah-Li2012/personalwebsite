@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WordCloud Generator</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.2.2/wordcloud2.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      background: linear-gradient(to right, #e0eafc, #cfdef3);
+      color: #333;
+      min-height: 100vh;
+    }
+    h1 {
+      margin-bottom: 20px;
+      text-align: center;
+      color: #1a237e;
+      font-size: 2rem;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+    }
+    #controls {
+      width: 100%;
+      max-width: 700px;
+      background: rgba(255,255,255,0.9);
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 12px;
+      font-size: 15px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      resize: none;
+      outline: none;
+    }
+    textarea:focus { border-color: #1a237e; box-shadow: 0 0 8px rgba(26,35,126,0.2); }
+    .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+    label { font-size: 14px; display: flex; flex-direction: column; gap: 4px; color: #444; flex: 1; min-width: 120px; }
+    input[type="number"], select, input[type="file"], button {
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid #bbb;
+      font-size: 14px;
+      outline: none;
+    }
+    input[type="number"]:focus, select:focus { border-color: #1a237e; box-shadow: 0 0 6px rgba(26,35,126,0.2); }
+
+    button {
+      background: #1a237e;
+      color: white;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.2s;
+      border: none;
+    }
+    button:hover { background: #3949ab; transform: translateY(-2px); }
+    canvas {
+      margin-top: 20px;
+      width: 800px;
+      height: 400px;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+    @media (max-width: 600px) {
+      h1 { font-size: 1.5rem; }
+      canvas { height: 300px; width: 100%; }
+      .row { flex-direction: column; }
+    }
+    .footer-info {
+      text-align: center;
+      font-size: 14px;
+      color: #888888;
+      margin: 20px 0;
+      font-family: Arial, sans-serif;
+    }
+
+  </style>
+</head>
+<body>
+  <h1>WordCloud Generator</h1>
+  <div id="controls">
+    <textarea id="textInput" placeholder="Type or paste your text here... (e.g. sub to Noah Li 404)"></textarea>
+    <div class="row">
+      <label>
+        Duplication Factor:
+        <input type="number" id="autoDupes" min="1" value="1">
+      </label>
+      <label>
+        Split type:
+        <select id="language"> <!-- uhhh btw i don't want to copyright this project is cuz idk, and if you see this id is language is actually uh when i was coding i was filtering it as Chinese and English cuz um Chinese can be split char by char and English is usually word by word,and i'm afraid people can't understand that so i change it to "split type" to make it very specific-->
+          <option value="en" selected>Split by spaces</option>
+          <option value="zh">Split by char</option>
+        </select>
+      </label>
+    </div>
+    <div class="row">
+      <button id="downloadBtn">Download</button>
+      <button id="generateBtn">Generate</button>
+    </div>
+  </div>
+
+  <canvas id="canvas"></canvas>
+
+  <p class="footer-info">
+    the generating system is powered by wordcloud2.js btw | I don't want to copyright this site,idk why
+  </p>
+
+
+  <script>
+    const textInput = document.getElementById("textInput");
+    const language = document.getElementById("language");
+    const canvas = document.getElementById("canvas");
+    const generateBtn = document.getElementById("generateBtn");
+    const downloadBtn = document.getElementById("downloadBtn");
+    const autoDupes = document.getElementById("autoDupes");
+
+    const scale = 3; // High-res scale factor
+
+    function resizeCanvas() {
+      const width = 800;
+      const height = 400;
+      canvas.width = width * scale;
+      canvas.height = height * scale;
+      canvas.style.width = width + "px";
+      canvas.style.height = height + "px";
+    }
+
+    resizeCanvas();
+
+
+    function processText(text, lang) {
+      let words = lang === "zh" ? text.replace(/\s+/g, "").split("") : text.split(/\s+/).filter(Boolean);
+      const count = parseInt(autoDupes.value) || 1;
+      let finalWords = [];
+      for (let i = 0; i < count; i++) finalWords = finalWords.concat(words);
+      return finalWords.map(w => [w, Math.floor(Math.random() * 50) + 10]);
+    }
+
+    generateBtn.addEventListener("click", () => {
+      const text = textInput.value.trim();
+      if (!text) return alert("Please enter some text!");
+      const list = processText(text, language.value);
+
+      WordCloud(canvas, {
+        list: list,
+        gridSize: 10 * scale,
+        weightFactor: 2 * scale,
+        fontFamily: 'Arial, "Microsoft YaHei", sans-serif',
+        color: () => `hsl(${Math.random() * 360}, 70%, 50%)`,
+        rotateRatio: 0.5,
+        rotationSteps: 2,
+        backgroundColor: "#ffffff",
+        clearCanvas: true,
+        drawOutOfBound: false,
+        shrinkToFit: true,
+      });
+    });
+
+    downloadBtn.addEventListener("click", () => {
+      const link = document.createElement("a");
+      link.download = "wordcloud.png";
+      link.href = canvas.toDataURL("image/png", 1.0); // max quality
+      link.click();
+    });
+  </script>
+</body>
+</html>
