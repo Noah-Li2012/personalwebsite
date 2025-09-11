@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noah Li-Personal Website</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" href="channels4_profile.jpg" type="image/jpeg" />
+    <style>
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: rgba(0,0,0,0.35);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .fade-in {
+            animation: fadeIn 2s ease-in-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .parallax-banner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.1;
+            z-index: 0;
+            will-change: transform;
+        }
+
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            opacity: 0.5;
+        }
+
+        nav, section, footer {
+            position: relative;
+            z-index: 2;
+        }
+        .navbar-glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .particles-js-canvas-el {
+            filter: blur(0.5px);
+        }
+
+        .gradient-text {
+            background: linear-gradient(45deg, #CCCCCC, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hover-scale {
+            transition: transform 0.3s ease;
+        }
+
+        .hover-scale:hover {
+            transform: scale(1.05);
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .skill-tag {
+            transition: all 0.3s ease;
+        }
+
+        .skill-tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .social-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .social-icon:hover {
+            transform: translateY(-3px);
+        }
+
+        /* Mobile background override */
+        @media only screen and (max-width: 768px) {
+            body {
+                background-position: left center !important;
+                background-size: cover !important;
+                background-repeat: no-repeat !important;
+                background-attachment: fixed !important;
+                min-height: 100vh !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white font-sans"
+    style="
+        background: url('https://cdn.jsdelivr.net/gh/Noah-Li2012/personalwebsite/bg-img.png') no-repeat center center fixed;
+        background-size: 108vw 108vh;
+        transition: background-position 0.3s cubic-bezier(0.4,0,0.2,1);
+    ">
+    <div id="particles-js"></div>
+
+        <!-- Navbar -->
+    <nav class="navbar-glass shadow-lg fixed top-0 w-full z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold gradient-text">Noah Li</h1>
+            <div class="md:hidden">
+                <button id="menu-toggle" class="text-white text-3xl focus:outline-none">&#9776;</button>
+            </div>
+            <div id="nav-links" class="hidden md:flex space-x-4">
+                <a href="https://noahli404.pages.dev" class="hover:text-teal-400 transition">Home</a>
+                <a href="https://www.youtube.com/@noahliNotFound" target="_blank" class="hover:text-teal-400 transition">YouTube</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-20 px-6 md:px-20 fade-in relative">
+        <h1 class="text-3xl font-semibold mb-6 gradient-text">Explore Projects</h1>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Project Card 1 -->
+            <div class="glass-effect p-6 rounded-lg hover-scale">
+                <h4 class="text-xl font-semibold mb-2">YouTube Channel</h4>
+                <p class="text-gray-300 mb-4">Sharing my programming adventure online!</p>
+                <div class="flex space-x-2">
+                    <a href="https://youtube.com/@noahliNotFound" target="_blank" class="text-teal-400 hover:underline">View Channel</a>
+                </div>
+            </div>
+            <!-- Project Card 2 -->
+            <div class="glass-effect p-6 rounded-lg hover-scale">
+                <h4 class="text-xl font-semibold mb-2">All Coding Projects</h4>
+                <p class="text-gray-300 mb-4">All my programs</p>
+                <div class="flex space-x-2">
+                    <a href="https://noahli404.pages.dev/projects" class="text-teal-400 hover:underline">Downloads</a>
+                </div>
+            </div>
+            <!-- Project Card 3 -->
+            <div class="glass-effect p-6 rounded-lg hover-scale">
+                <h4 class="text-xl font-semibold mb-2">Multi Tool</h4>
+                <p class="text-gray-300 mb-4">Multiple useful/useless tools</p>
+                <div class="flex space-x-2">
+                    <a href="https://multi-tools.pages.dev" class="text-teal-400 hover:underline">Multi-tools</a>
+                </div>
+            </div>
+
+            <div class="glass-effect p-6 rounded-lg hover-scale">
+                <h4 class="text-xl font-semibold mb-2">PreRecordium 1.7.4</h4>
+                <p class="text-gray-300 mb-4">Catch the moment you forgot to record.</p>
+                <div class="flex space-x-2">
+                    <a href="https://noahli404.pages.dev/prerecordium/" class="text-teal-400 hover:underline">Download</a>
+                </div>
+            </div>
+            <div class="glass-effect p-6 rounded-lg hover-scale">
+                <h4 class="text-xl font-semibold mb-2">Homework Excuse Generator</h4>
+                <p class="text-gray-300 mb-4">Wild excuses that no one believes.</p>
+                <div class="flex space-x-2">
+                    <a href="https://noahli404.pages.dev/excuse-homework" class="text-teal-400 hover:underline">Visit Site</a>
+                </div>
+            </div>
+            <div class="glass-effect p-6 rounded-lg hover-scale">
+                <h4 class="text-xl font-semibold mb-2">Clicker Game</h4>
+                <p class="text-gray-300 mb-4">Bet you can't get 20 point of score!</p>
+                <div class="flex space-x-2">
+                    <a href="https://noahli404.pages.dev/clicker" class="text-teal-400 hover:underline">Play Now!</a>
+                </div>
+            </div>
+            <div class="glass-effect p-6 rounded-lg hover-scale">
+                <h4 class="text-xl font-semibold mb-2">p5.js Visual Editor</h4>
+                <p class="text-gray-300 mb-4">101% WYSIWYG- Test your creativity</p>
+                <div class="flex space-x-2">
+                    <a href="https://noahli404.pages.dev/p5-visualEditor" class="text-teal-400 hover:underline">Visit Offcial Website</a>
+                </div>
+            </div>
+            <div class="glass-effect p-6 rounded-lg hover-scale">
+                <h4 class="text-xl font-semibold mb-2">TimeDriftium</h4>
+                <p class="text-gray-300 mb-4">Get your exact age (really)</p>
+                <div class="flex space-x-2">
+                    <a href="https://noahli404.pages.dev/timedriftium" class="text-teal-400 hover:underline">Check it out!</a>
+                </div>
+            </div>
+            <div class="glass-effect p-6 rounded-lg hover-scale">
+                <h4 class="text-xl font-semibold mb-2">Wormhole Audio Player</h4>
+                <p class="text-gray-300 mb-4">Hop in the <strong>wormhole</strong> as the audio starts</p>
+                <div class="flex space-x-2">
+                    <a href="https://noahli404.pages.dev/wormhole/" class="text-teal-400 hover:underline">Hop in</a>
+                </div>
+            </div>
+            <div class="glass-effect p-6 rounded-lg hover-scale">
+                <h4 class="text-xl font-semibold mb-2">RPS BATTLE ARENA</h4>
+                <p class="text-gray-300 mb-4">No more boring WPS,join the battle</p>
+                <div class="flex space-x-2">
+                    <a href="https://noahli404.pages.dev/rps" class="text-teal-400 hover:underline">Join now</a>
+                </div>
+            </div>
+            <div class="glass-effect p-6 rounded-lg hover-scale">
+                <h4 class="text-xl font-semibold mb-2">World Cloud Generator</h4>
+                <p class="text-gray-300 mb-4">Kinda a tool, not really useful</p>
+                <div class="flex space-x-2">
+                    <a href="https://noahli404.pages.dev/wcgen" class="text-teal-400 hover:underline">Check it!</a>
+                </div>
+            </div>
+            <div class="glass-effect p-6 rounded-lg hover-scale">
+                <h4 class="text-xl font-semibold mb-2">Coming Soon</h4>
+                <p class="text-gray-300 mb-4">Waiting ideas to pop-up in my mind</p>
+                <div class="flex space-x-2">
+                    <a href="https://www.youtube.com/@noahliNotFound/community" class="text-teal-400 hover:underline">Comment ideas on YouTube</a>
+                </div>
+            </div>
+            <div class="glass-effect p-6 rounded-lg hover-scale">
+                <h4 class="text-xl font-semibold mb-2">Coming Soon</h4>
+                <p class="text-gray-300 mb-4">Waiting ideas to pop-up in my mind</p>
+                <div class="flex space-x-2">
+                    <a href="https://www.youtube.com/@noahliNotFound/community" class="text-teal-400 hover:underline">Comment ideas on YouTube</a>
+                </div>
+            </div>
+            <div class="glass-effect p-6 rounded-lg hover-scale">
+                <h4 class="text-xl font-semibold mb-2">Coming Soon</h4>
+                <p class="text-gray-300 mb-4">Waiting ideas to pop-up in my mind</p>
+                <div class="flex space-x-2">
+                    <a href="https://www.youtube.com/@noahliNotFound/community" class="text-teal-400 hover:underline">Comment ideas on YouTube</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="text-center py-6 bg-gray-800 text-gray-400 fade-in relative">
+        © 2025 @noahliNotFound All rights reserved.
+    </footer>
+
+    <script>
+        // Smooth auto-moving background
+        let bgAngle = 0;
+        function animateBgAuto() {
+            if (window.innerWidth <= 768) return; // skip animation on mobile
+            bgAngle += 0.0015; // speed
+            const radius = 24; // px, movement radius
+            const x = Math.cos(bgAngle) * radius;
+            const y = Math.sin(bgAngle) * radius;
+            document.body.style.backgroundPosition = `calc(50% + ${x}px) calc(50% + ${y}px)`;
+            requestAnimationFrame(animateBgAuto);
+        }
+        animateBgAuto();
+
+        // Play Go brr.mp3 in a loop
+        const goBrrAudio = document.getElementById('go-brr-audio');
+        // Randomly select audio source
+        const audioFiles = ["Go brr.mp3", "Go brr2.mp3"];
+        goBrrAudio.src = audioFiles[Math.floor(Math.random() * audioFiles.length)];
+        function playGoBrr(force) {
+            goBrrAudio.volume = 0.5;
+            // Try to force play
+            if (force) {
+                goBrrAudio.muted = false;
+                goBrrAudio.play().catch(() => {});
+            } else {
+                goBrrAudio.play().catch(() => {
+                    // If autoplay is blocked, play on click
+                    window.addEventListener('click', () => {
+                        goBrrAudio.play();
+                    }, { once: true });
+                });
+            }
+        }
+        // Try to force play immediately
+        playGoBrr(true);
+        // Fallback to click if needed
+        playGoBrr(false);
+
+        const messages = [
+            "Noah —— That boi who codes for fun.",
+            "Help me reach 100 subscribers on YouTube!",
+            "Never give up on trolling your friends.",
+            "sub",
+            "I wish I could code as fast as I can think",
+            "I have infinite ideas!",
+            "I love creating useless/useful tools.",
+            "sub",
+            "Ideas are like a waterfall,it's infinite.",
+            "It's not like I have nothing to do, it's just that I have too many things that I'm lazy to do.",
+            "Loading my mind.",
+            "Kept going, never stopped trolling your little brother.",
+        ];
+        let currentMsg = 0;
+        const msgElem = document.getElementById('rotating-message');
+
+        function scrollOutIn(newMsg) {
+            msgElem.style.transition = 'transform 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.5s';
+            msgElem.style.transform = 'translateY(-30px)';
+            msgElem.style.opacity = '0';
+            setTimeout(() => {
+                msgElem.textContent = newMsg;
+                msgElem.style.transform = 'translateY(30px)';
+                setTimeout(() => {
+                    msgElem.style.transform = 'translateY(0)';
+                    msgElem.style.opacity = '1';
+                }, 50);
+            }, 500);
+        }
+
+        function rotateMessages() {
+            scrollOutIn(messages[currentMsg]);
+            currentMsg = (currentMsg + 1) % messages.length;
+            setTimeout(rotateMessages, 3500);
+        }
+        // Initialize first message
+        msgElem.textContent = messages[0];
+        msgElem.style.opacity = '1';
+        setTimeout(rotateMessages, 3500);
+        // Mobile menu toggle
+        const menuBtn = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Parallax effect (disabled on mobile)
+        document.addEventListener("mousemove", (e) => {
+            if (window.innerWidth <= 768) return; // skip parallax on mobile
+            const banner = document.querySelector(".parallax-banner");
+            if (banner) {
+                const x = (e.clientX / window.innerWidth - 0.5) * 20;
+                const y = (e.clientY / window.innerHeight - 0.5) * 20;
+                banner.style.transform = `translate(${x}px, ${y}px)`;
+            }
+        });
+
+        // Initialize particles
+        particlesJS('particles-js', {
+            particles: {
+                number: {
+                    value: 80,
+                    density: {
+                        enable: true,
+                        value_area: 800
+                    }
+                },
+                color: {
+                    value: '#4fd1c5'
+                },
+                shape: {
+                    type: 'circle'
+                },
+                opacity: {
+                    value: 0.5,
+                    random: false,
+                    anim: {
+                        enable: false
+                    }
+                },
+                size: {
+                    value: 3,
+                    random: true
+                },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: '#4fd1c5',
+                    opacity: 0.4,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 2,
+                    direction: 'none',
+                    random: false,
+                    straight: false,
+                    out_mode: 'out',
+                    bounce: false
+                }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: {
+                    onhover: {
+                        enable: true,
+                        mode: 'grab'
+                    },
+                    onclick: {
+                        enable: true,
+                        mode: 'push'
+                    },
+                    resize: true
+                },
+                modes: {
+                    grab: {
+                        distance: 140,
+                        line_linked: {
+                            opacity: 1
+                        }
+                    },
+                    push: {
+                        particles_nb: 4
+                    }
+                }
+            },
+            retina_detect: true
+        });
+    </script>
+</body>
+</html>
