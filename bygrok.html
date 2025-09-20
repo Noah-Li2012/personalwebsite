@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noah's Site</title>
+    <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.20.15/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        function App() {
+            const [darkMode, setDarkMode] = React.useState(true);
+
+            React.useEffect(() => {
+                const typed = new Typed('#typed-text', {
+                    strings: ['Coding.', 'Creating.', 'Sharing on YouTube.'],
+                    typeSpeed: 50,
+                    backSpeed: 30,
+                    backDelay: 1000,
+                    loop: true,
+                });
+                return () => typed.destroy();
+            }, []);
+
+            const toggleDarkMode = () => {
+                setDarkMode(!darkMode);
+            };
+
+            return (
+                <div className={darkMode ? 'bg-zinc-900 text-white' : 'bg-gray-100 text-black'}>
+                    <header className="relative min-h-[60vh] flex items-center justify-center bg-black overflow-hidden">
+                        <div className="absolute inset-0 animate-particle-bg" style={{
+                            background: darkMode
+                                ? 'radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, rgba(0, 0, 0, 0.8) 100%)'
+                                : 'radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, rgba(255, 255, 255, 0.8) 100%)',
+                        }}></div>
+                        <div className="text-center space-y-6 animate-fade-in relative z-10">
+                            <h1 className="text-4xl md:text-6xl font-bold tracking-tight">Yo, I'm Noah</h1>
+                            <p className={darkMode ? 'text-gray-400 text-lg md:text-xl' : 'text-gray-600 text-lg md:text-xl'}>
+                                <span id="typed-text"></span>
+                            </p>
+                            <a
+                                href="#youtube"
+                                className="inline-block bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-md transition-colors"
+                            >
+                                Check My Channel
+                            </a>
+                        </div>
+                    </header>
+
+                    <nav className="sticky top-0 bg-opacity-90 backdrop-blur-md p-4 z-10" style={{ backgroundColor: darkMode ? '#1F2937' : '#E5E7EB' }}>
+                        <div className="max-w-4xl mx-auto flex justify-between items-center">
+                            <div className="text-lg font-bold">Noah</div>
+                            <div className="space-x-4">
+                                <a href="#about" className="hover:text-blue-500 transition-colors">About</a>
+                                <a href="#projects" className="hover:text-blue-500 transition-colors">Projects</a>
+                                <a href="#youtube" className="hover:text-blue-500 transition-colors">YouTube</a>
+                                <a href="#contact" className="hover:text-blue-500 transition-colors">Contact</a>
+                                <button onClick={toggleDarkMode} className="p-2 rounded-full hover:bg-gray-700 transition-colors">
+                                    {darkMode ? '☀️' : '🌙'}
+                                </button>
+                            </div>
+                        </div>
+                    </nav>
+
+                    <main className="min-h-screen flex flex-col max-w-4xl mx-auto p-6 space-y-16 scroll-smooth">
+                        <section id="about" className="pt-12 backdrop-blur-md bg-opacity-30 rounded-lg p-6" style={{ backgroundColor: darkMode ? 'rgba(39, 39, 42, 0.3)' : 'rgba(255, 255, 255, 0.3)' }}>
+                            <h2 className="text-2xl font-semibold mb-4 text-center">About</h2>
+                            <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                                Yo, I'm Noah. I'm into programming and making YouTube videos. Just a student who loves creating and learning new stuff.
+                            </p>
+                            <h3 className="text-lg font-medium mt-4 mb-2">Habits</h3>
+                            <ul className={darkMode ? 'text-gray-400 list-disc list-inside space-y-1' : 'text-gray-600 list-disc list-inside space-y-1'}>
+                                <li>Coding cool projects</li>
+                                <li>Studying as a regular student</li>
+                                <li>Dropping a YouTube video every week</li>
+                            </ul>
+                        </section>
+
+                        <section id="projects" className="pt-12 backdrop-blur-md bg-opacity-30 rounded-lg p-6" style={{ backgroundColor: darkMode ? 'rgba(39, 39, 42, 0.3)' : 'rgba(255, 255, 255, 0.3)' }}>
+                            <h2 className="text-2xl font-semibold mb-4 text-center">Projects</h2>
+                            <div className="grid gap-6 md:grid-cols-2">
+                                <div className={darkMode ? 'bg-zinc-800 p-4 rounded-lg' : 'bg-white p-4 rounded-lg shadow'}>
+                                    <h3 className="text-lg font-medium mb-2">YouTube Channel</h3>
+                                    <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                                        My space for sharing programming adventures and more.
+                                    </p>
+                                    <a
+                                        href="https://www.youtube.com/@noahliNotFound"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-500 hover:text-blue-400 mt-2 inline-block"
+                                    >
+                                        Check it out
+                                    </a>
+                                </div>
+                                <div className={darkMode ? 'bg-zinc-800 p-4 rounded-lg' : 'bg-white p-4 rounded-lg shadow'}>
+                                    <h3 className="text-lg font-medium mb-2">Coding Projects</h3>
+                                    <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                                        A collection of programs I've built over time.
+                                    </p>
+                                    <a
+                                        href="https://noahli404.pages.dev"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-500 hover:text-blue-400 mt-2 inline-block"
+                                    >
+                                        View projects
+                                    </a>
+                                </div>
+                                <div className={darkMode ? 'bg-zinc-800 p-4 rounded-lg' : 'bg-white p-4 rounded-lg shadow'}>
+                                    <h3 className="text-lg font-medium mb-2">More</h3>
+                                    <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                                        Explore all my work and side projects.
+                                    </p>
+                                    <a
+                                        href="https://noahli404.pages.dev"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-500 hover:text-blue-400 mt-2 inline-block"
+                                    >
+                                        See more
+                                    </a>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section id="youtube" className="pt-12 backdrop-blur-md bg-opacity-30 rounded-lg p-6" style={{ backgroundColor: darkMode ? 'rgba(39, 39, 42, 0.3)' : 'rgba(255, 255, 255, 0.3)' }}>
+                            <h2 className="text-2xl font-semibold mb-4 text-center">YouTube</h2>
+                            <p className={darkMode ? 'text-gray-400' : 'text-gray-600'} mb-4>
+                                Subscribe to my channel:{' '}
+                                <a
+                                    href="https://www.youtube.com/@noahliNotFound"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-500 hover:text-blue-400"
+                                >
+                                    @noahliNotFound
+                                </a>
+                            </p>
+                            <a
+                                href="https://www.youtube.com/@noahliNotFound"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-block bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md transition-colors"
+                            >
+                                Subscribe
+                            </a>
+                        </section>
+
+                        <section id="contact" className="pt-12 backdrop-blur-md bg-opacity-30 rounded-lg p-6" style={{ backgroundColor: darkMode ? 'rgba(39, 39, 42, 0.3)' : 'rgba(255, 255, 255, 0.3)' }}>
+                            <h2 className="text-2xl font-semibold mb-4 text-center">Contact</h2>
+                            <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                                Got ideas or wanna chat? Email me at{' '}
+                                <a
+                                    href="mailto:importnoahli404@gmail.com"
+                                    className="text-blue-500 hover:text-blue-400"
+                                >
+                                    importnoahli404@gmail.com
+                                </a>
+                            </p>
+                        </section>
+                    </main>
+
+                    <footer className={darkMode ? 'bg-zinc-800 p-4 text-center text-gray-500 text-sm' : 'bg-gray-200 p-4 text-center text-gray-600 text-sm'}>
+                        <p>© 2025 Noah</p>
+                    </footer>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+    <style>
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes particle-bg {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .animate-fade-in {
+            animation: fade-in 1.5s ease-out;
+        }
+        .animate-particle-bg {
+            animation: particle-bg 10s ease-in-out infinite;
+        }
+    </style>
