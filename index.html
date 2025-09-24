@@ -261,30 +261,30 @@
         }
         animateBgAuto();
 
-        // Play Go brr.mp3 in a loop
-        // const goBrrAudio = document.getElementById('go-brr-audio');
-        // Randomly select audio source
-        // const audioFiles = ["Go brr.mp3", "Go brr2.mp3"];
-        goBrrAudio.src = audioFiles[Math.floor(Math.random() * audioFiles.length)];
-        function playGoBrr(force) {
-            goBrrAudio.volume = 0.5;
-            // Try to force play
-            if (force) {
-                goBrrAudio.muted = false;
-                goBrrAudio.play().catch(() => {});
-            } else {
-                goBrrAudio.play().catch(() => {
-                    // If autoplay is blocked, play on click
-                    window.addEventListener('click', () => {
-                        goBrrAudio.play();
-                    }, { once: true });
-                });
-            }
-        }
-        // Try to force play immediately
-        // playGoBrr(true);
-        // Fallback to click if needed
-        // playGoBrr(false);
+        // // Play Go brr.mp3 in a loop
+        // // const goBrrAudio = document.getElementById('go-brr-audio');
+        // // Randomly select audio source
+        // // const audioFiles = ["Go brr.mp3", "Go brr2.mp3"];
+        // goBrrAudio.src = audioFiles[Math.floor(Math.random() * audioFiles.length)];
+        // function playGoBrr(force) {
+        //     goBrrAudio.volume = 0.5;
+        //     // Try to force play
+        //     if (force) {
+        //         goBrrAudio.muted = false;
+        //         goBrrAudio.play().catch(() => {});
+        //     } else {
+        //         goBrrAudio.play().catch(() => {
+        //             // If autoplay is blocked, play on click
+        //             window.addEventListener('click', () => {
+        //                 goBrrAudio.play();
+        //             }, { once: true });
+        //         });
+        //     }
+        // }
+        // // Try to force play immediately
+        // // playGoBrr(true);
+        // // Fallback to click if needed
+        // // playGoBrr(false);
 
         const messages = [
             "Noah —— That boi who codes for fun.",
