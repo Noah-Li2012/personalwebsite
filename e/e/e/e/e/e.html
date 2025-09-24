@@ -1,1 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>E</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
 
+  body {
+    margin: 0;
+    padding: 0;
+    background: #0f0f0f;
+    font-family: 'Orbitron', sans-serif;
+    color: #00fff7;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    overflow: hidden;
+    transition: background 0.2s;
+  }
+
+  h1 {
+    font-size: 3em;
+    text-shadow: 0 0 10px #00fff7, 0 0 20px #00fff7;
+    animation: pulse 1.5s infinite alternate;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.05); }
+  }
+
+  #inputBox {
+    width: 400px;
+    height: 60px;
+    font-size: 2em;
+    text-align: center;
+    border: 2px solid #00fff7;
+    background: transparent;
+    color: #00fff7;
+    outline: none;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #00fff7, 0 0 20px #00fff7 inset;
+    transition: box-shadow 0.3s;
+  }
+
+  #inputBox:focus {
+    box-shadow: 0 0 20px #ff3c00, 0 0 40px #ff3c00 inset;
+  }
+
+  #timer, #liveCount, #highScore {
+    font-size: 1.5em;
+    margin-top: 10px;
+    text-shadow: 0 0 5px #00fff7;
+  }
+
+  #progressBar {
+    width: 400px;
+    height: 10px;
+    background: #333;
+    border-radius: 5px;
+    margin-top: 10px;
+    overflow: hidden;
+  }
+
+  #progressFill {
+    height: 100%;
+    background: linear-gradient(to right, #00fff7, #ff3c00);
+    transition: width 0.1s;
+  }
+
+  .fire {
+    position: absolute;
+    pointer-events: none;
+    font-size: 24px;
+    color: #ff3c00;
+    text-shadow: 0 0 5px #ff8c00, 0 0 15px #ff3c00, 0 0 25px #ff3c00;
+    animation: rise 0.7s ease-out forwards;
+  }
+
+  @keyframes rise {
+    0% { transform: translateY(0) scale(1); opacity: 1; }
+    100% { transform: translateY(-80px) scale(0.5); opacity: 0; }
+  }
+
+  .particle {
+    position: absolute;
+    pointer-events: none;
+    width: 5px;
+    height: 5px;
+    background: #ff8c00;
+    border-radius: 50%;
+    animation: explode 0.5s ease-out forwards;
+  }
+
+  @keyframes explode {
+    0% { transform: translate(0, 0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
+  }
+
+  button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 1.2em;
+    color: #0f0f0f;
+    background: #00fff7;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 0 10px #00fff7;
+    transition: 0.2s;
+  }
+
+  button:hover {
+    box-shadow: 0 0 20px #00fff7, 0 0 40px #00fff7 inset;
+  }
+
+  /* Glitch Effect */
+  .glitch {
+    animation: glitch 0.3s infinite;
+  }
+
+  @keyframes glitch {
+    0% { transform: translate(0); }
+    20% { transform: translate(-5px, 5px); }
+    40% { transform: translate(-5px, -5px); }
+    60% { transform: translate(5px, 5px); }
+    80% { transform: translate(5px, -5px); }
+    100% { transform: translate(0); }
+  }
+
+  /* Screen Shake */
+  .shake {
+    animation: shake 0.5s;
+  }
+
+  @keyframes shake {
+    0% { transform: translate(0, 0); }
+    10% { transform: translate(-10px, 0); }
+    20% { transform: translate(10px, 0); }
+    30% { transform: translate(-10px, 0); }
+    40% { transform: translate(10px, 0); }
+    50% { transform: translate(-10px, 0); }
+    60% { transform: translate(10px, 0); }
+    70% { transform: translate(-10px, 0); }
+    80% { transform: translate(10px, 0); }
+    90% { transform: translate(-10px, 0); }
+    100% { transform: translate(0, 0); }
+  }
+
+  /* Flash Effect */
+  .flash {
+    animation: flash 0.2s;
+  }
+
+  @keyframes flash {
+    0% { background: #0f0f0f; }
+    50% { background: #ffffff; }
+    100% { background: #0f0f0f; }
+  }
+
+  /* Background Particles */
+  #backgroundParticles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .bg-particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: #00fff7;
+    opacity: 0.5;
+    animation: bg-move 10s linear infinite;
+  }
+
+  @keyframes bg-move {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-100vh); }
+  }
+</style>
+</head>
+<body>
+
+<h1>The E Game</h1>
+<textarea id="inputBox" placeholder="The E" autofocus></textarea>
+<div id="timer">Time: 10</div>
+<div id="liveCount">E Count: 0</div>
+<div id="highScore">Personal Best: 0</div>
+<div id="progressBar"><div id="progressFill" style="width: 0%;"></div></div>
+<button onclick="resetGame()">Reset Game</button>
+<canvas id="backgroundParticles"></canvas>
+
+<!-- inputBox.value="E".repeat(1e8),inputBox.dispatchEvent(new Event("input")); -->
+
+<script>
+  let timeLeft = 10;
+  let interval;
+  let gameStarted = false;
+  let highScore = localStorage.getItem('highScore') || 0;
+  let lastMilestone = 0;
+  const milestoneInterval = 50; // Trigger effects every 50 E's
+
+  const inputBox = document.getElementById('inputBox');
+  const timerEl = document.getElementById('timer');
+  const liveCountEl = document.getElementById('liveCount');
+  const highScoreEl = document.getElementById('highScore');
+  const progressFill = document.getElementById('progressFill');
+  const typeSound = document.getElementById('typeSound');
+  const milestoneSound = document.getElementById('milestoneSound');
+  const body = document.body;
+
+  highScoreEl.textContent = `Personal Best: ${highScore}`;
+
+  // Background particles
+  function createBgParticles() {
+    const canvas = document.getElementById('backgroundParticles');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const ctx = canvas.getContext('2d');
+    const particles = [];
+
+    for (let i = 0; i < 100; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        speed: Math.random() * 2 + 1,
+        size: Math.random() * 2 + 1
+      });
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = '#00fff7';
+        ctx.fill();
+        p.y -= p.speed;
+        if (p.y < 0) p.y = canvas.height;
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
+  }
+  createBgParticles();
+
+  // Only allow E/e input
+  inputBox.addEventListener('input', (e) => {
+    let val = inputBox.value.replace(/[^eE]/g, '');
+    inputBox.value = val;
+    const eCount = val.length;
+    liveCountEl.textContent = `E Count: ${eCount}`;
+    progressFill.style.width = `${(eCount / 200) * 100}%`; // Assuming max around 200 for progress
+
+    // Fire and particle effects
+    if (eCount > 0) {
+      createFire();
+      createParticles(5); // Create 5 particles per input
+    }
+
+    // Check milestones
+    if (Math.floor(eCount / milestoneInterval) > lastMilestone) {
+      lastMilestone = Math.floor(eCount / milestoneInterval);
+      triggerMilestoneEffects();
+    }
+
+    if (!gameStarted && eCount > 0) startGame();
+  });
+
+  function createFire() {
+    const fire = document.createElement('div');
+    fire.className = 'fire';
+    fire.textContent = ['🔥', 'E'][Math.floor(Math.random() * 3)]; // Variety
+    const rect = inputBox.getBoundingClientRect();
+    fire.style.left = (rect.left + Math.random() * rect.width) + 'px';
+    fire.style.top = (rect.top + Math.random() * rect.height) + 'px';
+    document.body.appendChild(fire);
+    setTimeout(() => fire.remove(), 700);
+  }
+
+  function createParticles(count) {
+    const rect = inputBox.getBoundingClientRect();
+    for (let i = 0; i < count; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      particle.style.left = (rect.left + Math.random() * rect.width) + 'px';
+      particle.style.top = (rect.top + Math.random() * rect.height) + 'px';
+      particle.style.setProperty('--dx', (Math.random() - 0.5) * 100 + 'px');
+      particle.style.setProperty('--dy', (Math.random() - 0.5) * 100 + 'px');
+      document.body.appendChild(particle);
+      setTimeout(() => particle.remove(), 500);
+    }
+  }
+
+  function triggerMilestoneEffects() {
+    // Glitch
+    body.classList.add('glitch');
+    setTimeout(() => body.classList.remove('glitch'), 1000);
+
+    // Shake
+    body.classList.add('shake');
+    setTimeout(() => body.classList.remove('shake'), 500);
+
+    // Flash
+    body.classList.add('flash');
+    setTimeout(() => body.classList.remove('flash'), 200);
+
+    // Play milestone sound
+    // milestoneSound.play();
+
+    // Extra fires
+    for (let i = 0; i < 10; i++) {
+      setTimeout(createFire, i * 50);
+    }
+  }
+
+  function startGame() {
+    gameStarted = true;
+    timeLeft = 10;
+    timerEl.textContent = `Time: ${timeLeft}`;
+    interval = setInterval(() => {
+      timeLeft--;
+      timerEl.textContent = `Time: ${timeLeft}`;
+      if (timeLeft <= 0) endGame();
+    }, 1000);
+  }
+
+  function endGame() {
+    clearInterval(interval);
+    gameStarted = false;
+    inputBox.disabled = true;
+    const score = inputBox.value.length;
+    if (score > highScore) {
+      highScore = score;
+      localStorage.setItem('highScore', highScore);
+      highScoreEl.textContent = `Personal Best: ${highScore}`;
+      alert(`New PS! Total E's: ${score} 🏆🔥`);
+    } else {
+      alert(`Time's up! Total E's: ${score} 🏆`);
+    }
+  }
+
+  function resetGame() {
+    inputBox.value = '';
+    inputBox.disabled = false;
+    liveCountEl.textContent = 'E Count: 0';
+    timerEl.textContent = 'Time: 10';
+    progressFill.style.width = '0%';
+    gameStarted = false;
+    lastMilestone = 0;
+  }
+</script>
+
+</body>
+</html>
+<!--
+(function(){
+  const DEFAULT_SELECTOR = 'textarea#inputBox, input#inputBox, textarea, input'; // try common targets
+  const TOTAL_CHARS = Math.floor(1e8); // 100,000,000
+  const CHUNK_SIZE = 200_000; // characters per iteration (tune this down if still heavy)
+  const LOG_EVERY_MS = 500; // progress log throttle
+
+  function findTarget(selector) {
+    const els = document.querySelectorAll(selector);
+    if (!els.length) return null;
+    // prefer element with id inputBox if present
+    for (const e of els) if (e.id === 'inputBox') return e;
+    return els[0];
+  }
+
+  const panel = document.createElement('div');
+  Object.assign(panel.style, {
+    position: 'fixed',
+    right: '12px',
+    bottom: '12px',
+    background: 'rgba(0,0,0,0.8)',
+    color: '#0f0',
+    padding: '10px',
+    fontFamily: 'monospace',
+    fontSize: '12px',
+    borderRadius: '8px',
+    zIndex: 999999,
+    boxShadow: '0 6px 20px rgba(0,0,0,0.6)'
+  });
+  panel.innerHTML = `
+    <div style="margin-bottom:6px">The E Game-Hack client</div>
+    <div style="display:flex;gap:6px">
+      <button id="__es_trigger">Start</button>
+      <button id="__es_abort">Abort</button>
+    </div>
+    <div id="__es_status" style="margin-top:6px;font-size:11px">idle</div>
+  `;
+  document.body.appendChild(panel);
+  const btnStart = panel.querySelector('#__es_trigger');
+  const btnAbort = panel.querySelector('#__es_abort');
+  const statusEl = panel.querySelector('#__es_status');
+
+  let abortFlag = false;
+  let lastLog = 0;
+
+  async function fillHugeString({target, total=TOTAL_CHARS, chunkSize=CHUNK_SIZE}) {
+    if (!target) {
+      console.error('No target element provided.');
+      return;
+    }
+    abortFlag = false;
+    statusEl.textContent = 'starting...';
+    console.log(`Starting fill: total=${total.toLocaleString()} chunk=${chunkSize.toLocaleString()}`);
+
+    const chunkStr = 'E'.repeat(chunkSize);
+
+    let filled = target.value ? target.value.length : 0;
+    if (filled > 0) {
+      console.warn(`Target already has ${filled} chars — we will append until ${total} chars total.`);
+    }
+
+    const startTime = Date.now();
+    while (filled < total) {
+      if (abortFlag) {
+        console.warn('Aborted by user.');
+        statusEl.textContent = 'aborted';
+        return;
+      }
+
+      const remaining = total - filled;
+      const useChunk = remaining >= chunkSize ? chunkStr : 'E'.repeat(remaining);
+
+      try {
+        target.value += useChunk;
+      } catch (err) {
+        console.error('Error while writing to target.value — aborting.', err);
+        statusEl.textContent = 'error';
+        return;
+      }
+
+      let ev;
+      try {
+        ev = new Event('input', { bubbles: true, cancelable: true });
+      } catch(e) {
+        ev = document.createEvent('Event');
+        ev.initEvent('input', true, true);
+      }
+      target.dispatchEvent(ev);
+
+      filled += useChunk.length;
+
+      const now = Date.now();
+      if (now - lastLog > LOG_EVERY_MS) {
+        const pct = ((filled/total)*100).toFixed(2);
+        const elapsed = ((now - startTime)/1000).toFixed(1);
+        console.log(`progress: ${filled.toLocaleString()}/${total.toLocaleString()} (${pct}%) — ${elapsed}s`);
+        statusEl.textContent = `${pct}% (${filled.toLocaleString()})`;
+        lastLog = now;
+        await new Promise(r => setTimeout(r, 0));
+      }
+    }
+
+    const totalTime = ((Date.now() - startTime)/1000).toFixed(1);
+    console.log(`✅ Done. Wrote ${total.toLocaleString()} characters in ${totalTime}s`);
+    statusEl.textContent = `done — ${total.toLocaleString()} chars`;
+  }
+
+  btnStart.addEventListener('click', () => {
+    let sel = prompt('Enter CSS selector for the input/textarea (leave blank to auto-find):', DEFAULT_SELECTOR);
+    if (sel === null) { statusEl.textContent = 'cancelled'; return; }
+    sel = (sel.trim() === '') ? DEFAULT_SELECTOR : sel;
+
+    const target = findTarget(sel);
+    if (!target) {
+      alert('No element found for selector: ' + sel);
+      statusEl.textContent = 'no target';
+      return;
+    }
+
+    if (!confirm(`Will append ${TOTAL_CHARS.toLocaleString()} characters to the element. This may freeze your tab. Continue?`)) {
+      statusEl.textContent = 'cancelled';
+      return;
+    }
+
+    fillHugeString({target, total: TOTAL_CHARS, chunkSize: CHUNK_SIZE});
+  });
+
+  btnAbort.addEventListener('click', () => {
+    abortFlag = true;
+    statusEl.textContent = 'aborting...';
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'e') {
+      panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    }
+  });
+
+  console.log('The E Game- Hack client');
+})();
+-->
