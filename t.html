@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>T</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #f4f4f9, #e0e0f8);
+            color: #333;
+            margin: 0;
+            padding: 0;
+            scroll-behavior: smooth;
+        }
+
+        header {
+            background-color: #6200ea;
+            color: white;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        main {
+            padding: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+        }
+
+        .sound-box {
+            background-color: white;
+            border-radius: 12px;
+            padding: 1rem;
+            width: 150px;
+            text-align: center;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .sound-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        iframe {
+            border-radius: 8px;
+            width: 120px;
+            height: 120px;
+            border: none;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.2);
+        }
+
+        h3 {
+            font-size: 1rem;
+            margin: 0.5rem 0 1rem;
+        }
+
+        p {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>TrollishDEV</h1>
+    </header>
+
+    <main>
+        <p>Troll your friends with sounds!</p>
+
+        <div class="sound-box">
+            <h3>iPhone Camera</h3>
+            <iframe src="https://www.myinstants.com/instant/picture-sound-effect-instant-42639/embed/"></iframe>
+        </div>
+
+        <div class="sound-box">
+            <h3>Discord Ping</h3>
+            <iframe src="https://www.myinstants.com/instant/discord-ping-17250/embed/"></iframe>
+        </div>
+
+        <div class="sound-box">
+            <h3>WeChat Call</h3>
+            <iframe src="https://www.myinstants.com/instant/wechat-ringtone-wei-xin-ling-sheng-53285/embed/"></iframe>
+        </div>
+
+        <div class="sound-box">
+            <h3>iPhone Ringtone</h3>
+            <iframe width="110" height="200" src="https://www.myinstants.com/instant/iphone-reflection-bass-boost-11795/embed/" frameborder="0" scrolling="no"></iframe>
+        </div>
+    </main>
+
+    <footer>
+        hmm, most source from myinstants.com 😏
+    </footer>
+</body>
+</html>
