@@ -1,0 +1,1655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cursor Studio</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #e5e7eb;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      margin: 0;
+      padding: 1rem;
+    }
+    canvas {
+      border: 1px solid #4b5563;
+      border-radius: 6px;
+      transition: transform 0.2s ease;
+    }
+    .grid-overlay {
+      position: absolute;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .hotspot-crosshair {
+      position: absolute;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .tooltip {
+      visibility: hidden;
+      position: absolute;
+      background: #374151;
+      color: #fff;
+      padding: 3px 6px;
+      border-radius: 4px;
+      z-index: 10;
+      font-size: 0.7rem;
+      transition: visibility 0.2s ease, opacity 0.2s ease;
+    }
+    .tool:hover .tooltip {
+      visibility: visible;
+      opacity: 1;
+    }
+    .color-swatch {
+      width: 18px;
+      height: 18px;
+      border: 1px solid #4b5563;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .color-swatch:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 6px rgba(255,255,255,0.4);
+    }
+    button, select, input:not([type="range"]) {
+      transition: all 0.2s ease;
+      border-radius: 5px;
+    }
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+    }
+    select:hover, input:not([type="range"]):hover {
+      box-shadow: 0 0 4px rgba(59, 130, 246, 0.5);
+    }
+    input[type="range"] {
+      transition: all 0.2s ease;
+    }
+    .studio-container {
+      background: rgba(17, 24, 39, 0.9);
+      border-radius: 10px;
+      padding: 0.75rem;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .canvas-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex: 1;
+    }
+    .controls-panel {
+      width: 200px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      background: rgba(31, 41, 59, 0.8);
+      padding: 0.75rem;
+      border-radius: 8px;
+      border: 1px solid #374151;
+    }
+    .tool-group {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .tool-item {
+      flex: 1;
+    }
+    .main-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .workspace {
+      display: flex;
+      flex-direction: row;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+    .frame-list {
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #4b5563;
+      border-radius: 4px;
+      padding: 0.25rem;
+    }
+    .frame-item {
+      display: flex;
+      align-items: center;
+      padding: 0.25rem;
+      cursor: grab;
+      background: #374151;
+      margin-bottom: 0.25rem;
+      border-radius: 4px;
+    }
+    .frame-item.selected {
+      background: #4b5563;
+    }
+    .frame-item:active {
+      cursor: grabbing;
+    }
+    .context-menu {
+      position: absolute;
+      background: #374151;
+      border: 1px solid #4b5563;
+      border-radius: 4px;
+      padding: 0.25rem;
+      z-index: 20;
+    }
+    .context-menu button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 0.25rem;
+      background: none;
+      color: #e5e7eb;
+      border: none;
+      cursor: pointer;
+    }
+    .context-menu button:hover {
+      background: #4b5563;
+    }
+    @media (max-width: 768px) {
+      .workspace {
+        flex-direction: column;
+        align-items: center;
+      }
+      .controls-panel {
+        width: 100%;
+        max-width: 320px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="text-center mb-3">
+    <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">Cursor Studio</h1>
+    <p class="text-xs text-gray-400 mt-1">Craft Custom Windows Cursors with Precision</p>
+  </header>
+
+  <div class="main-layout">
+    <div class="studio-container">
+      <div class="workspace">
+        <!-- Controls Panel -->
+        <div class="controls-panel">
+          <label class="flex items-center gap-1 text-xs cursor-pointer tool relative">
+            <input type="checkbox" id="animated-mode"> Animated Mode
+            <span class="tooltip">Toggle animated cursor mode</span>
+          </label>
+
+          <div id="frame-controls" class="hidden">
+            <label class="block text-xs font-medium mb-1">Frames</label>
+            <div id="frame-list" class="frame-list"></div>
+            <button id="add-frame" class="p-1 bg-green-600 text-xs rounded mt-1 w-full">Add Frame</button>
+          </div>
+
+          <div class="tool relative">
+            <label class="block text-xs font-medium mb-1">Canvas Size</label>
+            <select id="canvas-size" class="w-full p-1 bg-gray-700 rounded text-xs">
+              <option value="16">16×16</option>
+              <option value="32" selected>32×32</option>
+              <option value="48">48×48</option>
+              <option value="64">64×64</option>
+              <option value="128">128×128</option>
+              <option value="256">256×256</option>
+            </select>
+            <span class="tooltip">Up to 256×256</span>
+          </div>
+
+          <div class="tool relative">
+            <label class="block text-xs font-medium mb-1">Canvas Background</label>
+            <input type="color" id="canvas-bg-picker" value="#FFFFFF" class="w-full h-7 p-0.5 bg-gray-700 rounded">
+            <span class="tooltip">Set canvas background color</span>
+          </div>
+
+          <div class="tool relative">
+            <label class="block text-xs font-medium mb-1">Background Image</label>
+            <input type="file" id="bg-image" accept="image/*" class="w-full p-1 bg-gray-700 rounded text-xs">
+            <span class="tooltip">Upload background image</span>
+          </div>
+          <button id="clear-bg" class="p-1 bg-red-600 text-xs rounded w-full">Clear BG</button>
+
+          <div class="tool relative">
+            <label class="block text-xs font-medium mb-1">Tool</label>
+            <select id="tool-select" class="w-full p-1 bg-gray-700 rounded text-xs">
+              <option value="brush">Brush</option>
+              <option value="eraser">Eraser</option>
+              <option value="fill">Fill</option>
+              <option value="eyedropper">Eyedropper</option>
+              <option value="hotspot">Hotspot</option>
+            </select>
+            <span class="tooltip">Hotspot sets click point</span>
+          </div>
+
+          <div class="tool relative">
+            <label class="block text-xs font-medium mb-1">Brush Size</label>
+            <select id="brush-size" class="w-full p-1 bg-gray-700 rounded text-xs">
+              <option value="1">1x1</option>
+              <option value="2">2x2</option>
+              <option value="3">3x3</option>
+              <option value="4">4x4</option>
+            </select>
+            <span class="tooltip">Size of brush/eraser</span>
+          </div>
+
+          <div class="tool-group">
+            <div class="tool-item tool relative">
+              <label class="block text-xs font-medium mb-1">Color</label>
+              <input type="color" id="color-picker" value="#000000" class="w-full h-7 p-0.5 bg-gray-700 rounded">
+              <span class="tooltip">Pick color</span>
+            </div>
+            <div class="tool-item tool relative">
+              <label class="block text-xs font-medium mb-1">Opacity</label>
+              <input type="range" id="alpha-slider" min="0" max="255" value="255" class="w-full">
+              <span class="tooltip">0-255</span>
+            </div>
+          </div>
+
+          <div class="tool relative">
+            <label class="block text-xs font-medium mb-1">Recent Colors</label>
+            <div id="recent-colors" class="flex flex-wrap gap-1"></div>
+            <span class="tooltip">Click to select</span>
+          </div>
+
+          <div class="tool relative">
+            <label class="block text-xs font-medium mb-1">Zoom</label>
+            <div class="tool-group">
+              <button id="zoom-in" class="p-1 bg-gray-600 text-xs rounded">+</button>
+              <button id="zoom-out" class="p-1 bg-gray-600 text-xs rounded">-</button>
+              <button id="reset-zoom" class="p-1 bg-gray-600 text-xs rounded">Reset</button>
+            </div>
+            <span class="tooltip">Ctrl+Scroll</span>
+          </div>
+
+          <div class="tool-group">
+            <label class="flex items-center gap-1 text-xs cursor-pointer tool relative">
+              <input type="checkbox" id="grid-toggle" checked> Grid (G)
+              <span class="tooltip">Toggle grid</span>
+            </label>
+            <label class="flex items-center gap-1 text-xs cursor-pointer tool relative">
+              <input type="checkbox" id="hotspot-toggle" checked> Hotspot (H)
+              <span class="tooltip">Toggle hotspot</span>
+            </label>
+          </div>
+
+          <div class="tool relative">
+            <label class="block text-xs font-medium mb-1">Hotspot</label>
+            <div class="tool-group">
+              <input type="number" id="hotspot-x" class="w-14 p-1 bg-gray-700 rounded text-xs" min="0" value="16" max="31">
+              <input type="number" id="hotspot-y" class="w-14 p-1 bg-gray-700 rounded text-xs" min="0" value="16" max="31">
+            </div>
+            <span class="tooltip">Click point (0 to size-1)</span>
+          </div>
+
+          <div class="tool-group">
+            <button id="undo" class="p-1 bg-gray-600 text-xs rounded">Undo (Ctrl+Z)</button>
+            <button id="redo" class="p-1 bg-gray-600 text-xs rounded">Redo (Ctrl+Y)</button>
+            <button id="clear" class="p-1 bg-red-600 text-xs rounded">Clear</button>
+          </div>
+
+          <div class="tool relative">
+            <button id="open-cur-ani" class="p-1 bg-blue-600 text-xs rounded w-full">Open .cur/.ani</button>
+            <input type="file" id="import-image" accept="image/png,image/jpeg,image/bmp,.cur,.ani" class="hidden">
+            <span class="tooltip">Import PNG/JPG/BMP/CUR/ANI</span>
+          </div>
+
+          <div class="tool-group">
+            <button id="export-cur" class="p-1 bg-blue-600 text-xs rounded">Export .cur (Ctrl+S)</button>
+            <button id="export-png" class="p-1 bg-blue-600 text-xs rounded">Export .png</button>
+          </div>
+        </div>
+
+        <!-- Canvas Section -->
+        <div class="canvas-section">
+          <div class="flex justify-between items-center mb-1">
+            <h2 class="text-base font-semibold">Canvas</h2>
+            <button id="clear-canvas" class="px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700">Clear</button>
+          </div>
+          <div id="canvas-container" class="relative mx-auto bg-gray-900 rounded-lg p-1.5">
+            <div id="grid-overlay" class="grid-overlay"></div>
+            <div id="hotspot-crosshair" class="hotspot-crosshair"></div>
+          </div>
+
+          <!-- Preview Section -->
+          <div class="mt-2">
+            <h3 class="text-sm font-medium mb-1">Preview</h3>
+            <div class="flex items-center gap-2 mb-1">
+              <label class="flex items-center gap-1 text-xs cursor-pointer tool relative">
+                <input type="checkbox" id="preview-as-cursor" class="rounded"> Use as Cursor
+                <span class="tooltip">Set page cursor to preview</span>
+              </label>
+              <label class="flex items-center gap-1 text-xs cursor-pointer tool relative">
+                <input type="checkbox" id="simulate-click"> Click Simulation
+                <span class="tooltip">Darken on mouse down</span>
+              </label>
+            </div>
+            <canvas id="preview-canvas" class="border border-gray-600 rounded hidden"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="text-center mt-4 text-xs text-gray-500">
+    <p>© 2025 Cursor Studio. Windows .cur format with XOR/AND masks and hotspot.</p>
+  </footer>
+
+  <script>
+    let canvasSize = 32;
+    let pixelSize = 10;
+    let zoom = 1;
+    let pixels = [];
+    let undoStack = [];
+    let redoStack = [];
+    let currentTool = 'brush';
+    let brushSize = 1;
+    let currentColor = '#000000';
+    let currentAlpha = 255;
+    let showGrid = true;
+    let showHotspot = true;
+    let hotspot = { x: 16, y: 16 };
+    let recentColors = [];
+    let maxRecent = 10;
+    let previewAsCursor = false;
+    let simulateClick = false;
+    let canvasBgColor = '#FFFFFF';
+    let backgroundImg = null;
+    let animatedMode = false;
+    let frames = [[]];
+    let frameNames = [];
+    let currentFrame = 0;
+    let maxFrames = 400;
+    let frameRate = 6; // jiffies, 1/60s
+    let contextMenu = null;
+
+    function setup() {
+      const canvas = createCanvas(canvasSize * pixelSize, canvasSize * pixelSize);
+      canvas.parent('canvas-container');
+      initializePixels();
+      loadFromLocalStorage();
+      updateGridOverlay();
+      updateHotspotCrosshair();
+      setupEventListeners();
+      updateRecentColors();
+      updateHotspotInputsMax();
+      updateFrameList();
+    }
+
+    function updateHotspotInputsMax() {
+      const max = canvasSize - 1;
+      document.getElementById('hotspot-x').max = max;
+      document.getElementById('hotspot-y').max = max;
+    }
+
+    function initializePixels() {
+      pixels = [];
+      for (let y = 0; y < canvasSize; y++) {
+        pixels[y] = [];
+        for (let x = 0; x < canvasSize; x++) {
+          pixels[y][x] = { r: 255, g: 255, b: 255, a: 0 };
+        }
+      }
+      saveToUndoStack();
+    }
+
+    function resizePixelArray(newSize) {
+      saveToUndoStack();
+      const oldSize = canvasSize;
+      canvasSize = newSize;
+      for (let f = 0; f < frames.length; f++) {
+        const oldPixels = frames[f];
+        const newPixels = [];
+        for (let y = 0; y < newSize; y++) {
+          newPixels[y] = [];
+          for (let x = 0; x < newSize; x++) {
+            if (y < oldSize && x < oldSize) {
+              newPixels[y][x] = { ...oldPixels[y][x] };
+            } else {
+              newPixels[y][x] = { r: 255, g: 255, b: 255, a: 0 };
+            }
+          }
+        }
+        frames[f] = newPixels;
+      }
+      hotspot.x = Math.min(hotspot.x, newSize - 1);
+      hotspot.y = Math.min(hotspot.y, newSize - 1);
+      document.getElementById('hotspot-x').value = hotspot.x;
+      document.getElementById('hotspot-y').value = hotspot.y;
+      pixels = frames[currentFrame];
+      saveToLocalStorage();
+    }
+
+    function draw() {
+      background(canvasBgColor);
+      if (backgroundImg) {
+        image(backgroundImg, 0, 0, width, height);
+      }
+      for (let y = 0; y < canvasSize; y++) {
+        for (let x = 0; x < canvasSize; x++) {
+          const { r, g, b, a } = pixels[y][x];
+          noStroke();
+          fill(r, g, b, a);
+          rect(x * pixelSize * zoom, y * pixelSize * zoom, pixelSize * zoom, pixelSize * zoom);
+        }
+      }
+      updatePreview();
+    }
+
+    function mousePressed() {
+      if (mouseX >= 0 && mouseX < width && mouseY >= 0 && mouseY < height) {
+        const x = Math.floor(mouseX / (pixelSize * zoom));
+        const y = Math.floor(mouseY / (pixelSize * zoom));
+        if (currentTool === 'brush') {
+          drawPixels(x, y);
+        } else if (currentTool === 'eraser') {
+          erasePixels(x, y);
+        } else if (currentTool === 'fill') {
+          floodFill(x, y);
+        } else if (currentTool === 'eyedropper') {
+          pickColor(x, y);
+        } else if (currentTool === 'hotspot') {
+          setHotspot(x, y);
+        }
+      }
+    }
+
+    function mouseDragged() {
+      if (mouseX >= 0 && mouseX < width && mouseY >= 0 && mouseY < height) {
+        const x = Math.floor(mouseX / (pixelSize * zoom));
+        const y = Math.floor(mouseY / (pixelSize * zoom));
+        if (currentTool === 'brush') {
+          drawPixels(x, y);
+        } else if (currentTool === 'eraser') {
+          erasePixels(x, y);
+        }
+      }
+    }
+
+    function drawPixels(centerX, centerY) {
+      saveToUndoStack();
+      const half = Math.floor(brushSize / 2);
+      for (let dy = -half; dy <= half; dy++) {
+        for (let dx = -half; dx <= half; dx++) {
+          const x = centerX + dx;
+          const y = centerY + dy;
+          if (x >= 0 && x < canvasSize && y >= 0 && y < canvasSize) {
+            const col = color(currentColor);
+            pixels[y][x] = {
+              r: red(col),
+              g: green(col),
+              b: blue(col),
+              a: currentAlpha
+            };
+          }
+        }
+      }
+      frames[currentFrame] = pixels;
+      addRecentColor();
+      saveToLocalStorage();
+    }
+
+    function erasePixels(centerX, centerY) {
+      saveToUndoStack();
+      const half = Math.floor(brushSize / 2);
+      for (let dy = -half; dy <= half; dy++) {
+        for (let dx = -half; dx <= half; dx++) {
+          const x = centerX + dx;
+          const y = centerY + dy;
+          if (x >= 0 && x < canvasSize && y >= 0 && y < canvasSize) {
+            pixels[y][x] = { r: 255, g: 255, b: 255, a: 0 };
+          }
+        }
+      }
+      frames[currentFrame] = pixels;
+      saveToLocalStorage();
+    }
+
+    function floodFill(x, y) {
+      const targetColor = { ...pixels[y][x] };
+      const newColor = {
+        r: red(color(currentColor)),
+        g: green(color(currentColor)),
+        b: blue(color(currentColor)),
+        a: currentAlpha
+      };
+      if (colorsEqual(targetColor, newColor)) return;
+      saveToUndoStack();
+      floodFillRecursive(x, y, targetColor, newColor);
+      frames[currentFrame] = pixels;
+      addRecentColor();
+      saveToLocalStorage();
+    }
+
+    function floodFillRecursive(x, y, targetColor, newColor) {
+      if (x < 0 || x >= canvasSize || y < 0 || y >= canvasSize) return;
+      if (!colorsEqual(pixels[y][x], targetColor)) return;
+      pixels[y][x] = newColor;
+      floodFillRecursive(x + 1, y, targetColor, newColor);
+      floodFillRecursive(x - 1, y, targetColor, newColor);
+      floodFillRecursive(x, y + 1, targetColor, newColor);
+      floodFillRecursive(x, y - 1, targetColor, newColor);
+    }
+
+    function colorsEqual(c1, c2) {
+      return c1.r === c2.r && c1.g === c2.g && c1.b === c2.b && c1.a === c2.a;
+    }
+
+    function pickColor(x, y) {
+      const { r, g, b, a } = pixels[y][x];
+      if (a === 0) return;
+      currentColor = `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).padStart(6, '0')}`;
+      currentAlpha = a;
+      document.getElementById('color-picker').value = currentColor;
+      document.getElementById('alpha-slider').value = a;
+      addRecentColor();
+    }
+
+    function setHotspot(x, y) {
+      hotspot.x = Math.max(0, Math.min(canvasSize - 1, x));
+      hotspot.y = Math.max(0, Math.min(canvasSize - 1, y));
+      document.getElementById('hotspot-x').value = hotspot.x;
+      document.getElementById('hotspot-y').value = hotspot.y;
+      updateHotspotCrosshair();
+      saveToLocalStorage();
+    }
+
+    function addRecentColor() {
+      const colorStr = `${currentColor},${currentAlpha}`;
+      if (!recentColors.includes(colorStr)) {
+        recentColors.unshift(colorStr);
+        if (recentColors.length > maxRecent) recentColors.pop();
+        updateRecentColors();
+        localStorage.setItem('recentColors', JSON.stringify(recentColors));
+      }
+    }
+
+    function updateRecentColors() {
+      const container = document.getElementById('recent-colors');
+      container.innerHTML = '';
+      recentColors.forEach(colorStr => {
+        const [hex, alpha] = colorStr.split(',');
+        const swatch = document.createElement('div');
+        swatch.className = 'color-swatch';
+        swatch.style.backgroundColor = hex;
+        swatch.style.opacity = alpha / 255;
+        swatch.title = `${hex} alpha:${alpha}`;
+        swatch.addEventListener('click', () => {
+          currentColor = hex;
+          currentAlpha = parseInt(alpha);
+          document.getElementById('color-picker').value = hex;
+          document.getElementById('alpha-slider').value = alpha;
+        });
+        container.appendChild(swatch);
+      });
+    }
+
+    function saveToUndoStack() {
+      undoStack.push(JSON.stringify(frames[currentFrame]));
+      redoStack = [];
+      if (undoStack.length > 50) undoStack.shift();
+    }
+
+    function undo() {
+      if (undoStack.length > 1) {
+        redoStack.push(undoStack.pop());
+        frames[currentFrame] = JSON.parse(undoStack[undoStack.length - 1]);
+        pixels = frames[currentFrame];
+        saveToLocalStorage();
+      }
+    }
+
+    function redo() {
+      if (redoStack.length > 0) {
+        undoStack.push(redoStack.pop());
+        frames[currentFrame] = JSON.parse(undoStack[undoStack.length - 1]);
+        pixels = frames[currentFrame];
+        saveToLocalStorage();
+      }
+    }
+
+    function clearCanvas() {
+      saveToUndoStack();
+      initializePixels();
+      frames[currentFrame] = pixels;
+      saveToLocalStorage();
+    }
+
+    function updateGridOverlay() {
+      const gridOverlay = document.getElementById('grid-overlay');
+      gridOverlay.innerHTML = '';
+      if (!showGrid) return;
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('width', canvasSize * pixelSize * zoom);
+      svg.setAttribute('height', canvasSize * pixelSize * zoom);
+      for (let i = 0; i <= canvasSize; i++) {
+        const lineX = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        lineX.setAttribute('x1', i * pixelSize * zoom);
+        lineX.setAttribute('y1', 0);
+        lineX.setAttribute('x2', i * pixelSize * zoom);
+        lineX.setAttribute('y2', canvasSize * pixelSize * zoom);
+        lineX.setAttribute('stroke', '#4b5563');
+        lineX.setAttribute('stroke-width', '1');
+        svg.appendChild(lineX);
+        const lineY = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        lineY.setAttribute('x1', 0);
+        lineY.setAttribute('y1', i * pixelSize * zoom);
+        lineY.setAttribute('x2', canvasSize * pixelSize * zoom);
+        lineY.setAttribute('y2', i * pixelSize * zoom);
+        lineY.setAttribute('stroke', '#4b5563');
+        lineY.setAttribute('stroke-width', '1');
+        svg.appendChild(lineY);
+      }
+      gridOverlay.appendChild(svg);
+      gridOverlay.style.width = `${canvasSize * pixelSize * zoom}px`;
+      gridOverlay.style.height = `${canvasSize * pixelSize * zoom}px`;
+    }
+
+    function updateHotspotCrosshair() {
+      const crosshair = document.getElementById('hotspot-crosshair');
+      crosshair.innerHTML = '';
+      if (!showHotspot) return;
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('width', canvasSize * pixelSize * zoom);
+      svg.setAttribute('height', canvasSize * pixelSize * zoom);
+      const lineH = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      lineH.setAttribute('x1', 0);
+      lineH.setAttribute('y1', hotspot.y * pixelSize * zoom);
+      lineH.setAttribute('x2', canvasSize * pixelSize * zoom);
+      lineH.setAttribute('y2', hotspot.y * pixelSize * zoom);
+      lineH.setAttribute('stroke', '#ff0000');
+      lineH.setAttribute('stroke-width', '1');
+      svg.appendChild(lineH);
+      const lineV = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      lineV.setAttribute('x1', hotspot.x * pixelSize * zoom);
+      lineV.setAttribute('y1', 0);
+      lineV.setAttribute('x2', hotspot.x * pixelSize * zoom);
+      lineV.setAttribute('y2', canvasSize * pixelSize * zoom);
+      lineV.setAttribute('stroke', '#ff0000');
+      lineV.setAttribute('stroke-width', '1');
+      svg.appendChild(lineV);
+      crosshair.appendChild(svg);
+      crosshair.style.width = `${canvasSize * pixelSize * zoom}px`;
+      crosshair.style.height = `${canvasSize * pixelSize * zoom}px`;
+    }
+
+    function getCursorDataURL(darken = false) {
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = canvasSize;
+      tempCanvas.height = canvasSize;
+      const ctx = tempCanvas.getContext('2d');
+      const imgData = ctx.createImageData(canvasSize, canvasSize);
+      for (let y = 0; y < canvasSize; y++) {
+        for (let x = 0; x < canvasSize; x++) {
+          const i = (y * canvasSize + x) * 4;
+          let { r, g, b, a } = pixels[y][x];
+          if (darken && a > 0) {
+            r = Math.max(0, r - 50);
+            g = Math.max(0, g - 50);
+            b = Math.max(0, b - 50);
+          }
+          imgData.data[i] = r;
+          imgData.data[i + 1] = g;
+          imgData.data[i + 2] = b;
+          imgData.data[i + 3] = a;
+        }
+      }
+      ctx.putImageData(imgData, 0, 0);
+      return tempCanvas.toDataURL();
+    }
+
+    function updatePreview() {
+      const previewCanvas = document.getElementById('preview-canvas');
+      if (previewAsCursor) {
+        document.body.style.cursor = `url(${getCursorDataURL()}) ${hotspot.x} ${hotspot.y}, auto`;
+        previewCanvas.classList.add('hidden');
+      } else {
+        document.body.style.cursor = 'auto';
+        previewCanvas.classList.remove('hidden');
+        previewCanvas.width = canvasSize;
+        previewCanvas.height = canvasSize;
+        const ctx = previewCanvas.getContext('2d');
+        ctx.fillStyle = canvasBgColor;
+        ctx.fillRect(0, 0, canvasSize, canvasSize);
+        if (backgroundImg) {
+          ctx.drawImage(backgroundImg, 0, 0, canvasSize, canvasSize);
+        }
+        const imgData = ctx.createImageData(canvasSize, canvasSize);
+        for (let y = 0; y < canvasSize; y++) {
+          for (let x = 0; x < canvasSize; x++) {
+            const i = (y * canvasSize + x) * 4;
+            imgData.data[i] = pixels[y][x].r;
+            imgData.data[i + 1] = pixels[y][x].g;
+            imgData.data[i + 2] = pixels[y][x].b;
+            imgData.data[i + 3] = pixels[y][x].a;
+          }
+        }
+        ctx.putImageData(imgData, 0, 0);
+      }
+    }
+
+    function handleMouseDown(e) {
+      if (simulateClick && previewAsCursor) {
+        document.body.style.cursor = `url(${getCursorDataURL(true)}) ${hotspot.x} ${hotspot.y}, auto`;
+      }
+    }
+
+    function handleMouseUp(e) {
+      if (simulateClick && previewAsCursor) {
+        document.body.style.cursor = `url(${getCursorDataURL()}) ${hotspot.x} ${hotspot.y}, auto`;
+      }
+    }
+
+    function exportCur() {
+      const buffer = createCurBuffer();
+      const blob = new Blob([buffer], { type: 'application/octet-stream' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'cursor.cur';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function createCurBuffer() {
+      const width = canvasSize;
+      const height = canvasSize;
+      const bpp = 32;
+      const xorSize = width * height * 4;
+      const bitBytesPerRow = Math.ceil(width / 8);
+      const paddedBytesPerRow = ((bitBytesPerRow + 3) >> 2) << 2;
+      const andSize = height * paddedBytesPerRow;
+      const infoHeaderSize = 40;
+      const iconDirSize = 6;
+      const iconEntrySize = 16;
+      const totalSize = iconDirSize + iconEntrySize + infoHeaderSize + xorSize + andSize;
+      const imageDataSize = infoHeaderSize + xorSize + andSize;
+
+      const buffer = new ArrayBuffer(totalSize);
+      const view = new DataView(buffer);
+
+      view.setUint16(0, 0, true);
+      view.setUint16(2, 2, true);
+      view.setUint16(4, 1, true);
+      view.setUint8(6, width > 255 ? 0 : width);
+      view.setUint8(7, height > 255 ? 0 : height);
+      view.setUint8(8, 0);
+      view.setUint8(9, 0);
+      view.setUint16(10, hotspot.x, true);
+      view.setUint16(12, hotspot.y, true);
+      view.setUint32(14, imageDataSize, true);
+      view.setUint32(18, iconDirSize + iconEntrySize, true);
+
+      let offset = iconDirSize + iconEntrySize + infoHeaderSize;
+      view.setUint32(22, infoHeaderSize, true);
+      view.setInt32(26, width, true);
+      view.setInt32(30, height * 2, true);
+      view.setUint16(34, 1, true);
+      view.setUint16(36, bpp, true);
+      view.setUint32(38, 0, true);
+      view.setUint32(42, xorSize + andSize, true);
+      view.setUint32(46, 0, true);
+      view.setUint32(50, 0, true);
+      view.setUint32(54, 0, true);
+      view.setUint32(58, 0, true);
+
+      for (let y = height - 1; y >= 0; y--) {
+        for (let x = 0; x < width; x++) {
+          const pixel = pixels[y][x];
+          view.setUint8(offset++, pixel.b);
+          view.setUint8(offset++, pixel.g);
+          view.setUint8(offset++, pixel.r);
+          view.setUint8(offset++, pixel.a);
+        }
+      }
+
+      for (let y = height - 1; y >= 0; y--) {
+        let bitPos = 0;
+        let currentByte = 0;
+        for (let x = 0; x < width; x++) {
+          if (pixels[y][x].a === 0) {
+            currentByte |= (1 << (7 - bitPos));
+          }
+          bitPos++;
+          if (bitPos === 8) {
+            view.setUint8(offset++, currentByte);
+            currentByte = 0;
+            bitPos = 0;
+          }
+        }
+        if (bitPos > 0) {
+          view.setUint8(offset++, currentByte);
+        }
+        const rowBytesWritten = Math.ceil(width / 8);
+        const padding = (4 - (rowBytesWritten % 4)) % 4;
+        for (let p = 0; p < padding; p++) {
+          view.setUint8(offset++, 0);
+        }
+      }
+
+      return buffer;
+    }
+
+    function exportAni() {
+      const riffHeader = new Uint8Array([82, 73, 70, 70, 0, 0, 0, 0, 65, 67, 79, 78]); // RIFF....ACON
+      const view = new DataView(riffHeader.buffer);
+      view.setUint32(4, getAniSize() - 8, true); // RIFF size
+
+      const anih = createAniHeader();
+      const fram = createFramChunk();
+
+      const aniBuffer = new Uint8Array(riffHeader.byteLength + anih.byteLength + fram.byteLength);
+      let offset = 0;
+      aniBuffer.set(riffHeader, offset);
+      offset += riffHeader.byteLength;
+      aniBuffer.set(anih, offset);
+      offset += anih.length;
+      aniBuffer.set(fram, offset);
+
+      const blob = new Blob([aniBuffer], { type: 'application/octet-stream' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'cursor.ani';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function getAniSize() {
+      let size = 12; // RIFF + ACON
+      size += 44; // anih chunk
+      size += 8; // LIST fram
+      for (let i = 0; i < frames.length; i++) {
+        size += 8 + getCurSize(); // icon chunk header + cur data
+      }
+      return size;
+    }
+
+    function createAniHeader() {
+      const buffer = new Uint8Array(44);
+      const view = new DataView(buffer.buffer);
+      view.setUint8(0, 97); // 'a'
+      view.setUint8(1, 110); // 'n'
+      view.setUint8(2, 105); // 'i'
+      view.setUint8(3, 104); // 'h'
+      view.setUint32(4, 36, true); // chunk size
+      view.setUint32(8, 36, true); // header size
+      view.setUint32(12, frames.length, true); // num frames
+      view.setUint32(16, frames.length, true); // num steps
+      view.setUint32(20, canvasSize, true); // width
+      view.setUint32(24, canvasSize, true); // height
+      view.setUint32(28, 32, true); // bit count
+      view.setUint32(32, 1, true); // planes
+      view.setUint32(36, frameRate, true); // display rate
+      view.setUint32(40, 1, true); // flags (IconFlag)
+      return buffer;
+    }
+
+    function createFramChunk() {
+      const header = new Uint8Array(8);
+      const view = new DataView(header.buffer);
+      view.setUint8(0, 76); // L
+      view.setUint8(1, 73); // I
+      view.setUint8(2, 83); // S
+      view.setUint8(3, 84); // T
+      view.setUint32(4, getFramSize() - 8, true); // size
+      const framType = new Uint8Array([102, 114, 97, 109]); // fram
+      const listHeader = new Uint8Array(12);
+      listHeader.set(header, 0);
+      listHeader.set(framType, 8);
+      let framBuffer = new Uint8Array(getFramSize() - 12);
+      let offset = 0;
+      for (let i = 0; i < frames.length; i++) {
+        pixels = frames[i];
+        const curBuffer = createCurBuffer();
+        const iconHeader = new Uint8Array(8);
+        const iconView = new DataView(iconHeader.buffer);
+        iconView.setUint8(0, 105); // 'i'
+        iconView.setUint8(1, 99); // 'c'
+        iconView.setUint8(2, 111); // 'o'
+        iconView.setUint8(3, 110); // 'n'
+        iconView.setUint32(4, curBuffer.byteLength, true);
+        framBuffer.set(iconHeader, offset);
+        offset += 8;
+        framBuffer.set(new Uint8Array(curBuffer), offset);
+        offset += curBuffer.byteLength;
+      }
+      const fullFram = new Uint8Array(framBuffer.length + 12);
+      fullFram.set(listHeader, 0);
+      fullFram.set(framBuffer, 12);
+      return fullFram;
+    }
+
+    function getFramSize() {
+      let size = 12; // LIST + fram
+      for (let i = 0; i < frames.length; i++) {
+        size += 8 + getCurSize();
+      }
+      return size;
+    }
+
+    function getCurSize() {
+      const width = canvasSize;
+      const height = canvasSize;
+      const xorSize = width * height * 4;
+      const bitBytesPerRow = Math.ceil(width / 8);
+      const paddedBytesPerRow = ((bitBytesPerRow + 3) >> 2) << 2;
+      const andSize = height * paddedBytesPerRow;
+      const infoHeaderSize = 40;
+      const iconDirSize = 6;
+      const iconEntrySize = 16;
+      return iconDirSize + iconEntrySize + infoHeaderSize + xorSize + andSize;
+    }
+
+    function exportPng() {
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = canvasSize;
+      tempCanvas.height = canvasSize;
+      const ctx = tempCanvas.getContext('2d');
+      const imgData = ctx.createImageData(canvasSize, canvasSize);
+      for (let y = 0; y < canvasSize; y++) {
+        for (let x = 0; x < canvasSize; x++) {
+          const i = (y * canvasSize + x) * 4;
+          imgData.data[i] = pixels[y][x].r;
+          imgData.data[i + 1] = pixels[y][x].g;
+          imgData.data[i + 2] = pixels[y][x].b;
+          imgData.data[i + 3] = pixels[y][x].a;
+        }
+      }
+      ctx.putImageData(imgData, 0, 0);
+      const a = document.createElement('a');
+      a.href = tempCanvas.toDataURL('image/png');
+      a.download = 'cursor.png';
+      a.click();
+    }
+
+    function importImage(file) {
+      const img = new Image();
+      img.onload = () => {
+        if (img.width !== canvasSize || img.height !== canvasSize) {
+          console.warn(`Resizing image from ${img.width}x${img.height} to ${canvasSize}x${canvasSize}`);
+        }
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = canvasSize;
+        tempCanvas.height = canvasSize;
+        const ctx = tempCanvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvasSize, canvasSize);
+        const imgData = ctx.getImageData(0, 0, canvasSize, canvasSize);
+        saveToUndoStack();
+        for (let y = 0; y < canvasSize; y++) {
+          for (let x = 0; x < canvasSize; x++) {
+            const i = (y * canvasSize + x) * 4;
+            pixels[y][x] = {
+              r: imgData.data[i],
+              g: imgData.data[i + 1],
+              b: imgData.data[i + 2],
+              a: imgData.data[i + 3]
+            };
+          }
+        }
+        frames[currentFrame] = pixels;
+        saveToLocalStorage();
+      };
+      img.onerror = () => alert('Failed to load image');
+      img.src = URL.createObjectURL(file);
+    }
+
+    function parseCur(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const buffer = e.target.result;
+        const view = new DataView(buffer);
+        if (view.getUint16(0, true) !== 0 || view.getUint16(2, true) !== 2 || view.getUint16(4, true) !== 1) {
+          alert('Invalid CUR file');
+          return;
+        }
+        let width = view.getUint8(6);
+        let height = view.getUint8(7);
+        const w = width === 0 ? 256 : width;
+        const h = height === 0 ? 256 : height;
+        if (w !== h) {
+          alert('Non-square cursors not supported');
+          return;
+        }
+        hotspot.x = view.getUint16(10, true);
+        hotspot.y = view.getUint16(12, true);
+        const imageOffset = view.getUint32(18, true);
+        const infoHeaderSize = view.getUint32(imageOffset, true);
+        if (infoHeaderSize !== 40) {
+          alert('Unsupported CUR format');
+          return;
+        }
+        const biWidth = view.getInt32(imageOffset + 4, true);
+        let biHeight = view.getInt32(imageOffset + 8, true);
+        const planes = view.getUint16(imageOffset + 12, true);
+        const bitCount = view.getUint16(imageOffset + 14, true);
+        if (biWidth !== w || biHeight !== h * 2 || planes !== 1 || bitCount !== 32) {
+          alert('Unsupported CUR format: only 32bpp ARGB');
+          return;
+        }
+        saveToUndoStack();
+        if (canvasSize !== w) {
+          canvasSize = w;
+          document.getElementById('canvas-size').value = canvasSize;
+          pixelSize = Math.max(4, Math.min(20, 320 / canvasSize));
+          resizeCanvas(canvasSize * pixelSize * zoom, canvasSize * pixelSize * zoom);
+          updateHotspotInputsMax();
+        }
+        document.getElementById('hotspot-x').value = hotspot.x;
+        document.getElementById('hotspot-y').value = hotspot.y;
+        updateHotspotCrosshair();
+        pixels = [];
+        for (let y = 0; y < canvasSize; y++) {
+          pixels[y] = [];
+          for (let x = 0; x < canvasSize; x++) {
+            pixels[y][x] = { r: 255, g: 255, b: 255, a: 0 };
+          }
+        }
+        let offset = imageOffset + 40;
+        for (let y = canvasSize - 1; y >= 0; y--) {
+          for (let x = 0; x < canvasSize; x++) {
+            const b = view.getUint8(offset++);
+            const g = view.getUint8(offset++);
+            const r = view.getUint8(offset++);
+            const a = view.getUint8(offset++);
+            pixels[y][x] = { r, g, b, a };
+          }
+        }
+        const bitBytesPerRow = Math.ceil(canvasSize / 8);
+        const paddedBytesPerRow = ((bitBytesPerRow + 3) >> 2) << 2;
+        for (let y = canvasSize - 1; y >= 0; y--) {
+          let bitPos = 0;
+          let byteOffset = offset;
+          for (let byte = 0; byte < bitBytesPerRow; byte++) {
+            const currentByte = view.getUint8(byteOffset++);
+            for (let bit = 7; bit >= 0; bit--) {
+              if (bitPos < canvasSize) {
+                const mask = (currentByte >> bit) & 1;
+                if (mask === 1) {
+                  pixels[y][bitPos].a = 0;
+                }
+              }
+              bitPos++;
+            }
+          }
+          offset += paddedBytesPerRow;
+        }
+        frames[currentFrame] = pixels;
+        animatedMode = false;
+        document.getElementById('animated-mode').checked = false;
+        updateFrameList();
+        saveToLocalStorage();
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function parseAni(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const buffer = e.target.result;
+        const view = new DataView(buffer);
+        // Check RIFF and ACON signature
+        if (view.getUint8(0) !== 82 || view.getUint8(1) !== 73 || view.getUint8(2) !== 70 || view.getUint8(3) !== 70 ||
+            view.getUint8(8) !== 65 || view.getUint8(9) !== 67 || view.getUint8(10) !== 79 || view.getUint8(11) !== 78) {
+          alert('Invalid ANI file');
+          return;
+        }
+        let offset = 12; // After RIFF header
+        let anih = null;
+        let framOffset = 0;
+        // Scan for 'anih' and 'fram' chunks
+        while (offset < buffer.byteLength) {
+          const chunkId = String.fromCharCode(view.getUint8(offset), view.getUint8(offset + 1), view.getUint8(offset + 2), view.getUint8(offset + 3));
+          const chunkSize = view.getUint32(offset + 4, true);
+          if (chunkId === 'anih') {
+            anih = { offset: offset + 8, size: chunkSize };
+          } else if (chunkId === 'LIST') {
+            const listType = String.fromCharCode(view.getUint8(offset + 8), view.getUint8(offset + 9), view.getUint8(offset + 10), view.getUint8(offset + 11));
+            if (listType === 'fram') {
+              framOffset = offset + 12;
+            }
+          }
+          offset += 8 + chunkSize;
+          if (chunkSize % 2 === 1) offset++; // Padding byte
+        }
+        if (!anih || !framOffset) {
+          alert('Invalid ANI file: missing anih or fram chunk');
+          return;
+        }
+        // Parse anih header
+        const numFrames = view.getUint32(anih.offset + 4, true);
+        const width = view.getUint32(anih.offset + 12, true);
+        const height = view.getUint32(anih.offset + 16, true);
+        const bitCount = view.getUint32(anih.offset + 20, true);
+        frameRate = view.getUint32(anih.offset + 28, true);
+        if (width !== height || bitCount !== 32) {
+          alert('Unsupported ANI format: only square 32bpp cursors supported');
+          return;
+        }
+        // Update canvas size
+        if (canvasSize !== width) {
+          canvasSize = width;
+          document.getElementById('canvas-size').value = canvasSize;
+          pixelSize = Math.max(4, Math.min(20, 320 / canvasSize));
+          resizeCanvas(canvasSize * pixelSize * zoom, canvasSize * pixelSize * zoom);
+          updateHotspotInputsMax();
+        }
+        // Parse frames
+        frames = [];
+        frameNames = [];
+        offset = framOffset;
+        for (let i = 0; i < numFrames && offset < buffer.byteLength; i++) {
+          const chunkId = String.fromCharCode(view.getUint8(offset), view.getUint8(offset + 1), view.getUint8(offset + 2), view.getUint8(offset + 3));
+          if (chunkId !== 'icon') {
+            alert('Invalid ANI file: expected icon chunk');
+            return;
+          }
+          const curSize = view.getUint32(offset + 4, true);
+          const curBuffer = buffer.slice(offset + 8, offset + 8 + curSize);
+          const curView = new DataView(curBuffer);
+          // Parse CUR data
+          if (curView.getUint16(0, true) !== 0 || curView.getUint16(2, true) !== 2 || curView.getUint16(4, true) !== 1) {
+            alert('Invalid CUR data in ANI file');
+            return;
+          }
+          let curWidth = curView.getUint8(6);
+          let curHeight = curView.getUint8(7);
+          const w = curWidth === 0 ? 256 : curWidth;
+          const h = curHeight === 0 ? 256 : curHeight;
+          if (w !== width || h !== height) {
+            alert('Inconsistent cursor dimensions in ANI file');
+            return;
+          }
+          hotspot.x = curView.getUint16(10, true);
+          hotspot.y = curView.getUint16(12, true);
+          const imageOffset = curView.getUint32(18, true);
+          const infoHeaderSize = curView.getUint32(imageOffset, true);
+          if (infoHeaderSize !== 40) {
+            alert('Unsupported CUR format in ANI file');
+            return;
+          }
+          const biWidth = curView.getInt32(imageOffset + 4, true);
+          const biHeight = curView.getInt32(imageOffset + 8, true);
+          const planes = curView.getUint16(imageOffset + 12, true);
+          const bitCountCur = curView.getUint16(imageOffset + 14, true);
+          if (biWidth !== w || biHeight !== h * 2 || planes !== 1 || bitCountCur !== 32) {
+            alert('Unsupported CUR format in ANI: only 32bpp ARGB');
+            return;
+          }
+          let framePixels = [];
+          for (let y = 0; y < canvasSize; y++) {
+            framePixels[y] = [];
+            for (let x = 0; x < canvasSize; x++) {
+              framePixels[y][x] = { r: 255, g: 255, b: 255, a: 0 };
+            }
+          }
+          let curOffset = imageOffset + 40;
+          for (let y = canvasSize - 1; y >= 0; y--) {
+            for (let x = 0; x < canvasSize; x++) {
+              const b = curView.getUint8(curOffset++);
+              const g = curView.getUint8(curOffset++);
+              const r = curView.getUint8(curOffset++);
+              const a = curView.getUint8(curOffset++);
+              framePixels[y][x] = { r, g, b, a };
+            }
+          }
+          const bitBytesPerRow = Math.ceil(canvasSize / 8);
+          const paddedBytesPerRow = ((bitBytesPerRow + 3) >> 2) << 2;
+          for (let y = canvasSize - 1; y >= 0; y--) {
+            let bitPos = 0;
+            let byteOffset = curOffset;
+            for (let byte = 0; byte < bitBytesPerRow; byte++) {
+              const currentByte = curView.getUint8(byteOffset++);
+              for (let bit = 7; bit >= 0; bit--) {
+                if (bitPos < canvasSize) {
+                  const mask = (currentByte >> bit) & 1;
+                  if (mask === 1) {
+                    framePixels[y][bitPos].a = 0;
+                  }
+                }
+                bitPos++;
+              }
+            }
+            curOffset += paddedBytesPerRow;
+          }
+          frames.push(framePixels);
+          frameNames.push(`Frame ${i + 1}`);
+          offset += 8 + curSize;
+          if (curSize % 2 === 1) offset++;
+        }
+        saveToUndoStack();
+        currentFrame = 0;
+        pixels = frames[currentFrame];
+        document.getElementById('hotspot-x').value = hotspot.x;
+        document.getElementById('hotspot-y').value = hotspot.y;
+        updateHotspotCrosshair();
+        animatedMode = frames.length > 1;
+        document.getElementById('animated-mode').checked = animatedMode;
+        document.getElementById('export-cur').textContent = animatedMode ? 'Export .ani' : 'Export .cur';
+        updateFrameList();
+        saveToLocalStorage();
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function saveToLocalStorage() {
+      let backgroundDataURL = null;
+      if (backgroundImg) {
+        let temp = createGraphics(backgroundImg.width, backgroundImg.height);
+        temp.image(backgroundImg, 0, 0);
+        backgroundDataURL = temp.canvas.toDataURL();
+        temp.remove();
+      }
+      localStorage.setItem('cursorEditor', JSON.stringify({
+        frames,
+        frameNames,
+        canvasSize,
+        hotspot,
+        canvasBgColor,
+        backgroundDataURL
+      }));
+    }
+
+    function loadFromLocalStorage() {
+      const data = localStorage.getItem('cursorEditor');
+      if (data) {
+        try {
+          const parsed = JSON.parse(data);
+          canvasSize = parsed.canvasSize || 32;
+          pixelSize = Math.max(4, Math.min(20, 320 / canvasSize));
+          if (parsed.frames && Array.isArray(parsed.frames) && parsed.frames.length > 0 && Array.isArray(parsed.frames[0]) && parsed.frames[0].length === canvasSize) {
+            frames = parsed.frames;
+            frameNames = parsed.frameNames || frames.map((_, i) => `Frame ${i + 1}`);
+          } else {
+            initializePixels();
+            frames = [pixels];
+            frameNames = ['Frame 1'];
+          }
+          pixels = frames[0];
+          hotspot = parsed.hotspot || { x: Math.floor(canvasSize / 2), y: Math.floor(canvasSize / 2) };
+          hotspot.x = Math.min(hotspot.x, canvasSize - 1);
+          hotspot.y = Math.min(hotspot.y, canvasSize - 1);
+          canvasBgColor = parsed.canvasBgColor || '#FFFFFF';
+          document.getElementById('hotspot-x').value = hotspot.x;
+          document.getElementById('hotspot-y').value = hotspot.y;
+          document.getElementById('canvas-bg-picker').value = canvasBgColor;
+          document.getElementById('canvas-size').value = canvasSize;
+          resizeCanvas(canvasSize * pixelSize * zoom, canvasSize * pixelSize * zoom);
+          updateHotspotInputsMax();
+          if (parsed.backgroundDataURL) {
+            loadImage(parsed.backgroundDataURL, (img) => {
+              backgroundImg = img;
+              redraw();
+            });
+          }
+        } catch (e) {
+          console.error('Failed to load from localStorage:', e);
+          initializePixels();
+          frames = [pixels];
+          frameNames = ['Frame 1'];
+          pixels = frames[0];
+        }
+      } else {
+        initializePixels();
+        frames = [pixels];
+        frameNames = ['Frame 1'];
+        pixels = frames[0];
+      }
+      const savedColors = localStorage.getItem('recentColors');
+      if (savedColors) {
+        try {
+          recentColors = JSON.parse(savedColors);
+          updateRecentColors();
+        } catch (e) {}
+      }
+    }
+
+    function updateFrameList() {
+      const frameList = document.getElementById('frame-list');
+      frameList.innerHTML = '';
+      frames.forEach((_, i) => {
+        const frameItem = document.createElement('div');
+        frameItem.className = 'frame-item';
+        if (i === currentFrame) frameItem.classList.add('selected');
+        frameItem.dataset.index = i;
+        frameItem.innerText = frameNames[i];
+        frameItem.draggable = true;
+        frameItem.addEventListener('click', () => {
+          currentFrame = i;
+          pixels = frames[currentFrame];
+          updateFrameList();
+          redraw();
+        });
+        frameItem.addEventListener('contextmenu', (e) => {
+          e.preventDefault();
+          showContextMenu(e, i);
+        });
+        frameList.appendChild(frameItem);
+      });
+      setupDragAndDrop();
+      const frameControls = document.getElementById('frame-controls');
+      if (animatedMode) {
+        frameControls.classList.remove('hidden');
+      } else {
+        frameControls.classList.add('hidden');
+      }
+    }
+
+    function setupDragAndDrop() {
+      const frameList = document.getElementById('frame-list');
+      let draggedItem = null;
+      frameList.addEventListener('dragstart', (e) => {
+        draggedItem = e.target;
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      frameList.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        const target = e.target.closest('.frame-item');
+        if (target && target !== draggedItem) {
+          const bounding = target.getBoundingClientRect();
+          const offset = bounding.y + (bounding.height / 2);
+          if (e.clientY - offset > 0) {
+            target.after(draggedItem);
+          } else {
+            target.before(draggedItem);
+          }
+        }
+      });
+      frameList.addEventListener('dragend', () => {
+        const newFrames = [];
+        const newNames = [];
+        Array.from(frameList.children).forEach((item) => {
+          const index = parseInt(item.dataset.index);
+          newFrames.push(frames[index]);
+          newNames.push(frameNames[index]);
+        });
+        frames = newFrames;
+        frameNames = newNames;
+        currentFrame = Array.from(frameList.children).findIndex(item => item.classList.contains('selected'));
+        pixels = frames[currentFrame];
+        updateFrameList();
+        saveToLocalStorage();
+      });
+    }
+
+    function showContextMenu(e, index) {
+      if (contextMenu) contextMenu.remove();
+      contextMenu = document.createElement('div');
+      contextMenu.className = 'context-menu';
+      contextMenu.style.left = `${e.pageX}px`;
+      contextMenu.style.top = `${e.pageY}px`;
+      const deleteBtn = document.createElement('button');
+      deleteBtn.innerText = 'Delete';
+      deleteBtn.addEventListener('click', () => {
+        if (frames.length > 1) {
+          frames.splice(index, 1);
+          frameNames.splice(index, 1);
+          if (currentFrame >= frames.length) currentFrame = frames.length - 1;
+          pixels = frames[currentFrame];
+          updateFrameList();
+          saveToLocalStorage();
+        } else {
+          alert('Cannot delete the last frame');
+        }
+        contextMenu.remove();
+      });
+      const renameBtn = document.createElement('button');
+      renameBtn.innerText = 'Rename';
+      renameBtn.addEventListener('click', () => {
+        const newName = prompt('Enter new frame name:', frameNames[index]);
+        if (newName) {
+          frameNames[index] = newName;
+          updateFrameList();
+          saveToLocalStorage();
+        }
+        contextMenu.remove();
+      });
+      const dupeBtn = document.createElement('button');
+      dupeBtn.innerText = 'Duplicate';
+      dupeBtn.addEventListener('click', () => {
+        const dupe = JSON.parse(JSON.stringify(frames[index]));
+        frames.splice(index + 1, 0, dupe);
+        frameNames.splice(index + 1, 0, `${frameNames[index]} (copy)`);
+        updateFrameList();
+        saveToLocalStorage();
+        contextMenu.remove();
+      });
+      contextMenu.appendChild(deleteBtn);
+      contextMenu.appendChild(renameBtn);
+      contextMenu.appendChild(dupeBtn);
+      document.body.appendChild(contextMenu);
+      document.addEventListener('click', hideContextMenu, { once: true });
+    }
+
+    function hideContextMenu() {
+      if (contextMenu) contextMenu.remove();
+    }
+
+    function setupEventListeners() {
+      document.getElementById('animated-mode').addEventListener('change', (e) => {
+        animatedMode = e.target.checked;
+        if (animatedMode && frames.length === 1) {
+          // Start with current as first frame
+        } else if (!animatedMode && frames.length > 1) {
+          // Keep first frame
+          frames = [frames[0]];
+          frameNames = [frameNames[0]];
+          currentFrame = 0;
+          pixels = frames[currentFrame];
+        }
+        updateFrameList();
+        document.getElementById('export-cur').textContent = animatedMode ? 'Export .ani' : 'Export .cur';
+        saveToLocalStorage();
+      });
+
+      document.getElementById('add-frame').addEventListener('click', () => {
+        if (frames.length >= maxFrames) {
+          alert('Maximum 400 frames reached');
+          return;
+        }
+        const dupe = JSON.parse(JSON.stringify(pixels));
+        frames.push(dupe);
+        frameNames.push(`Frame ${frames.length}`);
+        currentFrame = frames.length - 1;
+        pixels = frames[currentFrame];
+        updateFrameList();
+        saveToLocalStorage();
+      });
+
+      document.getElementById('canvas-size').addEventListener('change', (e) => {
+        const newSize = parseInt(e.target.value);
+        pixelSize = Math.max(4, Math.min(20, 320 / newSize));
+        resizePixelArray(newSize);
+        resizeCanvas(canvasSize * pixelSize * zoom, canvasSize * pixelSize * zoom);
+        updateHotspotInputsMax();
+        updateGridOverlay();
+        updateHotspotCrosshair();
+      });
+
+      document.getElementById('canvas-bg-picker').addEventListener('input', (e) => {
+        canvasBgColor = e.target.value;
+        saveToLocalStorage();
+      });
+
+      document.getElementById('bg-image').addEventListener('change', (e) => {
+        if (e.target.files[0]) {
+          loadImage(URL.createObjectURL(e.target.files[0]), (img) => {
+            backgroundImg = img;
+            saveToLocalStorage();
+          });
+        }
+      });
+
+      document.getElementById('clear-bg').addEventListener('click', () => {
+        backgroundImg = null;
+        saveToLocalStorage();
+      });
+
+      document.getElementById('tool-select').addEventListener('change', (e) => {
+        currentTool = e.target.value;
+      });
+
+      document.getElementById('brush-size').addEventListener('change', (e) => {
+        brushSize = parseInt(e.target.value);
+      });
+
+      document.getElementById('color-picker').addEventListener('input', (e) => {
+        currentColor = e.target.value;
+        addRecentColor();
+      });
+
+      document.getElementById('alpha-slider').addEventListener('change', (e) => {
+        currentAlpha = parseInt(e.target.value);
+        addRecentColor();
+      });
+
+      document.getElementById('zoom-in').addEventListener('click', () => {
+        zoom *= 1.2;
+        resizeCanvas(canvasSize * pixelSize * zoom, canvasSize * pixelSize * zoom);
+        updateGridOverlay();
+        updateHotspotCrosshair();
+      });
+
+      document.getElementById('zoom-out').addEventListener('click', () => {
+        zoom /= 1.2;
+        if (zoom < 0.1) zoom = 0.1;
+        resizeCanvas(canvasSize * pixelSize * zoom, canvasSize * pixelSize * zoom);
+        updateGridOverlay();
+        updateHotspotCrosshair();
+      });
+
+      document.getElementById('reset-zoom').addEventListener('click', () => {
+        zoom = 1;
+        resizeCanvas(canvasSize * pixelSize, canvasSize * pixelSize);
+        updateGridOverlay();
+        updateHotspotCrosshair();
+      });
+
+      document.getElementById('grid-toggle').addEventListener('change', (e) => {
+        showGrid = e.target.checked;
+        updateGridOverlay();
+      });
+
+      document.getElementById('hotspot-toggle').addEventListener('change', (e) => {
+        showHotspot = e.target.checked;
+        updateHotspotCrosshair();
+      });
+
+      document.getElementById('hotspot-x').addEventListener('input', (e) => {
+        hotspot.x = Math.max(0, Math.min(canvasSize - 1, parseInt(e.target.value) || 0));
+        e.target.value = hotspot.x;
+        updateHotspotCrosshair();
+        saveToLocalStorage();
+      });
+
+      document.getElementById('hotspot-y').addEventListener('input', (e) => {
+        hotspot.y = Math.max(0, Math.min(canvasSize - 1, parseInt(e.target.value) || 0));
+        e.target.value = hotspot.y;
+        updateHotspotCrosshair();
+        saveToLocalStorage();
+      });
+
+      document.getElementById('undo').addEventListener('click', undo);
+      document.getElementById('redo').addEventListener('click', redo);
+      document.getElementById('clear').addEventListener('click', clearCanvas);
+      document.getElementById('clear-canvas').addEventListener('click', clearCanvas);
+
+      document.getElementById('open-cur-ani').addEventListener('click', () => {
+        document.getElementById('import-image').click();
+      });
+
+      document.getElementById('import-image').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          if (window.confirm("Importing will overwrite current canvas. Continue?")) {
+            if (file.name.toLowerCase().endsWith('.cur')) {
+              parseCur(file);
+            } else if (file.name.toLowerCase().endsWith('.ani')) {
+              parseAni(file);
+            } else {
+              importImage(file);
+            }
+          }
+        }
+      });
+
+      document.getElementById('export-cur').addEventListener('click', () => {
+        if (animatedMode) {
+          exportAni();
+        } else {
+          exportCur();
+        }
+      });
+      document.getElementById('export-png').addEventListener('click', exportPng);
+
+      document.getElementById('preview-as-cursor').addEventListener('change', (e) => {
+        previewAsCursor = e.target.checked;
+        updatePreview();
+      });
+
+      document.getElementById('simulate-click').addEventListener('change', (e) => {
+        simulateClick = e.target.checked;
+        if (simulateClick) {
+          document.addEventListener('mousedown', handleMouseDown);
+          document.addEventListener('mouseup', handleMouseUp);
+        } else {
+          document.removeEventListener('mousedown', handleMouseDown);
+          document.removeEventListener('mouseup', handleMouseUp);
+        }
+        updatePreview();
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.key === 'z') {
+          e.preventDefault();
+          undo();
+        } else if (e.ctrlKey && e.key === 'y') {
+          e.preventDefault();
+          redo();
+        } else if (e.ctrlKey && e.key === 's') {
+          e.preventDefault();
+          if (animatedMode) {
+            exportAni();
+          } else {
+            exportCur();
+          }
+        } else if (e.key.toLowerCase() === 'g') {
+          e.preventDefault();
+          showGrid = !showGrid;
+          document.getElementById('grid-toggle').checked = showGrid;
+          updateGridOverlay();
+        } else if (e.key.toLowerCase() === 'h') {
+          e.preventDefault();
+          showHotspot = !showHotspot;
+          document.getElementById('hotspot-toggle').checked = showHotspot;
+          updateHotspotCrosshair();
+        }
+      });
+
+      window.addEventListener('wheel', (e) => {
+        if (e.ctrlKey) {
+          e.preventDefault();
+          if (e.deltaY < 0) {
+            zoom *= 1.1;
+          } else {
+            zoom /= 1.1;
+          }
+          if (zoom < 0.1) zoom = 0.1;
+          resizeCanvas(canvasSize * pixelSize * zoom, canvasSize * pixelSize * zoom);
+          updateGridOverlay();
+          updateHotspotCrosshair();
+        }
+      }, { passive: false });
+    }
+
+    new p5();
+  </script>
+</body>
+</html>
