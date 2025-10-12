@@ -19,6 +19,10 @@
       border-radius: 6px;
       transition: transform 0.2s ease;
     }
+    #preview-canvas {
+      border: none !important;
+      border-radius: 4px;
+    }
     .grid-overlay {
       position: absolute;
       pointer-events: none;
@@ -93,6 +97,16 @@
       border-radius: 8px;
       border: 1px solid #374151;
     }
+    .frames-panel {
+      width: 200px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      background: rgba(31, 41, 59, 0.8);
+      padding: 0.75rem;
+      border-radius: 8px;
+      border: 1px solid #374151;
+    }
     .tool-group {
       display: flex;
       gap: 0.5rem;
@@ -105,7 +119,7 @@
       display: flex;
       flex-direction: column;
       gap: 0.75rem;
-      max-width: 1000px;
+      max-width: 1200px;
       margin: 0 auto;
     }
     .workspace {
@@ -115,7 +129,7 @@
       align-items: flex-start;
     }
     .frame-list {
-      max-height: 200px;
+      max-height: 300px;
       overflow-y: auto;
       border: 1px solid #4b5563;
       border-radius: 4px;
@@ -129,12 +143,19 @@
       background: #374151;
       margin-bottom: 0.25rem;
       border-radius: 4px;
+      gap: 0.5rem;
     }
     .frame-item.selected {
       background: #4b5563;
     }
     .frame-item:active {
       cursor: grabbing;
+    }
+    .frame-preview {
+      width: 32px;
+      height: 32px;
+      border: 1px solid #4b5563;
+      border-radius: 2px;
     }
     .context-menu {
       position: absolute;
@@ -157,12 +178,18 @@
     .context-menu button:hover {
       background: #4b5563;
     }
+    #custom-cursor {
+      position: absolute;
+      pointer-events: none;
+      z-index: 9999;
+      display: none;
+    }
     @media (max-width: 768px) {
       .workspace {
         flex-direction: column;
         align-items: center;
       }
-      .controls-panel {
+      .controls-panel, .frames-panel {
         width: 100%;
         max-width: 320px;
       }
@@ -184,12 +211,6 @@
             <input type="checkbox" id="animated-mode"> Animated Mode
             <span class="tooltip">Toggle animated cursor mode</span>
           </label>
-
-          <div id="frame-controls" class="hidden">
-            <label class="block text-xs font-medium mb-1">Frames</label>
-            <div id="frame-list" class="frame-list"></div>
-            <button id="add-frame" class="p-1 bg-green-600 text-xs rounded mt-1 w-full">Add Frame</button>
-          </div>
 
           <div class="tool relative">
             <label class="block text-xs font-medium mb-1">Canvas Size</label>
@@ -307,6 +328,13 @@
           </div>
         </div>
 
+        <!-- Frames Panel (shown in animated mode) -->
+        <div id="frames-panel" class="frames-panel hidden">
+          <label class="block text-xs font-medium mb-1">Frames</label>
+          <div id="frame-list" class="frame-list"></div>
+          <button id="add-frame" class="p-1 bg-green-600 text-xs rounded mt-1 w-full">Add Frame</button>
+        </div>
+
         <!-- Canvas Section -->
         <div class="canvas-section">
           <div class="flex justify-between items-center mb-1">
@@ -323,7 +351,7 @@
             <h3 class="text-sm font-medium mb-1">Preview</h3>
             <div class="flex items-center gap-2 mb-1">
               <label class="flex items-center gap-1 text-xs cursor-pointer tool relative">
-                <input type="checkbox" id="preview-as-cursor" class="rounded"> Use as Cursor
+                <input type="checkbox" id="preview-as-cursor"> Use as Cursor
                 <span class="tooltip">Set page cursor to preview</span>
               </label>
               <label class="flex items-center gap-1 text-xs cursor-pointer tool relative">
@@ -331,7 +359,7 @@
                 <span class="tooltip">Darken on mouse down</span>
               </label>
             </div>
-            <canvas id="preview-canvas" class="border border-gray-600 rounded hidden"></canvas>
+            <canvas id="preview-canvas" class="rounded hidden"></canvas>
           </div>
         </div>
       </div>
@@ -339,8 +367,27 @@
   </div>
 
   <footer class="text-center mt-4 text-xs text-gray-500">
-    <p>© 2025 Cursor Studio. Windows .cur format with XOR/AND masks and hotspot.</p>
+    <p> &copy; 2025 NoahLi404/Cursor Studio. All rights reserved</p>
+    <p>Animated mode will not be automatically saved after existing the page, remember to save before existing</p>
   </footer>
+  <footer class="bg-gray-900 text-white p-6 text-center font-sans">
+    <h4 class="text-lg font-semibold mb-4">How to Use Custom Cursors</h4>
+    <ol class="list-decimal list-inside space-y-2 text-sm">
+      <li>Press <kbd>Windows + R</kbd>, type <code>main.cpl</code>, and hit Enter.</li>
+      <li>Go to the <span class="font-medium">Pointers</span> tab in Mouse Properties.</li>
+      <li>Select the cursor you want to change (e.g., Normal Select).</li>
+      <li>Click <span class="font-medium">Browse...</span> and choose your <code>.cur</code> or <code>.ani</code> file.</li>
+      <li>Click <span class="font-medium">Apply</span>, then <span class="font-medium">OK</span>.</li>
+      <li>Repeat for other cursors if needed.</li>
+    </ol>
+    <p class="mt-4 text-xs text-gray-400">Note: Animated cursors (.ani) only work if supported by Windows.</p>
+  </footer>
+
+
+  <!-- Custom cursor element for animated preview -->
+  <div id="custom-cursor">
+    <canvas id="custom-cursor-canvas"></canvas>
+  </div>
 
   <script>
     let canvasSize = 32;
@@ -369,6 +416,8 @@
     let maxFrames = 400;
     let frameRate = 6; // jiffies, 1/60s
     let contextMenu = null;
+    let animationInterval = null;
+    let currentAnimFrame = 0;
 
     function setup() {
       const canvas = createCanvas(canvasSize * pixelSize, canvasSize * pixelSize);
@@ -680,16 +729,17 @@
       crosshair.style.height = `${canvasSize * pixelSize * zoom}px`;
     }
 
-    function getCursorDataURL(darken = false) {
+    function getCursorDataURL(darken = false, frameIndex = currentFrame) {
       const tempCanvas = document.createElement('canvas');
       tempCanvas.width = canvasSize;
       tempCanvas.height = canvasSize;
       const ctx = tempCanvas.getContext('2d');
       const imgData = ctx.createImageData(canvasSize, canvasSize);
+      const framePixels = frames[frameIndex];
       for (let y = 0; y < canvasSize; y++) {
         for (let x = 0; x < canvasSize; x++) {
           const i = (y * canvasSize + x) * 4;
-          let { r, g, b, a } = pixels[y][x];
+          let { r, g, b, a } = framePixels[y][x];
           if (darken && a > 0) {
             r = Math.max(0, r - 50);
             g = Math.max(0, g - 50);
@@ -708,9 +758,14 @@
     function updatePreview() {
       const previewCanvas = document.getElementById('preview-canvas');
       if (previewAsCursor) {
-        document.body.style.cursor = `url(${getCursorDataURL()}) ${hotspot.x} ${hotspot.y}, auto`;
-        previewCanvas.classList.add('hidden');
+        if (animatedMode) {
+          startAnimatedCursorPreview();
+        } else {
+          document.body.style.cursor = `url(${getCursorDataURL()}) ${hotspot.x} ${hotspot.y}, auto`;
+          previewCanvas.classList.add('hidden');
+        }
       } else {
+        stopAnimatedCursorPreview();
         document.body.style.cursor = 'auto';
         previewCanvas.classList.remove('hidden');
         previewCanvas.width = canvasSize;
@@ -735,15 +790,79 @@
       }
     }
 
+    function startAnimatedCursorPreview() {
+      document.body.style.cursor = 'none';
+      const customCursor = document.getElementById('custom-cursor');
+      const customCanvas = document.getElementById('custom-cursor-canvas');
+      customCanvas.width = canvasSize;
+      customCanvas.height = canvasSize;
+      customCursor.style.display = 'block';
+      currentAnimFrame = 0;
+      drawAnimFrame(false);
+      if (animationInterval) clearInterval(animationInterval);
+      const intervalMs = (frameRate / 60) * 1000;
+      animationInterval = setInterval(() => {
+        currentAnimFrame = (currentAnimFrame + 1) % frames.length;
+        drawAnimFrame(false);
+      }, intervalMs);
+
+      document.addEventListener('mousemove', moveCustomCursor);
+    }
+
+    function stopAnimatedCursorPreview() {
+      if (animationInterval) clearInterval(animationInterval);
+      document.body.style.cursor = 'auto';
+      const customCursor = document.getElementById('custom-cursor');
+      customCursor.style.display = 'none';
+      document.removeEventListener('mousemove', moveCustomCursor);
+    }
+
+    function moveCustomCursor(e) {
+      const customCursor = document.getElementById('custom-cursor');
+      customCursor.style.left = `${e.clientX - hotspot.x}px`;
+      customCursor.style.top = `${e.clientY - hotspot.y}px`;
+    }
+
+    function drawAnimFrame(darken) {
+      const customCanvas = document.getElementById('custom-cursor-canvas');
+      const ctx = customCanvas.getContext('2d');
+      const imgData = ctx.createImageData(canvasSize, canvasSize);
+      const framePixels = frames[currentAnimFrame];
+      for (let y = 0; y < canvasSize; y++) {
+        for (let x = 0; x < canvasSize; x++) {
+          const i = (y * canvasSize + x) * 4;
+          let { r, g, b, a } = framePixels[y][x];
+          if (darken && a > 0) {
+            r = Math.max(0, r - 50);
+            g = Math.max(0, g - 50);
+            b = Math.max(0, b - 50);
+          }
+          imgData.data[i] = r;
+          imgData.data[i + 1] = g;
+          imgData.data[i + 2] = b;
+          imgData.data[i + 3] = a;
+        }
+      }
+      ctx.putImageData(imgData, 0, 0);
+    }
+
     function handleMouseDown(e) {
       if (simulateClick && previewAsCursor) {
-        document.body.style.cursor = `url(${getCursorDataURL(true)}) ${hotspot.x} ${hotspot.y}, auto`;
+        if (animatedMode) {
+          drawAnimFrame(true);
+        } else {
+          document.body.style.cursor = `url(${getCursorDataURL(true)}) ${hotspot.x} ${hotspot.y}, auto`;
+        }
       }
     }
 
     function handleMouseUp(e) {
       if (simulateClick && previewAsCursor) {
-        document.body.style.cursor = `url(${getCursorDataURL()}) ${hotspot.x} ${hotspot.y}, auto`;
+        if (animatedMode) {
+          drawAnimFrame(false);
+        } else {
+          document.body.style.cursor = `url(${getCursorDataURL()}) ${hotspot.x} ${hotspot.y}, auto`;
+        }
       }
     }
 
@@ -1314,12 +1433,37 @@
     function updateFrameList() {
       const frameList = document.getElementById('frame-list');
       frameList.innerHTML = '';
-      frames.forEach((_, i) => {
+      frames.forEach((framePixels, i) => {
         const frameItem = document.createElement('div');
         frameItem.className = 'frame-item';
         if (i === currentFrame) frameItem.classList.add('selected');
         frameItem.dataset.index = i;
-        frameItem.innerText = frameNames[i];
+
+        // Add preview canvas for each frame
+        const previewCanvas = document.createElement('canvas');
+        previewCanvas.className = 'frame-preview';
+        previewCanvas.width = canvasSize;
+        previewCanvas.height = canvasSize;
+        const ctx = previewCanvas.getContext('2d');
+        const imgData = ctx.createImageData(canvasSize, canvasSize);
+        for (let y = 0; y < canvasSize; y++) {
+          for (let x = 0; x < canvasSize; x++) {
+            const idx = (y * canvasSize + x) * 4;
+            imgData.data[idx] = framePixels[y][x].r;
+            imgData.data[idx + 1] = framePixels[y][x].g;
+            imgData.data[idx + 2] = framePixels[y][x].b;
+            imgData.data[idx + 3] = framePixels[y][x].a;
+          }
+        }
+        ctx.putImageData(imgData, 0, 0);
+        previewCanvas.style.width = '32px';
+        previewCanvas.style.height = '32px';
+        frameItem.appendChild(previewCanvas);
+
+        const nameSpan = document.createElement('span');
+        nameSpan.innerText = frameNames[i];
+        frameItem.appendChild(nameSpan);
+
         frameItem.draggable = true;
         frameItem.addEventListener('click', () => {
           currentFrame = i;
@@ -1334,11 +1478,11 @@
         frameList.appendChild(frameItem);
       });
       setupDragAndDrop();
-      const frameControls = document.getElementById('frame-controls');
+      const framesPanel = document.getElementById('frames-panel');
       if (animatedMode) {
-        frameControls.classList.remove('hidden');
+        framesPanel.classList.remove('hidden');
       } else {
-        frameControls.classList.add('hidden');
+        framesPanel.classList.add('hidden');
       }
     }
 
@@ -1435,6 +1579,18 @@
     function setupEventListeners() {
       document.getElementById('animated-mode').addEventListener('change', (e) => {
         animatedMode = e.target.checked;
+
+        // Disable preview as cursor when animated mode is on
+        const previewCheckbox = document.getElementById('preview-as-cursor');
+        if (animatedMode) {
+          previewCheckbox.checked = false;
+          previewCheckbox.disabled = true;
+          previewAsCursor = false;
+          stopAnimatedCursorPreview();
+        } else {
+          previewCheckbox.disabled = false;
+        }
+
         if (animatedMode && frames.length === 1) {
           // Start with current as first frame
         } else if (!animatedMode && frames.length > 1) {
@@ -1445,7 +1601,7 @@
           pixels = frames[currentFrame];
         }
         updateFrameList();
-        document.getElementById('export-cur').textContent = animatedMode ? 'Export .ani' : 'Export .cur';
+        document.getElementById('export-cur').textContent = animatedMode ? 'Export .ani (Ctrl+S)' : 'Export .cur (Ctrl+S)';
         saveToLocalStorage();
       });
 
@@ -1606,32 +1762,32 @@
         updatePreview();
       });
 
-      window.addEventListener('keydown', (e) => {
-        if (e.ctrlKey && e.key === 'z') {
-          e.preventDefault();
-          undo();
-        } else if (e.ctrlKey && e.key === 'y') {
-          e.preventDefault();
-          redo();
-        } else if (e.ctrlKey && e.key === 's') {
-          e.preventDefault();
-          if (animatedMode) {
-            exportAni();
-          } else {
-            exportCur();
-          }
-        } else if (e.key.toLowerCase() === 'g') {
-          e.preventDefault();
-          showGrid = !showGrid;
-          document.getElementById('grid-toggle').checked = showGrid;
-          updateGridOverlay();
-        } else if (e.key.toLowerCase() === 'h') {
-          e.preventDefault();
-          showHotspot = !showHotspot;
-          document.getElementById('hotspot-toggle').checked = showHotspot;
-          updateHotspotCrosshair();
-        }
-      });
+      // window.addEventListener('keydown', (e) => {
+      //   if (e.ctrlKey && e.key === 'z') {
+      //     e.preventDefault();
+      //     undo();
+      //   } else if (e.ctrlKey && e.key === 'y') {
+      //     e.preventDefault();
+      //     redo();
+      //   } else if (e.ctrlKey && e.key === 's') {
+      //     e.preventDefault();
+      //     if (animatedMode) {
+      //       exportAni();
+      //     } else {
+      //       exportCur();
+      //     }
+      //   } else if (e.key.toLowerCase() === 'g') {
+      //     e.preventDefault();
+      //     showGrid = !showGrid;
+      //     document.getElementById('grid-toggle').checked = showGrid;
+      //     updateGridOverlay();
+      //   } else if (e.key.toLowerCase() === 'h') {
+      //     e.preventDefault();
+      //     showHotspot = !showHotspot;
+      //     document.getElementById('hotspot-toggle').checked = showHotspot;
+      //     updateHotspotCrosshair();
+      //   }
+      // });
 
       window.addEventListener('wheel', (e) => {
         if (e.ctrlKey) {
