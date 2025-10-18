@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clipboard Studio - Official Download</title>
+<style>
+  /* Fonts & Resets */
+  @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+  body, html { width: 100%; height: 100%; overflow-x: hidden; background: #111; }
+
+  /* Background with blur (Windows 11 vibe) */
+  .background {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, #1A237E, #3F51B5);
+    filter: blur(50px);
+    z-index: -1;
+    animation: gradientShift 15s ease infinite;
+  }
+
+  /* Container with frosted glass effect */
+  .container {
+    max-width: 900px;
+    margin: 50px auto;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px) saturate(180%);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+    color: #fff;
+    text-align: center;
+  }
+
+  header h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  header p { font-size: 1.2rem; opacity: 0.8; margin-bottom: 40px; }
+
+  .btn-download {
+    display: inline-block;
+    background: #3F51B5;
+    color: #fff;
+    padding: 15px 30px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-bottom: 60px;
+  }
+  .btn-download:hover {
+    background: #5C6BC0;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+  }
+
+  .features-section {
+    margin-top: 20px;
+  }
+  .features-section h2 { margin-bottom: 20px; font-size: 2rem; }
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 25px;
+  }
+  .feature-card {
+    background: rgba(255,255,255,0.1);
+    padding: 20px;
+    border-radius: 15px;
+    backdrop-filter: blur(15px);
+    transition: all 0.3s ease;
+    text-align: left;
+  }
+  .feature-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255,255,255,0.15);
+  }
+
+  .feature-card h3 { margin-bottom: 10px; font-size: 1.2rem; }
+  .feature-card p { opacity: 0.8; font-size: 0.95rem; }
+
+  footer { margin-top: 60px; font-size: 0.9rem; opacity: 0.7; }
+
+  @keyframes gradientShift {
+    0% { background: linear-gradient(135deg, #1A237E, #3F51B5); }
+    50% { background: linear-gradient(135deg, #3F51B5, #1A237E); }
+    100% { background: linear-gradient(135deg, #1A237E, #3F51B5); }
+  }
+
+  kbd {
+    background: rgba(255,255,255,0.2);
+    border-radius: 4px;
+    padding: 2px 5px;
+    font-size: 0.9rem;
+    color: #fff;
+  }
+
+  @media(max-width:600px){
+    header h1 { font-size: 2.2rem; }
+    .btn-download { padding: 12px 25px; }
+  }
+</style>
+</head>
+<body>
+  <div class="background"></div>
+  <div class="container">
+    <header>
+      <h1>Clipboard Studio</h1>
+      <p>The Dream of a clipboard that <kbd>Never gones</kbd></p>
+    </header>
+
+    <main>
+      <section class="download-section">
+        <h2>Download Now</h2>
+        <a href="https://github.com/Noah-Li2012/personalwebsite/releases/download/app/ClipboardStudioInstaller.exe" class="btn-download">Download Installer (34.2 MB)</a>
+        <a href="https://noahli404.pages.dev/clipboardStudioSource" class="btn-download">Download Source Code (68.3 MB)</a>
+      </section>
+
+      <section class="features-section">
+        <h2>Features</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <h3>Smart Clipboard</h3>
+            <p>Save unlimited clipboard history and paste instantly.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Hotkeys</h3>
+            <p>Toggle the app with a global shortcut like <kbd>Ctrl+Shift+.</kbd>.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Modern UI</h3>
+            <p>Smooth animations, frosted glass, and customizable themes.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Settings</h3>
+            <p>Customize themes, max items, save path, and more.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Text copying only</h3>
+            <p>Save up storage, lightweight</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2025  NoahLi404</p>
+      <p>Disclaimer: NoahLi404 will not be responsibility for any lost things, include but not limited <kbd>Copying fail, crashes</kbd></p>
+    </footer>
+  </div>
+
+<script>
+  // Smooth scroll for future sections (if you add more)
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+</script>
+</body>
+</html>
