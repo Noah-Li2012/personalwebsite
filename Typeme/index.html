@@ -1,1 +1,611 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typeme - Advanced WPM Typing Test</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Core Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
+    <script src="https://unpkg.com/splitting@1.0.6/dist/splitting.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.0/echarts.min.js"></script>
+    
+    <!-- Splitting CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/splitting@1.0.6/dist/splitting.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        :root {
+            --primary-blue: #2563eb;
+            --success-green: #10b981;
+            --error-red: #ef4444;
+            --neutral-gray: #6b7280;
+            --background: #f8fafc;
+            --accent-pink: #ec4899;
+            --deep-charcoal: #1f2937;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--background);
+            overflow-x: hidden;
+        }
+        
+        .typing-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.25rem;
+            line-height: 1.8;
+            letter-spacing: 0.025em;
+        }
+        
+        .hero-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .particle-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .character.correct {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: var(--success-green);
+            border-radius: 2px;
+            animation: correctGlow 0.3s ease-out;
+        }
+        
+        .character.incorrect {
+            background-color: rgba(239, 68, 68, 0.3);
+            color: var(--error-red);
+            border-radius: 2px;
+            animation: errorShake 0.5s ease-out;
+        }
+        
+        .character.current {
+            background-color: rgba(37, 99, 235, 0.3);
+            color: var(--primary-blue);
+            border-radius: 2px;
+            animation: currentPulse 1s ease-in-out infinite;
+        }
+        
+        @keyframes correctGlow {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            100% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+        }
+        
+        @keyframes errorShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            75% { transform: translateX(2px); }
+        }
+        
+        @keyframes currentPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.35s;
+            transform-origin: 50% 50%;
+        }
+        
+        .floating-orb {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-blue), #1e40af);
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(37, 99, 235, 0.3);
+        }
+        
+        .floating-orb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 40px rgba(37, 99, 235, 0.4);
+        }
+        
+        .orb-eyes {
+            position: absolute;
+            top: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 16px;
+        }
+        
+        .orb-eye {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+        }
+        
+        .orb-eye.left {
+            left: 4px;
+        }
+        
+        .orb-eye.right {
+            right: 4px;
+        }
+        
+        .orb-pupil {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #1f2937;
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+        }
+        
+        .orb-blush {
+            position: absolute;
+            width: 8px;
+            height: 6px;
+            background: var(--accent-pink);
+            border-radius: 50%;
+            top: 45%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .orb-blush.left {
+            left: 15%;
+        }
+        
+        .orb-blush.right {
+            right: 15%;
+        }
+        
+        .floating-orb:hover .orb-blush {
+            opacity: 0.6;
+        }
+        
+        .orb-menu {
+            position: absolute;
+            bottom: 90px;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+            transition: all 0.3s ease;
+            min-width: 200px;
+        }
+        
+        .orb-menu.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+        }
+        
+        .orb-menu-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            text-decoration: none;
+            color: var(--deep-charcoal);
+        }
+        
+        .orb-menu-item:hover {
+            background-color: #f3f4f6;
+        }
+        
+        .orb-menu-item svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 0.75rem;
+            color: var(--primary-blue);
+        }
+        
+        .achievement-notification {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            transform: translateX(400px);
+            transition: transform 0.5s ease;
+            z-index: 1001;
+            max-width: 350px;
+        }
+        
+        .achievement-notification.show {
+            transform: translateX(0);
+        }
+        
+        .typing-area {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin: 2rem 0;
+        }
+        
+        .typing-input {
+            width: 100%;
+            min-height: 120px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            resize: vertical;
+            transition: border-color 0.2s ease;
+        }
+        
+        .typing-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .typing-input:disabled {
+            background-color: #f9fafb;
+            cursor: not-allowed;
+        }
+        
+        .goal-tracker {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        
+        .encouragement-message {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            text-align: center;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+        
+        .encouragement-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        @media (max-width: 768px) {
+            .floating-orb {
+                bottom: 1rem;
+                right: 1rem;
+                width: 60px;
+                height: 60px;
+            }
+            
+            .typing-text {
+                font-size: 1rem;
+            }
+            
+            .metric-card {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-gray-900">Typeme</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="index.html" class="text-blue-600 font-medium px-3 py-2 rounded-md text-sm">Test</a>
+                        <a href="statistics.html" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Statistics</a>
+                        <a href="settings.html" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Settings</a>
+                        <a href="help.html" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Help</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-bg relative py-16">
+        <canvas id="particleCanvas" class="particle-canvas"></canvas>
+        <div class="hero-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h2 class="text-4xl md:text-6xl font-bold text-white mb-6">
+                    <span id="typed-text"></span>
+                </h2>
+                <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+                    Master your typing skills with real-time feedback, daily goals, and comprehensive progress tracking. 
+                    Join thousands of users improving their WPM with our advanced typing test platform.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button id="startTestBtn" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
+                        Start Typing Test
+                    </button>
+                    <button id="viewStatsBtn" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
+                        View Statistics
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Goal Tracker -->
+        <div class="goal-tracker" id="goalTracker">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div>
+                    <h3 class="text-lg font-semibold mb-2">Daily Goal Progress</h3>
+                    <p class="text-blue-100">Today's Target: <span id="dailyGoal">50 WPM</span> | Tests Completed: <span id="testsCompleted">0</span>/5</p>
+                </div>
+                <div class="mt-4 md:mt-0">
+                    <div class="flex items-center space-x-4">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold" id="currentStreak">0</div>
+                            <div class="text-sm text-blue-100">Day Streak</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold" id="bestWPM">0</div>
+                            <div class="text-sm text-blue-100">Best WPM</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metrics Dashboard -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="metric-card text-center">
+                <div class="text-3xl font-bold text-blue-600 mb-2" id="currentWPM">0</div>
+                <div class="text-sm text-gray-600">Current WPM</div>
+                <div class="mt-2">
+                    <svg class="progress-ring w-16 h-16 mx-auto" viewBox="0 0 120 120">
+                        <circle class="progress-ring-circle" stroke="#e5e7eb" stroke-width="8" fill="transparent" r="52" cx="60" cy="60"/>
+                        <circle class="progress-ring-circle" stroke="#2563eb" stroke-width="8" fill="transparent" r="52" cx="60" cy="60" 
+                                stroke-dasharray="326.73" stroke-dashoffset="326.73" id="wpmProgress"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="metric-card text-center">
+                <div class="text-3xl font-bold text-green-600 mb-2" id="accuracy">100%</div>
+                <div class="text-sm text-gray-600">Accuracy</div>
+                <div class="mt-2 text-xs text-gray-500">
+                    <span id="correctChars">0</span> correct / <span id="totalChars">0</span> total
+                </div>
+            </div>
+            
+            <div class="metric-card text-center">
+                <div class="text-3xl font-bold text-red-500 mb-2" id="errorCount">0</div>
+                <div class="text-sm text-gray-600">Errors</div>
+                <div class="mt-2">
+                    <button id="resetErrorsBtn" class="text-xs text-blue-600 hover:text-blue-800">Reset</button>
+                </div>
+            </div>
+            
+            <div class="metric-card text-center">
+                <div class="text-3xl font-bold text-purple-600 mb-2" id="timerDisplay">1:00</div>
+                <div class="text-sm text-gray-600">Time Left</div>
+                <div class="mt-2">
+                    <select id="testDuration" class="text-xs border rounded px-2 py-1">
+                        <option value="60">1 Minute</option>
+                        <option value="180">3 Minutes</option>
+                        <option value="300">5 Minutes</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Encouragement Message -->
+        <div class="encouragement-message" id="encouragementMessage">
+            <p id="encouragementText">Great job! Keep up the excellent typing pace!</p>
+        </div>
+
+        <!-- Typing Interface -->
+        <div class="typing-area">
+            <div class="mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Typing Test</h3>
+                    <div class="flex space-x-2">
+                        <select id="difficultyLevel" class="text-sm border rounded px-3 py-1">
+                            <option value="easy">Easy</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="hard">Hard</option>
+                        </select>
+                        <select id="textCategory" class="text-sm border rounded px-3 py-1">
+                            <option value="general">General</option>
+                            <option value="technology">Technology</option>
+                            <option value="literature">Literature</option>
+                            <option value="business">Business</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Sample Text Display -->
+                <div class="bg-gray-50 p-6 rounded-lg mb-6">
+                    <div id="sampleText" class="typing-text text-gray-700 leading-relaxed">
+                        The quick brown fox jumps over the lazy dog. This pangram sentence contains every letter of the alphabet at least once, making it perfect for typing practice. As you type this text, pay attention to your finger placement and try to maintain a steady rhythm. Remember that accuracy is more important than speed when learning to type properly.
+                    </div>
+                </div>
+                
+                <!-- Typing Input -->
+                <textarea 
+                    id="typingInput" 
+                    class="typing-input" 
+                    placeholder="Click here and start typing to begin the test..."
+                    disabled
+                ></textarea>
+                
+                <!-- Control Buttons -->
+                <div class="flex justify-center space-x-4 mt-6">
+                    <button id="startBtn" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                        Start Test
+                    </button>
+                    <button id="pauseBtn" class="bg-yellow-500 text-white px-6 py-2 rounded-lg font-medium hover:bg-yellow-600 transition-colors" disabled>
+                        Pause
+                    </button>
+                    <button id="resetBtn" class="bg-gray-500 text-white px-6 py-2 rounded-lg font-medium hover:bg-gray-600 transition-colors">
+                        Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h4 class="font-semibold text-gray-900 mb-2">Today's Performance</h4>
+                <div class="space-y-2 text-sm text-gray-600">
+                    <div>Tests Completed: <span id="dailyTests" class="font-medium">0</span></div>
+                    <div>Average WPM: <span id="dailyAvgWPM" class="font-medium">0</span></div>
+                    <div>Best WPM: <span id="dailyBestWPM" class="font-medium">0</span></div>
+                </div>
+            </div>
+            
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h4 class="font-semibold text-gray-900 mb-2">This Week</h4>
+                <div class="space-y-2 text-sm text-gray-600">
+                    <div>Total Tests: <span id="weeklyTests" class="font-medium">0</span></div>
+                    <div>Average WPM: <span id="weeklyAvgWPM" class="font-medium">0</span></div>
+                    <div>Improvement: <span id="weeklyImprovement" class="font-medium">+0%</span></div>
+                </div>
+            </div>
+            
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h4 class="font-semibold text-gray-900 mb-2">Achievements</h4>
+                <div class="flex flex-wrap gap-2" id="achievementBadges">
+                    <!-- Achievement badges will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Floating 3D Orb Tool -->
+    <div class="floating-orb" id="floatingOrb">
+        <div class="orb-eyes">
+            <div class="orb-eye left">
+                <div class="orb-pupil"></div>
+            </div>
+            <div class="orb-eye right">
+                <div class="orb-pupil"></div>
+            </div>
+        </div>
+        <div class="orb-blush left"></div>
+        <div class="orb-blush right"></div>
+        
+        <div class="orb-menu" id="orbMenu">
+            <a href="settings.html" class="orb-menu-item">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                Settings
+            </a>
+            <a href="statistics.html" class="orb-menu-item">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                Statistics
+            </a>
+            <div class="orb-menu-item" id="toggleSound">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>
+                </svg>
+                Sound: <span id="soundStatus">ON</span>
+            </div>
+            <div class="orb-menu-item" id="customTextBtn">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+                Custom Text
+            </div>
+            <a href="help.html" class="orb-menu-item">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Help
+            </a>
+        </div>
+    </div>
+
+    <!-- Achievement Notification -->
+    <div class="achievement-notification" id="achievementNotification">
+        <div class="flex items-center mb-2">
+            <div class="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center mr-3">
+                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                </svg>
+            </div>
+            <h4 class="font-semibold text-gray-900">Achievement Unlocked!</h4>
+        </div>
+        <p class="text-sm text-gray-600" id="achievementText">You've reached a new milestone!</p>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center text-gray-600">
+                <p>&copy; 2025 NoahLi404</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Main JavaScript -->
+    <script src="main.js"></script>
+</body>
+</html>
