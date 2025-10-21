@@ -1,4 +1,4 @@
-// TypeMaster Pro - Main JavaScript File
+// Typewho - Main JavaScript File
 // Advanced WPM Typing Test with Real-time Feedback
 
 class TypingTest {
