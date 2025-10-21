@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help & Tutorial - Typeme</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Core Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        :root {
+            --primary-blue: #2563eb;
+            --success-green: #10b981;
+            --error-red: #ef4444;
+            --neutral-gray: #6b7280;
+            --background: #f8fafc;
+            --accent-pink: #ec4899;
+            --deep-charcoal: #1f2937;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--background);
+        }
+        
+        .help-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin: 1rem 0;
+        }
+        
+        .faq-item {
+            border-bottom: 1px solid #f3f4f6;
+            padding: 1.5rem 0;
+        }
+        
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+        
+        .faq-question {
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: var(--deep-charcoal);
+        }
+        
+        .faq-question:hover {
+            color: var(--primary-blue);
+        }
+        
+        .faq-answer {
+            margin-top: 1rem;
+            color: var(--neutral-gray);
+            line-height: 1.6;
+            display: none;
+        }
+        
+        .faq-answer.show {
+            display: block;
+        }
+        
+        .tutorial-step {
+            display: flex;
+            align-items: flex-start;
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: #f9fafb;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-blue);
+        }
+        
+        .step-number {
+            background: var(--primary-blue);
+            color: white;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .step-title {
+            font-weight: 600;
+            color: var(--deep-charcoal);
+            margin-bottom: 0.5rem;
+        }
+        
+        .step-description {
+            color: var(--neutral-gray);
+            line-height: 1.6;
+        }
+        
+        .tip-box {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        
+        .keyboard-layout {
+            background: #1f2937;
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+        
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            margin: 0.25rem 0;
+        }
+        
+        .key {
+            background: #374151;
+            color: white;
+            padding: 0.5rem 0.75rem;
+            margin: 0.125rem;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            min-width: 2rem;
+            text-align: center;
+        }
+        
+        .key.home {
+            background: var(--primary-blue);
+        }
+        
+        .key.wide {
+            min-width: 4rem;
+        }
+        
+        .key.space {
+            min-width: 12rem;
+        }
+        
+        .progress-bar {
+            background: #e5e7eb;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        
+        .progress-fill {
+            background: var(--success-green);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .contact-form {
+            background: #f9fafb;
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+        
+        .form-group {
+            margin: 1rem 0;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--deep-charcoal);
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-family: inherit;
+        }
+        
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .submit-btn {
+            background: var(--primary-blue);
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .submit-btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-gray-900">Typeme</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="index.html" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Test</a>
+                        <a href="statistics.html" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Statistics</a>
+                        <a href="settings.html" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Settings</a>
+                        <a href="help.html" class="text-blue-600 font-medium px-3 py-2 rounded-md text-sm">Help</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Help & Tutorial</h2>
+                <p class="text-gray-600">Learn how to master touch typing and use Typeme effectively</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Quick Start Tutorial -->
+        <div class="help-card">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">🚀 Quick Start Guide</h3>
+            <p class="text-gray-600 mb-6">Get started with Typeme in just a few simple steps:</p>
+            
+            <div class="tutorial-step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <div class="step-title">Choose Your Settings</div>
+                    <div class="step-description">
+                        Select your preferred test duration (1, 3, or 5 minutes), difficulty level (Easy, Medium, Hard), 
+                        and text category (General, Technology, Literature, Business) from the dropdown menus.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tutorial-step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <div class="step-title">Start the Test</div>
+                    <div class="step-description">
+                        Click the "Start Test" button or use Ctrl/Cmd + Enter. The timer will begin when you start typing, 
+                        and you'll see real-time feedback on your WPM, accuracy, and errors.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tutorial-step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <div class="step-title">Type with Feedback</div>
+                    <div class="step-description">
+                        Correct characters will glow green, incorrect ones will turn red. You must fix errors before continuing. 
+                        Your WPM and accuracy are calculated in real-time as you type.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tutorial-step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <div class="step-title">Track Your Progress</div>
+                    <div class="step-description">
+                        After completing the test, view your statistics, set daily goals, and track your improvement over time. 
+                        Earn achievements for reaching milestones and maintaining streaks.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Touch Typing Basics -->
+        <div class="help-card">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">⌨️ Touch Typing Fundamentals</h3>
+            
+            <div class="tip-box">
+                <h4 class="font-semibold mb-2">💡 Pro Tip</h4>
+                <p>Focus on accuracy first, speed will come naturally with practice. It's better to type slowly and correctly 
+                than quickly with many errors.</p>
+            </div>
+            
+            <h4 class="text-lg font-semibold text-gray-900 mb-3">Home Row Position</h4>
+            <p class="text-gray-600 mb-4">
+                The foundation of touch typing is the home row position. Your fingers should rest on these keys:
+            </p>
+            
+            <div class="keyboard-layout">
+                <div class="keyboard-row">
+                    <div class="key">Q</div>
+                    <div class="key">W</div>
+                    <div class="key home">E</div>
+                    <div class="key home">R</div>
+                    <div class="key">T</div>
+                    <div class="key">Y</div>
+                    <div class="key home">U</div>
+                    <div class="key home">I</div>
+                    <div class="key">O</div>
+                    <div class="key">P</div>
+                </div>
+                <div class="keyboard-row">
+                    <div class="key">A</div>
+                    <div class="key home">S</div>
+                    <div class="key home">D</div>
+                    <div class="key home">F</div>
+                    <div class="key">G</div>
+                    <div class="key">H</div>
+                    <div class="key home">J</div>
+                    <div class="key home">K</div>
+                    <div class="key home">L</div>
+                    <div class="key">;</div>
+                </div>
+                <div class="keyboard-row">
+                    <div class="key wide">Shift</div>
+                    <div class="key">Z</div>
+                    <div class="key">X</div>
+                    <div class="key">C</div>
+                    <div class="key">V</div>
+                    <div class="key">B</div>
+                    <div class="key">N</div>
+                    <div class="key">M</div>
+                    <div class="key wide">Shift</div>
+                </div>
+                <div class="keyboard-row">
+                    <div class="key space">Space</div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <div>
+                    <h5 class="font-semibold text-gray-900 mb-2">Left Hand Fingers</h5>
+                    <ul class="text-gray-600 space-y-1">
+                        <li>• Pinky: A, Q, Z</li>
+                        <li>• Ring: S, W, X</li>
+                        <li>• Middle: D, E, C</li>
+                        <li>• Index: F, R, T, G, V, B</li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-semibold text-gray-900 mb-2">Right Hand Fingers</h5>
+                    <ul class="text-gray-600 space-y-1">
+                        <li>• Index: H, Y, U, J, N, M</li>
+                        <li>• Middle: K, I, ,</li>
+                        <li>• Ring: L, O, .</li>
+                        <li>• Pinky: ;, P, /</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Guide -->
+        <div class="help-card">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">🎯 Feature Guide</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-3">Real-time Feedback</h4>
+                    <ul class="text-gray-600 space-y-2">
+                        <li>• <strong>Green highlighting</strong> - Correct characters</li>
+                        <li>• <strong>Red highlighting</strong> - Incorrect characters</li>
+                        <li>• <strong>Blue highlighting</strong> - Current position</li>
+                        <li>• <strong>Live WPM</strong> - Words per minute calculation</li>
+                        <li>• <strong>Accuracy percentage</strong> - Real-time accuracy</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-3">3D Orb Tool</h4>
+                    <ul class="text-gray-600 space-y-2">
+                        <li>• <strong>Hover</strong> - Pink blush effect</li>
+                        <li>• <strong>Click</strong> - Access quick settings</li>
+                        <li>• <strong>Sound toggle</strong> - Enable/disable audio</li>
+                        <li>• <strong>Custom text</strong> - Add personal practice material</li>
+                        <li>• <strong>Statistics</strong> - Quick access to performance data</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-3">Daily Goals</h4>
+                    <ul class="text-gray-600 space-y-2">
+                        <li>• <strong>WPM targets</strong> - Set daily speed goals</li>
+                        <li>• <strong>Streak tracking</strong> - Monitor consecutive days</li>
+                        <li>• <strong>Progress visualization</strong> - See improvement trends</li>
+                        <li>• <strong>Achievement badges</strong> - Unlock milestones</li>
+                        <li>• <strong>Encouragement system</strong> - Motivational feedback</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-3">Statistics & Analytics</h4>
+                    <ul class="text-gray-600 space-y-2">
+                        <li>• <strong>WPM trends</strong> - Historical speed data</li>
+                        <li>• <strong>Accuracy analysis</strong> - Error pattern identification</li>
+                        <li>• <strong>Performance charts</strong> - Visual progress tracking</li>
+                        <li>• <strong>Export data</strong> - Download CSV reports</li>
+                        <li>• <strong>Comparison tools</strong> - Week-over-week analysis</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Keyboard Shortcuts -->
+        <div class="help-card">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">⌨️ Keyboard Shortcuts</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-3">Test Control</h4>
+                    <div class="space-y-2 text-gray-600">
+                        <div class="flex justify-between">
+                            <span>Start Test</span>
+                            <kbd class="bg-gray-100 px-2 py-1 rounded text-sm">Ctrl/Cmd + Enter</kbd>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Pause Test</span>
+                            <kbd class="bg-gray-100 px-2 py-1 rounded text-sm">Escape</kbd>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Reset Test</span>
+                            <kbd class="bg-gray-100 px-2 py-1 rounded text-sm">Ctrl/Cmd + R</kbd>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-3">Navigation</h4>
+                    <div class="space-y-2 text-gray-600">
+                        <div class="flex justify-between">
+                            <span>Focus Typing Area</span>
+                            <kbd class="bg-gray-100 px-2 py-1 rounded text-sm">Tab</kbd>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Next Field</span>
+                            <kbd class="bg-gray-100 px-2 py-1 rounded text-sm">Tab</kbd>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Previous Field</span>
+                            <kbd class="bg-gray-100 px-2 py-1 rounded text-sm">Shift + Tab</kbd>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Typing Tips -->
+        <div class="help-card">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">💡 Expert Typing Tips</h3>
+            
+            <div class="space-y-6">
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-2">1. Proper Posture</h4>
+                    <p class="text-gray-600 mb-2">
+                        Sit up straight with your feet flat on the floor. Keep your wrists straight and elevated, 
+                        not resting on the desk. Your elbows should be at a 90-degree angle.
+                    </p>
+                    <div class="warning-box">
+                        <strong>Avoid:</strong> Hunching over, resting wrists on the desk, or typing with straight arms.
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-2">2. Finger Placement</h4>
+                    <p class="text-gray-600 mb-2">
+                        Always return to the home row position after each keystroke. Use the raised bumps on F and J 
+                        keys to orient your fingers without looking.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-2">3. Rhythm and Flow</h4>
+                    <p class="text-gray-600 mb-2">
+                        Develop a steady typing rhythm. Avoid rushing individual keystrokes. Think in words or phrases 
+                        rather than individual letters.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-2">4. Practice Strategy</h4>
+                    <ul class="text-gray-600 space-y-1">
+                        <li>• Practice daily for 15-30 minutes rather than long, infrequent sessions</li>
+                        <li>• Focus on accuracy before speed - speed will come naturally</li>
+                        <li>• Use a variety of texts to practice different word patterns</li>
+                        <li>• Review and practice common words and letter combinations</li>
+                        <li>• Take breaks to prevent fatigue and maintain focus</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-2">5. Common Mistakes to Avoid</h4>
+                    <div class="warning-box">
+                        <ul class="space-y-1">
+                            <li>• Looking at the keyboard while typing</li>
+                            <li>• Using the wrong fingers for keys</li>
+                            <li>• Rushing and making careless errors</li>
+                            <li>• Ignoring proper finger placement</li>
+                            <li>• Practicing with poor posture</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Troubleshooting -->
+        <div class="help-card">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">🔧 Troubleshooting</h3>
+            
+            <div class="space-y-4">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Test won't start or timer doesn't begin</span>
+                        <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="faq-answer">
+                        Make sure you've clicked in the typing area and started typing. The timer begins when you type the first character. 
+                        If using keyboard shortcuts, ensure the typing area has focus. Try refreshing the page if issues persist.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Sound effects not working</span>
+                        <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="faq-answer">
+                        Check that sound effects are enabled in settings. Some browsers require user interaction before playing audio. 
+                        Try clicking anywhere on the page first, then start typing. Also check your system volume and browser permissions.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Statistics not saving or progress lost</span>
+                        <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="faq-answer">
+                        Statistics are saved in your browser's local storage. Ensure cookies and local storage are enabled. 
+                        Using private/incognito mode or clearing browser data will remove your progress. Consider exporting your data regularly.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>3D orb tool not responding</span>
+                        <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="faq-answer">
+                        The orb tool requires JavaScript to be enabled. Try refreshing the page or clearing your browser cache. 
+                        If the issue persists, check your browser's developer console for any error messages.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Performance issues or lag</span>
+                        <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="faq-answer">
+                        Try disabling animations in settings, close other browser tabs, or use a different browser. 
+                        The application works best on modern browsers with good JavaScript performance. Ensure your device meets minimum requirements.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center text-gray-600">
+                <p>&copy; 2025 NoahLi404</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        class HelpPage {
+            constructor() {
+                this.init();
+            }
+            
+            init() {
+                this.setupEventListeners();
+                this.animateElements();
+            }
+            
+            setupEventListeners() {
+                // FAQ toggle
+                document.querySelectorAll('.faq-question').forEach(question => {
+                    question.addEventListener('click', (e) => this.toggleFAQ(e.currentTarget));
+                });
+                
+                // Contact form
+                document.getElementById('contactForm').addEventListener('submit', (e) => this.handleContactForm(e));
+                
+                // Tutorial step animations
+                document.querySelectorAll('.tutorial-step').forEach((step, index) => {
+                    step.addEventListener('mouseenter', () => this.animateStep(step));
+                });
+            }
+            
+            toggleFAQ(question) {
+                const answer = question.nextElementSibling;
+                const icon = question.querySelector('svg');
+                
+                // Close all other FAQs
+                document.querySelectorAll('.faq-answer').forEach(a => {
+                    if (a !== answer) {
+                        a.classList.remove('show');
+                        a.previousElementSibling.querySelector('svg').style.transform = 'rotate(0deg)';
+                    }
+                });
+                
+                // Toggle current FAQ
+                answer.classList.toggle('show');
+                
+                // Animate icon
+                const rotation = answer.classList.contains('show') ? '180deg' : '0deg';
+                anime({
+                    targets: icon,
+                    rotate: rotation,
+                    duration: 300,
+                    easing: 'easeOutQuad'
+                });
+                
+                // Animate answer
+                if (answer.classList.contains('show')) {
+                    anime({
+                        targets: answer,
+                        opacity: [0, 1],
+                        maxHeight: [0, '200px'],
+                        duration: 300,
+                        easing: 'easeOutQuad'
+                    });
+                }
+            }
+            
+            animateStep(step) {
+                anime({
+                    targets: step,
+                    scale: [1, 1.02, 1],
+                    duration: 300,
+                    easing: 'easeOutQuad'
+                });
+                
+                anime({
+                    targets: step.querySelector('.step-number'),
+                    scale: [1, 1.1, 1],
+                    duration: 300,
+                    easing: 'easeOutQuad'
+                });
+            }
+            
+            animateElements() {
+                // Animate cards on scroll
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            anime({
+                                targets: entry.target,
+                                opacity: [0, 1],
+                                translateY: [30, 0],
+                                duration: 600,
+                                easing: 'easeOutQuad',
+                                delay: 100
+                            });
+                        }
+                    });
+                });
+                
+                document.querySelectorAll('.help-card').forEach(card => {
+                    observer.observe(card);
+                });
+                
+                // Animate tutorial steps
+                document.querySelectorAll('.tutorial-step').forEach((step, index) => {
+                    anime({
+                        targets: step,
+                        opacity: [0, 1],
+                        translateX: [-50, 0],
+                        duration: 500,
+                        easing: 'easeOutQuad',
+                        delay: index * 100
+                    });
+                });
+            }
+            
+            handleContactForm(event) {
+                event.preventDefault();
+                
+                const formData = new FormData(event.target);
+                const data = Object.fromEntries(formData);
+                
+                // Simulate form submission
+                this.showNotification('Thank you for your message! We\'ll get back to you soon.', 'success');
+                
+                // Reset form
+                event.target.reset();
+                
+                // Animate form submission
+                anime({
+                    targets: event.target,
+                    scale: [1, 1.02, 1],
+                    duration: 300,
+                    easing: 'easeOutQuad'
+                });
+            }
+            
+            showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg text-white z-50 ${
+                    type === 'success' ? 'bg-green-500' :
+                    type === 'error' ? 'bg-red-500' :
+                    'bg-blue-500'
+                }`;
+                notification.textContent = message;
+                
+                document.body.appendChild(notification);
+                
+                anime({
+                    targets: notification,
+                    translateX: [300, 0],
+                    opacity: [0, 1],
+                    duration: 300,
+                    easing: 'easeOutQuad'
+                });
+                
+                setTimeout(() => {
+                    anime({
+                        targets: notification,
+                        translateX: [0, 300],
+                        opacity: [1, 0],
+                        duration: 300,
+                        easing: 'easeInQuad',
+                        complete: () => notification.remove()
+                    });
+                }, 4000);
+            }
+        }
+        
+        // Initialize help page
+        document.addEventListener('DOMContentLoaded', () => {
+            new HelpPage();
+        });
+    </script>
+</body>
+</html>
