@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Typeme</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Core Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        :root {
+            --primary-blue: #2563eb;
+            --success-green: #10b981;
+            --error-red: #ef4444;
+            --neutral-gray: #6b7280;
+            --background: #f8fafc;
+            --accent-pink: #ec4899;
+            --deep-charcoal: #1f2937;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--background);
+        }
+        
+        .settings-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin: 1rem 0;
+        }
+        
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+        
+        .setting-label {
+            flex: 1;
+        }
+        
+        .setting-description {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: #e5e7eb;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .toggle-switch.active {
+            background: var(--primary-blue);
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .toggle-switch.active::after {
+            transform: translateX(26px);
+        }
+        
+        .slider {
+            width: 200px;
+            height: 6px;
+            border-radius: 3px;
+            background: #e5e7eb;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-blue);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-blue);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .color-picker {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .preview-area {
+            background: #f9fafb;
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            margin: 1rem 0;
+        }
+        
+        .save-btn {
+            background: var(--success-green);
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .save-btn:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+        
+        .reset-btn {
+            background: #ef4444;
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            margin-left: 1rem;
+        }
+        
+        .reset-btn:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+        
+        .tab-navigation {
+            display: flex;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 2rem;
+        }
+        
+        .tab-btn {
+            padding: 1rem 2rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: #6b7280;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+        
+        .tab-btn.active {
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-blue);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .goal-input {
+            width: 100px;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .custom-text-area {
+            width: 100%;
+            min-height: 200px;
+            padding: 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            resize: vertical;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-gray-900">Typeme</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="index.html" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Test</a>
+                        <a href="statistics.html" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Statistics</a>
+                        <a href="settings.html" class="text-blue-600 font-medium px-3 py-2 rounded-md text-sm">Settings</a>
+                        <a href="help.html" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Help</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Settings</h2>
+                <p class="text-gray-600">Customize your typing test experience and preferences</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Tab Navigation -->
+        <div class="tab-navigation">
+            <button class="tab-btn active" data-tab="general">General</button>
+            <button class="tab-btn" data-tab="typing">Typing Test</button>
+            <button class="tab-btn" data-tab="appearance">Appearance</button>
+            <button class="tab-btn" data-tab="audio">Audio</button>
+            <button class="tab-btn" data-tab="data">Data</button>
+        </div>
+
+        <!-- General Settings -->
+        <div class="tab-content active" id="general">
+            <div class="settings-card">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">General Preferences</h3>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div class="font-medium">Daily Goal</div>
+                        <div class="setting-description">Set your target WPM for daily practice</div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <input type="number" id="dailyGoal" class="goal-input" min="10" max="200" value="50">
+                        <span class="text-gray-600">WPM</span>
+                    </div>
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div class="font-medium">Default Test Duration</div>
+                        <div class="setting-description">Default time limit for typing tests</div>
+                    </div>
+                    <select id="defaultDuration" class="border rounded px-3 py-2">
+                        <option value="60">1 Minute</option>
+                        <option value="180">3 Minutes</option>
+                        <option value="300">5 Minutes</option>
+                        <option value="600">10 Minutes</option>
+                    </select>
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div class="font-medium">Auto-save Progress</div>
+                        <div class="setting-description">Automatically save your test results</div>
+                    </div>
+                    <div class="toggle-switch active" id="autoSave"></div>
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div class="font-medium">Show Real-time WPM</div>
+                        <div class="setting-description">Display live WPM during typing tests</div>
+                    </div>
+                    <div class="toggle-switch active" id="showRealTimeWPM"></div>
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div class="font-medium">Keyboard Shortcuts</div>
+                        <div class="setting-description">Enable keyboard shortcuts for test control</div>
+                    </div>
+                    <div class="toggle-switch active" id="keyboardShortcuts"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Typing Test Settings -->
+        <div class="tab-content" id="typing">
+            <div class="settings-card">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Typing Test Preferences</h3>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div class="font-medium">Default Difficulty</div>
+                        <div class="setting-description">Starting difficulty level for new tests</div>
+                    </div>
+                    <select id="defaultDifficulty" class="border rounded px-3 py-2">
+                        <option value="easy">Easy</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div class="font-medium">Default Category</div>
+                        <div class="setting-description">Default text category for tests</div>
+                    </div>
+                    <select id="defaultCategory" class="border rounded px-3 py-2">
+                        <option value="general" selected>General</option>
+                        <option value="technology">Technology</option>
+                        <option value="literature">Literature</option>
+                        <option value="business">Business</option>
+                    </select>
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div class="font-medium">Force Error Correction</div>
+                        <div class="setting-description">Must fix errors before continuing</div>
+                    </div>
+                    <div class="toggle-switch active" id="forceErrorCorrection"></div>
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div class="font-medium">Show Character Preview</div>
+                        <div class="setting-description">Highlight current typing position</div>
+                    </div>
+                    <div class="toggle-switch active" id="showCharPreview"></div>
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div class="font-medium">Punctuation in Tests</div>
+                        <div class="setting-description">Include punctuation in typing texts</div>
+                    </div>
+                    <div class="toggle-switch active" id="includePunctuation"></div>
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div class="font-medium">Numbers in Tests</div>
+                        <div class="setting-description">Include numbers in typing texts</div>
+                    </div>
+                    <div class="toggle-switch" id="includeNumbers"></div>
+                </div>
+            </div>
+            
+            <!-- Custom Text -->
+            <div class="settings-card">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Custom Practice Text</h3>
+                <div class="setting-description mb-4">
+                    Add your own text for personalized typing practice. Each line will be used as a separate test.
+                </div>
+                
+                <textarea id="customTexts" class="custom-text-area" placeholder="Enter your custom practice text here...&#10;Each line can be a separate practice text.&#10;You can add multiple lines for variety."></textarea>
+                
+                <div class="flex justify-between items-center mt-4">
+                    <div class="text-sm text-gray-600">
+                        <span id="customTextCount">0</span> custom texts added
+                    </div>
+                    <div class="space-x-2">
+                        <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors" id="addCustomText">
+                            Add Text
+                        </button>
+                        <button class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors" id="clearCustomTexts">
+                            Clear All
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appearance Settings -->
+        <div class="tab-content" id="appearance">
+            <div class="settings-card">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Visual Preferences</h3>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div class="font-medium">Theme</div>
+                        <div class="setting-description">Choose your preferred color theme</div>
+                    </div>
+                    <select id="themeSelect" class="border rounded px-3 py-2">
+                        <option value="light" selected>Light</option>
+                        <option value="dark">Dark</option>
+                        <option value="auto">Auto (System)</option>
+                    </select>
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div class="font-medium">Font Size</div>
+                        <div class="setting-description">Size of text in typing area</div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm">Small</span>
+                        <input type="range" id="fontSizeSlider" class="slider" min="14" max="24" value="18">
+                        <span class="text-sm">Large</span>
+                    </div>
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div class="font-medium">Font Family</div>
+                        <div class="setting-description">Font used for typing text</div>
+                    </div>
+                    <select id="fontFamily" class="border rounded px-3 py-2">
+                        <option value="JetBrains Mono" selected>JetBrains Mono</option>
+                        <option value="Fira Code">Fira Code</option>
+                        <option value="Source Code Pro">Source Code Pro</option>
+                        <option value="Consolas">Consolas</option>
+                        <option value="Monaco">Monaco</option>
+                    </select>
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div class="font-medium">Success Color</div>
+                        <div class="setting-description">Color for correct characters</div>
+                    </div>
+                    <input type="color" id="successColor" class="color-picker" value="#10b981">
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div class="font-medium">Error Color</div>
+                        <div class="setting-description">Color for incorrect characters</div>
+                    </div>
+                    <input type="color" id="errorColor" class="color-picker" value="#ef4444">
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div class="font-medium">Animations</div>
+                        <div class="setting-description">Enable visual animations and effects</div>
+                    </div>
+                    <div class="toggle-switch active" id="animationsEnabled"></div>
+                </div>
+                
+                <!-- Preview Area -->
+                <div class="preview-area">
+                    <h4 class="font-medium mb-2">Preview</h4>
+                    <div id="textPreview" style="font-size: 18px; font-family: 'JetBrains Mono', monospace;">
+                        The quick brown fox jumps over the lazy dog.
+                        <span style="background-color: rgba(16, 185, 129, 0.2); color: #10b981;">This is correct text.</span>
+                        <span style="background-color: rgba(239, 68, 68, 0.3); color: #ef4444;">This is incorrect text.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Audio Settings -->
+        <div class="tab-content" id="audio">
+            <div class="settings-card">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Audio Preferences</h3>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div class="font-medium">Sound Effects</div>
+                        <div class="setting-description">Enable typing and notification sounds</div>
+                    </div>
+                    <div class="toggle-switch active" id="soundEffects"></div>
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div class="font-medium">Master Volume</div>
+                        <div class="setting-description">Overall volume level</div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm">Off</span>
+                        <input type="range" id="masterVolume" class="slider" min="0" max="100" value="70">
+                        <span class="text-sm">Max</span>
+                    </div>
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div class="font-medium">Keypress Volume</div>
+                        <div class="setting-description">Volume of typing sounds</div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm">Off</span>
+                        <input type="range" id="keypressVolume" class="slider" min="0" max="100" value="50">
+                        <span class="text-sm">Max</span>
+                    </div>
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div class="font-medium">Error Sound Volume</div>
+                        <div class="setting-description">Volume of error notification sounds</div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm">Off</span>
+                        <input type="range" id="errorVolume" class="slider" min="0" max="100" value="60">
+                        <span class="text-sm">Max</span>
+                    </div>
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div class="font-medium">Achievement Sound Volume</div>
+                        <div class="setting-description">Volume of achievement notifications</div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm">Off</span>
+                        <input type="range" id="achievementVolume" class="slider" min="0" max="100" value="80">
+                        <span class="text-sm">Max</span>
+                    </div>
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div class="font-medium">Sound Profile</div>
+                        <div class="setting-description">Choose your preferred sound theme</div>
+                    </div>
+                    <select id="soundProfile" class="border rounded px-3 py-2">
+                        <option value="mechanical" selected>Mechanical Keyboard</option>
+                        <option value="membrane">Membrane Keyboard</option>
+                        <option value="typewriter">Typewriter</option>
+                        <option value="minimal">Minimal</option>
+                    </select>
+                </div>
+                
+                <!-- Test Sound Button -->
+                <div class="text-center mt-4">
+                    <button class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors" id="testSound">
+                        Test Sound
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Settings -->
+        <div class="tab-content" id="data">
+            <div class="settings-card">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Data Management</h3>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div class="font-medium">Export Data</div>
+                        <div class="setting-description">Download all your typing statistics and settings</div>
+                    </div>
+                    <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors" id="exportSettings">
+                        Export
+                    </button>
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div class="font-medium">Import Data</div>
+                        <div class="setting-description">Import previously exported data</div>
+                    </div>
+                    <input type="file" id="importFile" accept=".json" class="hidden">
+                    <button class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors" id="importSettings">
+                        Import
+                    </button>
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div class="font-medium">Reset All Data</div>
+                        <div class="setting-description">Clear all statistics, achievements, and settings</div>
+                    </div>
+                    <button class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors" id="resetData">
+                        Reset
+                    </button>
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div class="font-medium">Auto-backup</div>
+                        <div class="setting-description">Automatically backup data to browser storage</div>
+                    </div>
+                    <div class="toggle-switch active" id="autoBackup"></div>
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div class="font-medium">Data Retention</div>
+                        <div class="setting-description">How long to keep test history</div>
+                    </div>
+                    <select id="dataRetention" class="border rounded px-3 py-2">
+                        <option value="30">30 days</option>
+                        <option value="90">90 days</option>
+                        <option value="365">1 year</option>
+                        <option value="forever" selected>Forever</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Storage Information -->
+            <div class="settings-card">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Storage Information</h3>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span>Total Tests:</span>
+                        <span id="totalTestsCount">0</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Achievements:</span>
+                        <span id="achievementsCount">0</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Custom Texts:</span>
+                        <span id="customTextsCount">0</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Storage Used:</span>
+                        <span id="storageUsed">0 KB</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Save and Reset Buttons -->
+        <div class="text-center mt-8">
+            <button class="save-btn" id="saveSettings">Save All Settings</button>
+            <button class="reset-btn" id="resetSettings">Reset to Defaults</button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center text-gray-600">
+                <p>&copy; 2025 NoahLi404</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        class SettingsPage {
+            constructor() {
+                this.settings = this.loadSettings();
+                this.init();
+            }
+            
+            init() {
+                this.setupEventListeners();
+                this.loadSettingsUI();
+                this.updatePreview();
+                this.updateStorageInfo();
+            }
+            
+            setupEventListeners() {
+                // Tab navigation
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
+                });
+                
+                // Toggle switches
+                document.querySelectorAll('.toggle-switch').forEach(toggle => {
+                    toggle.addEventListener('click', (e) => this.toggleSwitch(e.target));
+                });
+                
+                // Sliders and inputs
+                document.getElementById('fontSizeSlider').addEventListener('input', () => this.updatePreview());
+                document.getElementById('fontFamily').addEventListener('change', () => this.updatePreview());
+                document.getElementById('successColor').addEventListener('input', () => this.updatePreview());
+                document.getElementById('errorColor').addEventListener('input', () => this.updatePreview());
+                
+                // Custom text management
+                document.getElementById('addCustomText').addEventListener('click', () => this.addCustomText());
+                document.getElementById('clearCustomTexts').addEventListener('click', () => this.clearCustomTexts());
+                document.getElementById('customTexts').addEventListener('input', () => this.updateCustomTextCount());
+                
+                // Audio test
+                document.getElementById('testSound').addEventListener('click', () => this.testSound());
+                
+                // Data management
+                document.getElementById('exportSettings').addEventListener('click', () => this.exportData());
+                document.getElementById('importSettings').addEventListener('click', () => this.importData());
+                document.getElementById('resetData').addEventListener('click', () => this.resetData());
+                document.getElementById('importFile').addEventListener('change', (e) => this.handleFileImport(e));
+                
+                // Save and reset buttons
+                document.getElementById('saveSettings').addEventListener('click', () => this.saveSettings());
+                document.getElementById('resetSettings').addEventListener('click', () => this.resetToDefaults());
+            }
+            
+            switchTab(tabName) {
+                // Update tab buttons
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+                
+                // Update tab content
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                document.getElementById(tabName).classList.add('active');
+                
+                // Animate tab switch
+                anime({
+                    targets: `#${tabName}`,
+                    opacity: [0, 1],
+                    translateY: [20, 0],
+                    duration: 300,
+                    easing: 'easeOutQuad'
+                });
+            }
+            
+            toggleSwitch(element) {
+                element.classList.toggle('active');
+                
+                // Animate toggle
+                anime({
+                    targets: element,
+                    scale: [1, 1.1, 1],
+                    duration: 200,
+                    easing: 'easeOutQuad'
+                });
+            }
+            
+            loadSettingsUI() {
+                // Load all settings into UI elements
+                Object.keys(this.settings).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        if (element.type === 'checkbox') {
+                            element.checked = this.settings[key];
+                        } else if (element.classList.contains('toggle-switch')) {
+                            element.classList.toggle('active', this.settings[key]);
+                        } else {
+                            element.value = this.settings[key];
+                        }
+                    }
+                });
+                
+                this.updateCustomTextCount();
+            }
+            
+            updatePreview() {
+                const fontSize = document.getElementById('fontSizeSlider').value;
+                const fontFamily = document.getElementById('fontFamily').value;
+                const successColor = document.getElementById('successColor').value;
+                const errorColor = document.getElementById('errorColor').value;
+                
+                const preview = document.getElementById('textPreview');
+                preview.style.fontSize = fontSize + 'px';
+                preview.style.fontFamily = fontFamily;
+                
+                // Update colors in preview
+                const correctSpan = preview.querySelector('span:first-of-type');
+                const errorSpan = preview.querySelector('span:last-of-type');
+                
+                if (correctSpan) {
+                    correctSpan.style.color = successColor;
+                    correctSpan.style.backgroundColor = successColor + '33';
+                }
+                if (errorSpan) {
+                    errorSpan.style.color = errorColor;
+                    errorSpan.style.backgroundColor = errorColor + '4D';
+                }
+            }
+            
+            addCustomText() {
+                const textarea = document.getElementById('customTexts');
+                const text = textarea.value.trim();
+                
+                if (text) {
+                    if (!this.settings.customTexts) {
+                        this.settings.customTexts = [];
+                    }
+                    
+                    this.settings.customTexts.push(text);
+                    textarea.value = '';
+                    this.updateCustomTextCount();
+                    this.showNotification('Custom text added successfully!', 'success');
+                }
+            }
+            
+            clearCustomTexts() {
+                if (confirm('Are you sure you want to clear all custom texts?')) {
+                    this.settings.customTexts = [];
+                    document.getElementById('customTexts').value = '';
+                    this.updateCustomTextCount();
+                    this.showNotification('All custom texts cleared', 'info');
+                }
+            }
+            
+            updateCustomTextCount() {
+                const count = this.settings.customTexts ? this.settings.customTexts.length : 0;
+                document.getElementById('customTextCount').textContent = count;
+            }
+            
+            testSound() {
+                // Simple sound test using Web Audio API
+                try {
+                    const audioContext = new (AudioContext || webkitAudioContext)();
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = 800;
+                    oscillator.type = 'sine';
+                    
+                    const volume = document.getElementById('masterVolume').value / 100;
+                    gainNode.gain.setValueAtTime(volume * 0.1, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.2);
+                    
+                    this.showNotification('Sound test completed', 'success');
+                } catch (error) {
+                    this.showNotification('Sound test failed', 'error');
+                }
+            }
+            
+            exportData() {
+                const exportData = {
+                    settings: this.settings,
+                    stats: this.loadStats(),
+                    exportDate: new Date().toISOString(),
+                    version: '1.0'
+                };
+                
+                const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `typeme-backup-${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+                
+                this.showNotification('Settings exported successfully!', 'success');
+            }
+            
+            importData() {
+                document.getElementById('importFile').click();
+            }
+            
+            handleFileImport(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const importData = JSON.parse(e.target.result);
+                        
+                        if (importData.settings) {
+                            this.settings = { ...this.settings, ...importData.settings };
+                            this.saveSettings();
+                            this.loadSettingsUI();
+                        }
+                        
+                        if (importData.stats) {
+                            localStorage.setItem('typingTestStats', JSON.stringify(importData.stats));
+                        }
+                        
+                        this.showNotification('Data imported successfully!', 'success');
+                        this.updateStorageInfo();
+                    } catch (error) {
+                        this.showNotification('Invalid import file', 'error');
+                    }
+                };
+                reader.readAsText(file);
+            }
+            
+            resetData() {
+                if (confirm('Are you sure you want to reset all data? This cannot be undone.')) {
+                    localStorage.removeItem('typingTestStats');
+                    localStorage.removeItem('typingTestSettings');
+                    this.settings = this.getDefaultSettings();
+                    this.loadSettingsUI();
+                    this.updateStorageInfo();
+                    this.showNotification('All data has been reset', 'info');
+                }
+            }
+            
+            saveSettings() {
+                // Collect all settings from UI
+                const newSettings = this.getDefaultSettings();
+                
+                // Update settings from UI elements
+                Object.keys(newSettings).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        if (element.classList.contains('toggle-switch')) {
+                            newSettings[key] = element.classList.contains('active');
+                        } else if (element.type === 'number') {
+                            newSettings[key] = parseInt(element.value) || newSettings[key];
+                        } else {
+                            newSettings[key] = element.value;
+                        }
+                    }
+                });
+                
+                // Preserve custom texts
+                newSettings.customTexts = this.settings.customTexts || [];
+                
+                this.settings = newSettings;
+                localStorage.setItem('typingTestSettings', JSON.stringify(this.settings));
+                
+                this.showNotification('Settings saved successfully!', 'success');
+                
+                // Animate save button
+                anime({
+                    targets: '#saveSettings',
+                    scale: [1, 1.05, 1],
+                    duration: 300,
+                    easing: 'easeOutQuad'
+                });
+            }
+            
+            resetToDefaults() {
+                if (confirm('Are you sure you want to reset all settings to defaults?')) {
+                    this.settings = this.getDefaultSettings();
+                    this.loadSettingsUI();
+                    this.updatePreview();
+                    this.showNotification('Settings reset to defaults', 'info');
+                }
+            }
+            
+            updateStorageInfo() {
+                const stats = this.loadStats();
+                const totalTests = Object.values(stats.dailyStats).reduce((sum, day) => sum + day.tests.length, 0);
+                const achievements = stats.achievements.length;
+                const customTexts = this.settings.customTexts ? this.settings.customTexts.length : 0;
+                
+                // Calculate storage usage (rough estimate)
+                const totalData = JSON.stringify({ stats, settings: this.settings });
+                const storageUsed = Math.round(totalData.length / 1024);
+                
+                document.getElementById('totalTestsCount').textContent = totalTests;
+                document.getElementById('achievementsCount').textContent = achievements;
+                document.getElementById('customTextsCount').textContent = customTexts;
+                document.getElementById('storageUsed').textContent = storageUsed + ' KB';
+            }
+            
+            loadStats() {
+                const defaultStats = {
+                    dailyStats: {},
+                    bestWPM: 0,
+                    currentStreak: 0,
+                    lastActiveDate: null,
+                    achievements: []
+                };
+                
+                try {
+                    const saved = localStorage.getItem('typingTestStats');
+                    return saved ? { ...defaultStats, ...JSON.parse(saved) } : defaultStats;
+                } catch (error) {
+                    return defaultStats;
+                }
+            }
+            
+            getDefaultSettings() {
+                return {
+                    dailyGoal: 50,
+                    defaultDuration: 60,
+                    autoSave: true,
+                    showRealTimeWPM: true,
+                    keyboardShortcuts: true,
+                    defaultDifficulty: 'medium',
+                    defaultCategory: 'general',
+                    forceErrorCorrection: true,
+                    showCharPreview: true,
+                    includePunctuation: true,
+                    includeNumbers: false,
+                    themeSelect: 'light',
+                    fontSizeSlider: 18,
+                    fontFamily: 'JetBrains Mono',
+                    successColor: '#10b981',
+                    errorColor: '#ef4444',
+                    animationsEnabled: true,
+                    soundEffects: true,
+                    masterVolume: 70,
+                    keypressVolume: 50,
+                    errorVolume: 60,
+                    achievementVolume: 80,
+                    soundProfile: 'mechanical',
+                    autoBackup: true,
+                    dataRetention: 'forever'
+                };
+            }
+            
+            loadSettings() {
+                try {
+                    const saved = localStorage.getItem('typingTestSettings');
+                    return saved ? { ...this.getDefaultSettings(), ...JSON.parse(saved) } : this.getDefaultSettings();
+                } catch (error) {
+                    return this.getDefaultSettings();
+                }
+            }
+            
+            showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg text-white z-50 ${
+                    type === 'success' ? 'bg-green-500' :
+                    type === 'error' ? 'bg-red-500' :
+                    'bg-blue-500'
+                }`;
+                notification.textContent = message;
+                
+                document.body.appendChild(notification);
+                
+                anime({
+                    targets: notification,
+                    translateX: [300, 0],
+                    opacity: [0, 1],
+                    duration: 300,
+                    easing: 'easeOutQuad'
+                });
+                
+                setTimeout(() => {
+                    anime({
+                        targets: notification,
+                        translateX: [0, 300],
+                        opacity: [1, 0],
+                        duration: 300,
+                        easing: 'easeInQuad',
+                        complete: () => notification.remove()
+                    });
+                }, 3000);
+            }
+        }
+        
+        // Initialize settings page
+        document.addEventListener('DOMContentLoaded', () => {
+            new SettingsPage();
+        });
+    </script>
+</body>
+</html>
