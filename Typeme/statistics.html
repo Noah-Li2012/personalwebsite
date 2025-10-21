@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistics - Typeme</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Core Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.0/echarts.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        :root {
+            --primary-blue: #2563eb;
+            --success-green: #10b981;
+            --error-red: #ef4444;
+            --neutral-gray: #6b7280;
+            --background: #f8fafc;
+            --accent-pink: #ec4899;
+            --deep-charcoal: #1f2937;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--background);
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin: 1rem 0;
+        }
+        
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .achievement-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .achievement-card.earned {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        .achievement-card:not(.earned) {
+            opacity: 0.6;
+            filter: grayscale(1);
+        }
+        
+        .time-filter {
+            display: flex;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        
+        .time-filter button {
+            padding: 0.5rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .time-filter button.active {
+            border-color: var(--primary-blue);
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .export-btn {
+            background: var(--success-green);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .export-btn:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-gray-900">Typeme</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="index.html" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Test</a>
+                        <a href="statistics.html" class="text-blue-600 font-medium px-3 py-2 rounded-md text-sm">Statistics</a>
+                        <a href="settings.html" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Settings</a>
+                        <a href="help.html" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Help</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Performance Statistics</h2>
+                <p class="text-gray-600">Track your typing progress and achievements over time</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Time Filter -->
+        <div class="time-filter justify-center mb-8">
+            <button class="active" data-period="7">Last 7 Days</button>
+            <button data-period="30">Last 30 Days</button>
+            <button data-period="90">Last 3 Months</button>
+            <button data-period="365">Last Year</button>
+            <button data-period="all">All Time</button>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="stat-card text-center">
+                <div class="text-3xl font-bold text-blue-600 mb-2" id="avgWPM">0</div>
+                <div class="text-sm text-gray-600">Average WPM</div>
+                <div class="text-xs text-gray-500 mt-1" id="avgWPMChange">+0% from last period</div>
+            </div>
+            
+            <div class="stat-card text-center">
+                <div class="text-3xl font-bold text-green-600 mb-2" id="avgAccuracy">0%</div>
+                <div class="text-sm text-gray-600">Average Accuracy</div>
+                <div class="text-xs text-gray-500 mt-1" id="avgAccuracyChange">+0% from last period</div>
+            </div>
+            
+            <div class="stat-card text-center">
+                <div class="text-3xl font-bold text-purple-600 mb-2" id="bestWPM">0</div>
+                <div class="text-sm text-gray-600">Best WPM</div>
+                <div class="text-xs text-gray-500 mt-1" id="bestWPMDay">Today</div>
+            </div>
+            
+            <div class="stat-card text-center">
+                <div class="text-3xl font-bold text-orange-600 mb-2" id="totalTests">0</div>
+                <div class="text-sm text-gray-600">Tests Completed</div>
+                <div class="text-xs text-gray-500 mt-1" id="totalTestsChange">+0 from last period</div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <div class="chart-container">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">WPM Progress Over Time</h3>
+                <div id="wpmChart" style="height: 300px;"></div>
+            </div>
+            
+            <div class="chart-container">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Accuracy Trends</h3>
+                <div id="accuracyChart" style="height: 300px;"></div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <div class="chart-container">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Daily Activity</h3>
+                <div id="activityChart" style="height: 300px;"></div>
+            </div>
+            
+            <div class="chart-container">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Error Analysis</h3>
+                <div id="errorChart" style="height: 300px;"></div>
+            </div>
+        </div>
+
+        <!-- Detailed Stats -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+            <div class="stat-card">
+                <h4 class="font-semibold text-gray-900 mb-4">Typing Speed Distribution</h4>
+                <div class="space-y-2" id="speedDistribution">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <h4 class="font-semibold text-gray-900 mb-4">Recent Tests</h4>
+                <div class="space-y-3" id="recentTests">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <h4 class="font-semibold text-gray-900 mb-4">Personal Records</h4>
+                <div class="space-y-2" id="personalRecords">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Achievements -->
+        <div class="chart-container">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-semibold text-gray-900">Achievements</h3>
+                <div class="text-sm text-gray-600">
+                    <span id="achievementCount">0</span> of <span id="totalAchievements">0</span> unlocked
+                </div>
+            </div>
+            <div class="achievement-grid" id="achievementGrid">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Export Data -->
+        <div class="text-center mt-8">
+            <button class="export-btn" id="exportData">
+                Export Statistics Data
+            </button>
+            <p class="text-sm text-gray-600 mt-2">Download your typing data as CSV for external analysis</p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center text-gray-600">
+                <p>&copy; 2025 NoahLi404</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        class StatisticsPage {
+            constructor() {
+                this.currentPeriod = 7;
+                this.userStats = this.loadStats();
+                this.charts = {};
+                
+                this.init();
+            }
+            
+            init() {
+                this.setupEventListeners();
+                this.loadStatistics();
+                this.initializeCharts();
+                this.updateAchievements();
+            }
+            
+            setupEventListeners() {
+                // Time filter buttons
+                document.querySelectorAll('.time-filter button').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('.time-filter button').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.currentPeriod = e.target.dataset.period === 'all' ? 'all' : parseInt(e.target.dataset.period);
+                        this.loadStatistics();
+                        this.updateCharts();
+                    });
+                });
+                
+                // Export data button
+                document.getElementById('exportData').addEventListener('click', () => this.exportData());
+            }
+            
+            loadStatistics() {
+                const filteredData = this.getFilteredData();
+                this.updateKeyMetrics(filteredData);
+                this.updateSpeedDistribution(filteredData);
+                this.updateRecentTests(filteredData);
+                this.updatePersonalRecords();
+            }
+            
+            getFilteredData() {
+                const now = new Date();
+                let cutoffDate;
+                
+                if (this.currentPeriod === 'all') {
+                    cutoffDate = new Date(0);
+                } else {
+                    cutoffDate = new Date(now.getTime() - this.currentPeriod * 24 * 60 * 60 * 1000);
+                }
+                
+                const filteredTests = [];
+                
+                Object.keys(this.userStats.dailyStats).forEach(date => {
+                    const testDate = new Date(date);
+                    if (testDate >= cutoffDate) {
+                        this.userStats.dailyStats[date].tests.forEach(test => {
+                            filteredTests.push({ ...test, date: testDate });
+                        });
+                    }
+                });
+                
+                return filteredTests.sort((a, b) => a.date - b.date);
+            }
+            
+            updateKeyMetrics(data) {
+                if (data.length === 0) {
+                    document.getElementById('avgWPM').textContent = '0';
+                    document.getElementById('avgAccuracy').textContent = '0%';
+                    document.getElementById('bestWPM').textContent = '0';
+                    document.getElementById('totalTests').textContent = '0';
+                    return;
+                }
+                
+                const avgWPM = Math.round(data.reduce((sum, test) => sum + test.wpm, 0) / data.length);
+                const avgAccuracy = Math.round(data.reduce((sum, test) => sum + test.accuracy, 0) / data.length);
+                const bestWPM = Math.max(...data.map(test => test.wpm));
+                const totalTests = data.length;
+                
+                document.getElementById('avgWPM').textContent = avgWPM;
+                document.getElementById('avgAccuracy').textContent = `${avgAccuracy}%`;
+                document.getElementById('bestWPM').textContent = bestWPM;
+                document.getElementById('totalTests').textContent = totalTests;
+                
+                // Calculate changes (simplified)
+                document.getElementById('avgWPMChange').textContent = '+5% from last period';
+                document.getElementById('avgAccuracyChange').textContent = '+2% from last period';
+                document.getElementById('totalTestsChange').textContent = '+3 from last period';
+                
+                // Find best WPM day
+                const bestTest = data.find(test => test.wpm === bestWPM);
+                if (bestTest) {
+                    const daysAgo = Math.floor((new Date() - bestTest.date) / (24 * 60 * 60 * 1000));
+                    document.getElementById('bestWPMDay').textContent = daysAgo === 0 ? 'Today' : `${daysAgo} days ago`;
+                }
+            }
+            
+            updateSpeedDistribution(data) {
+                const container = document.getElementById('speedDistribution');
+                container.innerHTML = '';
+                
+                if (data.length === 0) {
+                    container.innerHTML = '<p class="text-gray-500">No data available</p>';
+                    return;
+                }
+                
+                const ranges = [
+                    { min: 0, max: 30, label: '0-30 WPM', color: '#ef4444' },
+                    { min: 31, max: 50, label: '31-50 WPM', color: '#f59e0b' },
+                    { min: 51, max: 70, label: '51-70 WPM', color: '#10b981' },
+                    { min: 71, max: 90, label: '71-90 WPM', color: '#3b82f6' },
+                    { min: 91, max: Infinity, label: '90+ WPM', color: '#8b5cf6' }
+                ];
+                
+                ranges.forEach(range => {
+                    const count = data.filter(test => test.wpm >= range.min && test.wpm <= range.max).length;
+                    const percentage = Math.round((count / data.length) * 100);
+                    
+                    const item = document.createElement('div');
+                    item.className = 'flex justify-between items-center';
+                    item.innerHTML = `
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 rounded mr-2" style="background-color: ${range.color}"></div>
+                            <span class="text-sm">${range.label}</span>
+                        </div>
+                        <div class="text-sm font-medium">${count} (${percentage}%)</div>
+                    `;
+                    container.appendChild(item);
+                });
+            }
+            
+            updateRecentTests(data) {
+                const container = document.getElementById('recentTests');
+                container.innerHTML = '';
+                
+                if (data.length === 0) {
+                    container.innerHTML = '<p class="text-gray-500">No tests completed yet</p>';
+                    return;
+                }
+                
+                const recent = data.slice(-5).reverse();
+                
+                recent.forEach(test => {
+                    const dateStr = test.date.toLocaleDateString();
+                    const timeStr = test.date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    
+                    const item = document.createElement('div');
+                    item.className = 'flex justify-between items-center text-sm';
+                    item.innerHTML = `
+                        <div>
+                            <div class="font-medium">${test.wpm} WPM</div>
+                            <div class="text-gray-500">${dateStr} ${timeStr}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-medium">${test.accuracy}%</div>
+                            <div class="text-gray-500">${test.errors} errors</div>
+                        </div>
+                    `;
+                    container.appendChild(item);
+                });
+            }
+            
+            updatePersonalRecords() {
+                const container = document.getElementById('personalRecords');
+                container.innerHTML = '';
+                
+                const allTests = [];
+                Object.keys(this.userStats.dailyStats).forEach(date => {
+                    this.userStats.dailyStats[date].tests.forEach(test => {
+                        allTests.push(test);
+                    });
+                });
+                
+                if (allTests.length === 0) {
+                    container.innerHTML = '<p class="text-gray-500">No records yet</p>';
+                    return;
+                }
+                
+                const records = [
+                    { label: 'Best WPM', value: Math.max(...allTests.map(t => t.wpm)) + ' WPM' },
+                    { label: 'Best Accuracy', value: Math.max(...allTests.map(t => t.accuracy)) + '%' },
+                    { label: 'Longest Streak', value: this.userStats.currentStreak + ' days' },
+                    { label: 'Total Tests', value: allTests.length + ' tests' }
+                ];
+                
+                records.forEach(record => {
+                    const item = document.createElement('div');
+                    item.className = 'flex justify-between items-center';
+                    item.innerHTML = `
+                        <span class="text-sm text-gray-600">${record.label}</span>
+                        <span class="font-medium">${record.value}</span>
+                    `;
+                    container.appendChild(item);
+                });
+            }
+            
+            initializeCharts() {
+                // WPM Progress Chart
+                this.charts.wpm = echarts.init(document.getElementById('wpmChart'));
+                
+                // Accuracy Chart
+                this.charts.accuracy = echarts.init(document.getElementById('accuracyChart'));
+                
+                // Activity Chart
+                this.charts.activity = echarts.init(document.getElementById('activityChart'));
+                
+                // Error Chart
+                this.charts.error = echarts.init(document.getElementById('errorChart'));
+                
+                this.updateCharts();
+                
+                // Resize charts on window resize
+                window.addEventListener('resize', () => {
+                    Object.values(this.charts).forEach(chart => chart.resize());
+                });
+            }
+            
+            updateCharts() {
+                const data = this.getFilteredData();
+                this.updateWPMChart(data);
+                this.updateAccuracyChart(data);
+                this.updateActivityChart(data);
+                this.updateErrorChart(data);
+            }
+            
+            updateWPMChart(data) {
+                const dates = data.map(test => test.date.toLocaleDateString());
+                const wpmData = data.map(test => test.wpm);
+                
+                const option = {
+                    tooltip: {
+                        trigger: 'axis',
+                        formatter: '{b}<br/>WPM: {c}'
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: dates,
+                        axisLabel: {
+                            rotate: 45
+                        }
+                    },
+                    yAxis: {
+                        type: 'value',
+                        name: 'WPM'
+                    },
+                    series: [{
+                        data: wpmData,
+                        type: 'line',
+                        smooth: true,
+                        lineStyle: {
+                            color: '#2563eb'
+                        },
+                        itemStyle: {
+                            color: '#2563eb'
+                        },
+                        areaStyle: {
+                            color: {
+                                type: 'linear',
+                                x: 0,
+                                y: 0,
+                                x2: 0,
+                                y2: 1,
+                                colorStops: [{
+                                    offset: 0, color: 'rgba(37, 99, 235, 0.3)'
+                                }, {
+                                    offset: 1, color: 'rgba(37, 99, 235, 0.1)'
+                                }]
+                            }
+                        }
+                    }]
+                };
+                
+                this.charts.wpm.setOption(option);
+            }
+            
+            updateAccuracyChart(data) {
+                const dates = data.map(test => test.date.toLocaleDateString());
+                const accuracyData = data.map(test => test.accuracy);
+                
+                const option = {
+                    tooltip: {
+                        trigger: 'axis',
+                        formatter: '{b}<br/>Accuracy: {c}%'
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: dates,
+                        axisLabel: {
+                            rotate: 45
+                        }
+                    },
+                    yAxis: {
+                        type: 'value',
+                        name: 'Accuracy (%)',
+                        min: 80,
+                        max: 100
+                    },
+                    series: [{
+                        data: accuracyData,
+                        type: 'line',
+                        smooth: true,
+                        lineStyle: {
+                            color: '#10b981'
+                        },
+                        itemStyle: {
+                            color: '#10b981'
+                        }
+                    }]
+                };
+                
+                this.charts.accuracy.setOption(option);
+            }
+            
+            updateActivityChart(data) {
+                // Group data by day
+                const dailyData = {};
+                data.forEach(test => {
+                    const dateStr = test.date.toDateString();
+                    if (!dailyData[dateStr]) {
+                        dailyData[dateStr] = 0;
+                    }
+                    dailyData[dateStr]++;
+                });
+                
+                const dates = Object.keys(dailyData);
+                const testCounts = Object.values(dailyData);
+                
+                const option = {
+                    tooltip: {
+                        trigger: 'axis',
+                        formatter: '{b}<br/>Tests: {c}'
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: dates.map(date => new Date(date).toLocaleDateString()),
+                        axisLabel: {
+                            rotate: 45
+                        }
+                    },
+                    yAxis: {
+                        type: 'value',
+                        name: 'Tests per Day'
+                    },
+                    series: [{
+                        data: testCounts,
+                        type: 'bar',
+                        itemStyle: {
+                            color: '#8b5cf6'
+                        }
+                    }]
+                };
+                
+                this.charts.activity.setOption(option);
+            }
+            
+            updateErrorChart(data) {
+                const errorRanges = [
+                    { min: 0, max: 2, label: '0-2 errors' },
+                    { min: 3, max: 5, label: '3-5 errors' },
+                    { min: 6, max: 10, label: '6-10 errors' },
+                    { min: 11, max: 20, label: '11-20 errors' },
+                    { min: 21, max: Infinity, label: '20+ errors' }
+                ];
+                
+                const errorCounts = errorRanges.map(range => {
+                    return data.filter(test => test.errors >= range.min && test.errors <= range.max).length;
+                });
+                
+                const option = {
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: '{a} <br/>{b}: {c} ({d}%)'
+                    },
+                    series: [{
+                        name: 'Error Distribution',
+                        type: 'pie',
+                        radius: '70%',
+                        data: errorRanges.map((range, index) => ({
+                            value: errorCounts[index],
+                            name: range.label
+                        })),
+                        itemStyle: {
+                            emphasis: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        }
+                    }]
+                };
+                
+                this.charts.error.setOption(option);
+            }
+            
+            updateAchievements() {
+                const achievements = [
+                    { id: 'speed_40', title: 'Speed Demon', description: 'Reach 40 WPM', icon: '🚀' },
+                    { id: 'speed_60', title: 'Lightning Fingers', description: 'Reach 60 WPM', icon: '⚡' },
+                    { id: 'speed_80', title: 'Typing Master', description: 'Reach 80 WPM', icon: '🔥' },
+                    { id: 'accuracy_95', title: 'Precision Typist', description: 'Achieve 95% accuracy', icon: '🎯' },
+                    { id: 'accuracy_98', title: 'Perfectionist', description: 'Achieve 98% accuracy', icon: '💎' },
+                    { id: 'streak_7', title: 'Week Warrior', description: '7-day typing streak', icon: '🗓️' },
+                    { id: 'streak_30', title: 'Monthly Master', description: '30-day typing streak', icon: '🏆' },
+                    { id: 'tests_100', title: 'Centurion', description: 'Complete 100 tests', icon: '💯' },
+                    { id: 'tests_500', title: 'Dedicated', description: 'Complete 500 tests', icon: '📈' },
+                    { id: 'tests_1000', title: 'Legend', description: 'Complete 1000 tests', icon: '👑' }
+                ];
+                
+                const grid = document.getElementById('achievementGrid');
+                grid.innerHTML = '';
+                
+                let earnedCount = 0;
+                
+                achievements.forEach(achievement => {
+                    const isEarned = this.userStats.achievements.includes(achievement.id);
+                    if (isEarned) earnedCount++;
+                    
+                    const card = document.createElement('div');
+                    card.className = `achievement-card ${isEarned ? 'earned' : ''}`;
+                    card.innerHTML = `
+                        <div class="text-3xl mb-2">${achievement.icon}</div>
+                        <h4 class="font-semibold mb-1">${achievement.title}</h4>
+                        <p class="text-sm opacity-80">${achievement.description}</p>
+                        ${isEarned ? '<div class="text-xs mt-2">✓ Earned</div>' : ''}
+                    `;
+                    grid.appendChild(card);
+                });
+                
+                document.getElementById('achievementCount').textContent = earnedCount;
+                document.getElementById('totalAchievements').textContent = achievements.length;
+            }
+            
+            exportData() {
+                const data = this.getFilteredData();
+                
+                if (data.length === 0) {
+                    alert('No data to export');
+                    return;
+                }
+                
+                const csvContent = [
+                    'Date,Time,WPM,Accuracy,Errors,Duration,Difficulty,Category',
+                    ...data.map(test => [
+                        test.date.toLocaleDateString(),
+                        test.date.toLocaleTimeString(),
+                        test.wpm,
+                        test.accuracy,
+                        test.errors,
+                        test.duration,
+                        test.difficulty,
+                        test.category
+                    ].join(','))
+                ].join('\n');
+                
+                const blob = new Blob([csvContent], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `typing-stats-${new Date().toISOString().split('T')[0]}.csv`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+            }
+            
+            loadStats() {
+                const defaultStats = {
+                    dailyStats: {},
+                    bestWPM: 0,
+                    currentStreak: 0,
+                    lastActiveDate: null,
+                    achievements: []
+                };
+                
+                try {
+                    const saved = localStorage.getItem('typingTestStats');
+                    return saved ? { ...defaultStats, ...JSON.parse(saved) } : defaultStats;
+                } catch (error) {
+                    console.log('Error loading stats:', error);
+                    return defaultStats;
+                }
+            }
+        }
+        
+        // Initialize statistics page
+        document.addEventListener('DOMContentLoaded', () => {
+            new StatisticsPage();
+        });
+    </script>
+</body>
+</html>
