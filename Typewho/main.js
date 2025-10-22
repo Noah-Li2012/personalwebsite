@@ -24,7 +24,7 @@ class TypingTest {
             easy: {
                 general: [
                     "The quick brown fox jumps over the lazy dog. This pangram contains every letter of the alphabet.",
-                    "Practice makes perfect when learning to type. Start slowly and focus on accuracy first.",
+                    "In typing, word based language like English uses WPM, character based language like Chinese uses CPM",
                     "Technology has changed how we communicate and work every single day in modern life."
                 ],
                 technology: [
