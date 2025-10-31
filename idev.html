@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>mWebiDev 🌌 - Made mobile web devs shine</title>
+<link rel="icon" href="screenie.png" type="image/png">
+<style>
+* {margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', sans-serif;}
+body {background:#121212; color:#eee; line-height:1.6; scroll-behavior:smooth;}
+a {text-decoration:none; color:inherit;}
+
+/* ----- NAVBAR ----- */
+nav {position: fixed; top:0; width:100%; background:#1e1e2f; display:flex; justify-content: space-between; align-items:center; padding:10px 30px; z-index:1000; box-shadow:0 2px 10px rgba(0,0,0,0.5);}
+nav .logo {font-size:1.5rem; font-weight:bold; color:#fff;}
+nav ul {list-style:none; display:flex; gap:20px;}
+nav ul li a {padding:6px 10px; border-radius:4px; transition:0.3s;}
+nav ul li a:hover {background:#333366;}
+
+/* ----- HEADER ----- */
+header {text-align:center; padding:120px 20px 60px 20px; animation: fadeIn 1s ease forwards;}
+header .logo-img {width:100px; margin-bottom:10px; border-radius:12px; transition: transform 0.5s;}
+header .logo-img:hover {transform: rotate(10deg) scale(1.05);}
+h1 {font-size:3rem; margin-bottom:10px; animation: slideDown 1s ease forwards;}
+p {font-size:1.1rem; color:#aaa; animation: fadeIn 1.5s ease forwards;}
+
+/* ----- SECTIONS ----- */
+section {max-width:900px; margin:60px auto; padding:30px 20px; background:#1e1e2f; border-radius:12px; text-align:center; opacity:0; transform: translateY(30px); transition: all 0.8s ease;}
+section.visible {opacity:1; transform: translateY(0);}
+h2 {font-size:2rem; margin-bottom:20px;}
+ul {list-style:none; margin-top:20px;}
+li {margin:10px 0; font-size:1.1rem; transition: 0.3s;}
+li:hover {color:#00ffff; transform: scale(1.05);}
+.btn {display:inline-block; margin:20px 0; padding:12px 25px; background:#333366; color:#fff; border-radius:8px; font-weight:bold; transition:0.3s; position: relative; z-index:1;}
+.btn:hover {background:#5555aa; transform: scale(1.05);}
+.btn.shining {animation: shineShake 1s infinite; z-index: 1001;} /* button shines & shakes */
+.qr-img {width:220px; border:2px solid #555; border-radius:8px; margin-top:10px; transition: transform 0.3s;}
+.qr-img:hover {transform: scale(1.05);}
+
+/* ----- FOOTER ----- */
+footer {text-align:center; margin:40px 0 20px 0; font-size:0.9rem; color:#aaa;}
+footer a {color:#ccc;}
+footer a:hover {color:#fff;}
+
+/* ----- ANIMATIONS ----- */
+@keyframes fadeIn {from {opacity:0;} to {opacity:1;}}
+@keyframes slideDown {from {transform:translateY(-30px);} to {transform:translateY(0);}}
+@keyframes shineShake {
+  0%,100% { transform: scale(1) rotate(0deg); text-shadow: 0 0 5px #00ffff; }
+  25% { transform: scale(1.05) rotate(1deg); text-shadow: 0 0 10px #00ffff; }
+  50% { transform: scale(1.1) rotate(-1deg); text-shadow: 0 0 15px #00ffff; }
+  75% { transform: scale(1.05) rotate(1deg); text-shadow: 0 0 10px #00ffff; }
+}
+
+/* ----- DARK UNIVERSE ----- */
+#dark-universe {
+    position: fixed; top:0; left:0; width:100%; height:100%;
+    background: rgba(0,0,0,0.95); backdrop-filter: blur(10px);
+    opacity:0; pointer-events:none; transition: opacity 0.8s ease;
+    z-index:999; overflow:hidden;
+}
+#dark-universe.visible {opacity:1;}
+#universe-canvas {width:100%; height:100%; display:block;}
+</style>
+</head>
+
+<body>
+
+<nav>
+    <div class="logo">mWebiDev 🌌</div>
+    <ul>
+        <li><a href="#why">Why</a></li>
+        <li><a href="#download">Download</a></li>
+    </ul>
+</nav>
+
+<header>
+    <h1>mWebiDev 🌌</h1>
+    <p>a lightweight LAN server that lets you preview your website on any device in your network before publishing it online.</p>
+    <img src="screenshot.png" alt="screenshot" class="logo-img">
+</header>
+
+<section id="why">
+    <h2>Why mWebiDev? 🌌</h2>
+    <h3>🔥 Goods</h3>
+    <ul>
+        <li>🚀 Quick & easy local web server</li>
+        <li>📂 Folder selection with token protection</li>
+        <li>📱 QR code support for instant access</li>
+        <li>📜 Real-time logs & monitoring</li>
+        <li>⚙️ Advanced settings for power users</li>
+        <li>🏠 Uses LAN - No server lag</li>
+    </ul>
+    <h3>😭 Cons</h3>
+    <ul>
+        <li>😭 Supports only LAN</li>
+        <li>😭 Supports only Windows</li>
+    </ul>
+</section>
+
+<section id="download">
+    <h2>Download</h2>
+    <a href="downloads/mWebiDev.exe" class="btn">Download Windows EXE</a>
+</section>
+
+<div id="dark-universe">
+    <canvas id="universe-canvas"></canvas>
+</div>
+
+<footer>
+    <p>© 2025 mWebiDev 🌌 | Made with 🔥 for web developers</p>
+</footer>
+
+<script>
+// ----- SECTION SCROLL ANIMATION -----
+const sections = document.querySelectorAll('section');
+function revealSections() {
+    const triggerBottom = window.innerHeight * 0.85;
+    sections.forEach(section => {
+        const sectionTop = section.getBoundingClientRect().top;
+        if(sectionTop < triggerBottom) section.classList.add('visible');
+    });
+}
+window.addEventListener('scroll', revealSections);
+window.addEventListener('load', revealSections);
+
+// ----- DARK UNIVERSE -----
+const downloadBtn = document.querySelector('.btn');
+const darkUniverse = document.getElementById('dark-universe');
+const canvas = document.getElementById('universe-canvas');
+const ctx = canvas.getContext('2d');
+
+let stars=[], blueCircles=[], shootingStars=[], flowingText=[], nebulae=[];
+let animationId=null, isAnimating=false;
+
+function resizeCanvas() {canvas.width=window.innerWidth; canvas.height=window.innerHeight;}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+function initUniverse() {
+    stars=[]; blueCircles=[]; shootingStars=[]; flowingText=[]; nebulae=[];
+    for(let i=0;i<200;i++) stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*2+1,speed:Math.random()*0.5+0.1,opacity:Math.random()*0.5+0.5,twinkle:Math.random()*0.02+0.01});
+    for(let i=0;i<40;i++) blueCircles.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*15+5,speedX:(Math.random()-0.5)*0.4,speedY:(Math.random()-0.5)*0.4,color:`rgba(${Math.floor(Math.random()*50+50)},${Math.floor(Math.random()*100+100)},255,0.3)`});
+    for(let i=0;i<5;i++) nebulae.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*200+100,color1:`rgba(${Math.random()*255},${Math.random()*255},${Math.random()*255},0.1)`,color2:`rgba(${Math.random()*255},${Math.random()*255},${Math.random()*255},0.05)`,speedX:(Math.random()-0.5)*0.1,speedY:(Math.random()-0.5)*0.1});
+    for(let i=0;i<30;i++) flowingText.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,speedY:0.8+Math.random()*0.5,opacity:0.4+Math.random()*0.6,text:['Download!','⭐','✨','🚀'][Math.floor(Math.random()*4)],size:Math.random()*20+15});
+}
+
+function addShootingStars(count=5){
+    for(let i=0;i<count;i++){
+        const direction=Math.random()>0.5?1:-1;
+        shootingStars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height/2,len:Math.random()*100+60,speedX:(Math.random()*8+4)*direction,speedY:Math.random()*4+2,opacity:1,color:`rgba(255,${Math.floor(Math.random()*100+155)},${Math.floor(Math.random()*100+155)},1)`});
+    }
+}
+
+function drawUniverse(){
+    if(!isAnimating) return;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    nebulae.forEach(n=>{
+        const grad = ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,n.r);
+        grad.addColorStop(0,n.color1); grad.addColorStop(1,n.color2);
+        ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,Math.PI*2); ctx.fillStyle=grad; ctx.fill();
+        n.x+=n.speedX; n.y+=n.speedY;
+        if(n.x<-n.r)n.x=canvas.width+n.r; if(n.x>canvas.width+n.r)n.x=-n.r;
+        if(n.y<-n.r)n.y=canvas.height+n.r; if(n.y>canvas.height+n.r)n.y=-n.r;
+    });
+
+    stars.forEach(s=>{
+        s.opacity=Math.sin(Date.now()*s.twinkle)*0.3+0.7;
+        ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fillStyle=`rgba(255,255,255,${s.opacity})`; ctx.fill();
+        s.y+=s.speed; if(s.y>canvas.height){s.y=0;s.x=Math.random()*canvas.width;}
+    });
+
+    blueCircles.forEach(c=>{
+        ctx.beginPath(); ctx.arc(c.x,c.y,c.r,0,Math.PI*2); ctx.fillStyle=c.color; ctx.fill();
+        c.x+=c.speedX; c.y+=c.speedY;
+        if(c.x<0)c.x=canvas.width; if(c.x>canvas.width)c.x=0;
+        if(c.y<0)c.y=canvas.height; if(c.y>canvas.height)c.y=0;
+    });
+
+    shootingStars.forEach((s,i)=>{
+        ctx.beginPath(); ctx.moveTo(s.x,s.y); ctx.lineTo(s.x-s.len*Math.sign(s.speedX),s.y-s.len/2);
+        ctx.strokeStyle=s.color; ctx.lineWidth=2; ctx.stroke();
+        s.x+=s.speedX; s.y+=s.speedY; s.opacity-=0.015;
+        if(s.opacity<=0) shootingStars.splice(i,1);
+    });
+
+    flowingText.forEach(f=>{
+        ctx.font=`${f.size}px Arial`; ctx.fillStyle=`rgba(0,255,255,${f.opacity})`; ctx.fillText(f.text,f.x,f.y);
+        f.y-=f.speedY; if(f.y<0) f.y=canvas.height;
+    });
+
+    animationId=requestAnimationFrame(drawUniverse);
+}
+
+downloadBtn.addEventListener('mouseenter',()=>{
+    darkUniverse.classList.add('visible'); canvas.style.display='block';
+    resizeCanvas(); downloadBtn.classList.add('shining');
+    initUniverse(); addShootingStars(10);
+    if(!isAnimating){ isAnimating=true; drawUniverse(); }
+});
+
+downloadBtn.addEventListener('mouseleave', () => {
+    downloadBtn.classList.remove('shining');
+    addShootingStars(20);
+
+    // Trigger CSS fade-out
+    darkUniverse.classList.remove('visible');
+
+    // Wait for CSS transition to finish before hiding canvas & stopping animation
+    setTimeout(() => {
+        cancelAnimationFrame(animationId);
+        isAnimating = false;
+        shootingStars = [];
+        canvas.style.display = 'none';
+    }, 800); // match your CSS transition duration
+});
+
+</script>
+
+</body>
+</html>
