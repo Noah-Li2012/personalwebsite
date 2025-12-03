@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCRemotium - Remote Control App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a1628 0%, #1a3a52 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(-45deg, #0a1628, #1a3a52, #2563eb, #0369a1);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            z-index: -1;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Floating orbs */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        .orb1 {
+            width: 300px;
+            height: 300px;
+            background: #fff;
+            top: -150px;
+            left: -150px;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .orb2 {
+            width: 200px;
+            height: 200px;
+            background: #fff;
+            bottom: -100px;
+            right: -100px;
+            animation: float 25s infinite ease-in-out reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, 30px) scale(1.1); }
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: slideDown 0.8s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 10px;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            font-size: 3.5rem;
+            animation: rotate 4s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .tagline {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 10px;
+        }
+
+        /* Main content */
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            margin-bottom: 80px;
+            animation: fadeIn 1s ease 0.3s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .features {
+            color: #fff;
+        }
+
+        .features h2 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            line-height: 1.2;
+        }
+
+        .feature-list {
+            list-style: none;
+        }
+
+        .feature-item {
+            padding: 15px 0;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            opacity: 0;
+            animation: slideIn 0.6s ease forwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .feature-item:nth-child(1) { animation-delay: 0.4s; }
+        .feature-item:nth-child(2) { animation-delay: 0.5s; }
+        .feature-item:nth-child(3) { animation-delay: 0.6s; }
+        .feature-item:nth-child(4) { animation-delay: 0.7s; }
+        .feature-item:nth-child(5) { animation-delay: 0.8s; }
+        .feature-item:nth-child(6) { animation-delay: 0.9s; }
+
+        .feature-icon {
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+        }
+
+        /* Download section */
+        .download-section {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 50px 40px;
+            backdrop-filter: blur(20px);
+            text-align: center;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            animation: fadeIn 1s ease 0.5s both;
+        }
+
+        .download-section h3 {
+            font-size: 2rem;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        .version-info {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 30px;
+        }
+
+        /* Download button */
+        .download-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #2563eb, #0369a1);
+            color: #fff;
+            padding: 18px 50px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
+            position: relative;
+            overflow: hidden;
+            margin: 10px;
+        }
+
+        .download-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .download-btn:hover::before {
+            left: 100%;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(37, 99, 235, 0.6);
+            background: linear-gradient(135deg, #0369a1, #0284c7);
+        }
+
+        .download-btn:hover::after {
+            content: 'Error: Permission (not) Denied 😏';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.9rem;
+            color: #fff;
+            white-space: nowrap;
+            animation: pixelate 0.1s infinite;
+        }
+
+        @keyframes pixelate {
+            0%, 100% { text-shadow: 2px 2px 0px rgba(0, 255, 255, 0.8), -2px -2px 0px rgba(255, 0, 255, 0.8); }
+            50% { text-shadow: -2px 2px 0px rgba(255, 0, 255, 0.8), 2px -2px 0px rgba(0, 255, 255, 0.8); }
+        }
+
+        .download-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* System requirements */
+        .requirements {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .req-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            color: rgba(255, 255, 255, 0.9);
+            text-align: left;
+        }
+
+        .req-card h4 {
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .req-card ul {
+            margin-left: 20px;
+            font-size: 0.95rem;
+        }
+
+        .req-card li {
+            margin-bottom: 8px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            padding-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 80px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .logo {
+                font-size: 2.5rem;
+            }
+
+            .features h2 {
+                font-size: 1.8rem;
+            }
+
+            .download-section {
+                padding: 30px 20px;
+            }
+
+            .download-btn {
+                padding: 15px 40px;
+                font-size: 1rem;
+            }
+        }
+
+        /* Easter egg - konami code */
+        .easter-egg-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            color: #00ff00;
+            padding: 40px 60px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            text-align: center;
+            z-index: 9999;
+            display: none;
+            border: 2px solid #00ff00;
+            box-shadow: 0 0 20px #00ff00;
+            animation: easterEggAppear 0.5s ease;
+        }
+
+        @keyframes easterEggAppear {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        /* Matrix rain effect */
+        .matrix-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9998;
+            display: none;
+            pointer-events: none;
+        }
+
+        /* Glitch effect */
+        .glitch {
+            animation: glitch 0.3s;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(2px, 2px); }
+            50% { transform: translate(-2px, -2px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        /* Secret button */
+        .secret-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            font-size: 1.5rem;
+            z-index: 100;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .secret-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        /* Terminal effect */
+        .terminal {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.95);
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            max-width: 300px;
+            border: 1px solid #00ff00;
+            z-index: 100;
+            display: none;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .terminal-line {
+            margin: 5px 0;
+            word-break: break-all;
+        }
+
+        .terminal-cursor {
+            display: inline-block;
+            width: 10px;
+            height: 15px;
+            background: #00ff00;
+            margin-left: 5px;
+            animation: blink 0.7s infinite;
+        }
+
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <span class="logo-icon">🖥️</span>
+                <span>PCRemotium</span>
+            </div>
+            <p class="tagline">Control Your PC From Anywhere</p>
+            <p class="subtitle">Turn your smartphone into a wireless remote for your computer <span style="font-size: 0.8rem;">(Your couch will thank you 🛋️)</span></p>
+        </header>
+
+        <!-- Main Content -->
+        <div class="content">
+            <!-- Features -->
+            <div class="features">
+                <h2>Why Choose PCRemotium?</h2>
+                <ul class="feature-list">
+                    <li class="feature-item">
+                        <div class="feature-icon">🖱️</div>
+                        <span>Full Mouse Control - Move, click, and scroll with ease</span>
+                    </li>
+                    <li class="feature-item">
+                        <div class="feature-icon">⌨️</div>
+                        <span>Keyboard Support - Type directly from your phone</span>
+                    </li>
+                    <li class="feature-item">
+                        <div class="feature-icon">⚡</div>
+                        <span>Low Latency - Real-time responsive control</span>
+                    </li>
+                    <li class="feature-item">
+                        <div class="feature-icon">🔐</div>
+                        <span>Secure Connection - Local network communication</span>
+                    </li>
+                    <li class="feature-item">
+                        <div class="feature-icon">🎮</div>
+                        <span>Hotkey Support - Create custom shortcuts</span>
+                    </li>
+                    <li class="feature-item">
+                        <div class="feature-icon">📡</div>
+                        <span>Multi-Device - Connect multiple devices simultaneously</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Download Section -->
+            <div class="download-section">
+                <h3>Ready to Control?</h3>
+                <p class="version-info">Latest Version 2025.2 | Windows 10/11</p>
+                
+                <a href="https://github.com/Noah-Li2012/personalwebsite/releases/download/remoteecontrllelr/PCRemotium_Setup.exe" class="download-btn" id="downloadBtn">
+                    ⬇️ Download PCRemotium for Windows
+                </a>
+                
+                <p style="margin-top: 20px; color: rgba(255, 255, 255, 0.6); font-size: 0.9rem;">
+                    File size: ~57 MB | Download for free
+                </p>
+
+                <div class="requirements">
+                    <div class="req-card">
+                        <h4>📋 System Requirements</h4>
+                        <ul>
+                            <li>Windows 10 or 11</li>
+                            <li>2GB RAM minimum</li>
+                            <li>.NET Framework 4.7+</li>
+                        </ul>
+                    </div>
+                    <div class="req-card">
+                        <h4>📱 Phone Requirements</h4>
+                        <ul>
+                            <li>iOS/Android device</li>
+                            <li>Modern web browser</li>
+                            <li>Same WiFi network</li>
+                        </ul>
+                    </div>
+                    <div class="req-card">
+                        <h4>⚙️ Features</h4>
+                        <ul>
+                            <li>QR Code Connection</li>
+                            <li>Real-time Control</li>
+                            <li>Custom Hotkeys</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 PCRemotium - Remote Control App. All rights reserved.</p>
+    </footer>
+
+    <!-- Easter Egg Elements -->
+    <div class="easter-egg-message" id="easterMessage"></div>
+    <canvas class="matrix-rain" id="matrixRain"></canvas>
+    <button class="secret-btn" id="secretBtn" title="Don't click...">🔒</button>
+    <div class="terminal" id="terminal"></div>
+
+    <script>
+        // Konami Code Easter Egg
+        const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+        let konamiIndex = 0;
+
+        document.addEventListener('keydown', (e) => {
+            const key = e.key === 'b' || e.key === 'a' ? e.key : e.code;
+            if (key === konamiCode[konamiIndex]) {
+                konamiIndex++;
+                if (konamiIndex === konamiCode.length) {
+                    triggerEasterEgg();
+                    konamiIndex = 0;
+                }
+            } else {
+                konamiIndex = 0;
+            }
+        });
+
+        function triggerEasterEgg() {
+            const message = document.getElementById('easterMessage');
+            message.innerHTML = `
+                🎮 KONAMI CODE ACTIVATED! 🎮<br><br>
+                You've unlocked NOTHING!<br>
+                <span style="font-size: 0.8rem; margin-top: 10px; display: block;">Secret: try typing "helloworld"</span>
+            `;
+            message.style.display = 'block';
+            document.body.classList.add('glitch');
+            
+            setTimeout(() => {
+                message.style.display = 'none';
+                document.body.classList.remove('glitch');
+            }, 3000);
+        }
+
+        // Secret button easter egg
+        let clickCount = 0;
+        document.getElementById('secretBtn').addEventListener('click', () => {
+            clickCount++;
+            const btn = document.getElementById('secretBtn');
+            const messages = ['🤔', '👀', '🔥', '😈', '💎'];
+            btn.textContent = messages[clickCount % messages.length];
+
+            if (clickCount === 5) {
+                activateMatrix();
+            }
+            if (clickCount === 10) {
+                showTerminal();
+            }
+        });
+
+        // Matrix rain effect
+        function activateMatrix() {
+            const canvas = document.getElementById('matrixRain');
+            const ctx = canvas.getContext('2d');
+            canvas.style.display = 'block';
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const chars = '01NoahLi404';
+            const fontSize = 16;
+            const columns = canvas.width / fontSize;
+            const drops = [];
+
+            for (let i = 0; i < columns; i++) {
+                drops[i] = Math.random() * canvas.height;
+            }
+
+            function draw() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#00ff00';
+                ctx.font = fontSize + 'px monospace';
+
+                for (let i = 0; i < drops.length; i++) {
+                    const text = chars[Math.floor(Math.random() * chars.length)];
+                    ctx.fillText(text, i * fontSize, drops[i]);
+                    drops[i]++;
+                    if (drops[i] > canvas.height) {
+                        drops[i] = 0;
+                    }
+                }
+            }
+
+            const interval = setInterval(() => {
+                draw();
+            }, 30);
+
+            setTimeout(() => {
+                clearInterval(interval);
+                canvas.style.display = 'none';
+            }, 3000);
+        }
+
+        // Terminal easter egg
+        function showTerminal() {
+            const terminal = document.getElementById('terminal');
+            terminal.style.display = 'block';
+            
+            const messages = [
+                '> Scanning system...',
+                '> Found PCRemotium installation',
+                '> Initializing remote connection',
+                '> QR Code Generated: ████████',
+                '> Waiting for phone...',
+                '> Connected! ✓'
+            ];
+
+            let index = 0;
+            const addMessage = () => {
+                if (index < messages.length) {
+                    const line = document.createElement('div');
+                    line.className = 'terminal-line';
+                    line.textContent = messages[index];
+                    terminal.appendChild(line);
+                    terminal.scrollTop = terminal.scrollHeight;
+                    index++;
+                    setTimeout(addMessage, 500);
+                }
+            };
+
+            addMessage();
+
+            setTimeout(() => {
+                terminal.style.display = 'none';
+                terminal.innerHTML = '';
+            }, 5000);
+        }
+
+        // Download button functionality
+        document.getElementById('downloadBtn').addEventListener('click', (e) => {
+            // Allow the default link behavior - it will download the file
+        });
+
+        // Double click easter egg
+        let lastClickTime = 0;
+        document.addEventListener('click', (e) => {
+            const currentTime = new Date().getTime();
+            if (currentTime - lastClickTime < 300) {
+                createHeartAnimation(e.clientX, e.clientY);
+            }
+            lastClickTime = currentTime;
+        });
+
+        function createHeartAnimation(x, y) {
+            const heart = document.createElement('div');
+            heart.textContent = '🙃';
+            heart.style.cssText = `
+                position: fixed;
+                left: ${x}px;
+                top: ${y}px;
+                font-size: 2rem;
+                pointer-events: none;
+                z-index: 9999;
+                animation: float-up 2s ease-out forwards;
+            `;
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 2000);
+        }
+
+        // Add float-up animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes float-up {
+                0% {
+                    transform: translateY(0) scale(1);
+                    opacity: 1;
+                }
+                100% {
+                    transform: translateY(-100px) scale(0.5);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Typing effect easter egg
+        let typingSequence = '';
+        document.addEventListener('keypress', (e) => {
+            typingSequence += e.key.toLowerCase();
+            if (typingSequence.includes('helloworld')) {
+                activateGodMode();
+                typingSequence = '';
+            }
+            if (typingSequence.length > 20) {
+                typingSequence = typingSequence.slice(-20);
+            }
+        });
+
+        function activateGodMode() {
+            const message = document.getElementById('easterMessage');
+            message.innerHTML = `
+                ⚡ PCRemotium ⚡<br><br>
+                up up down down left right left right b a!<br>
+                <span style="font-size: 0.8rem; margin-top: 10px; display: block;">Access granted to ultimate PC remote capabilities...</span>
+            `;
+            message.style.display = 'block';
+            document.documentElement.style.filter = 'hue-rotate(360deg)';
+            
+            setTimeout(() => {
+                message.style.display = 'none';
+                document.documentElement.style.filter = 'hue-rotate(0deg)';
+            }, 3000);
+        }
+
+        // Right-click easter egg
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            const message = document.getElementById('easterMessage');
+            message.innerHTML = `
+                🛡️ CONTEXT MENU DISABLED 🛡️<br><br>
+                This app is too powerful to be right-clicked!<br>
+                <span style="font-size: 0.8rem;">Nice try though... 😎</span>
+            `;
+            message.style.display = 'block';
+            
+            setTimeout(() => {
+                message.style.display = 'none';
+            }, 2000);
+        });
+
+        // Animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.feature-item').forEach(item => {
+            observer.observe(item);
+        });
+    </script>
+</body>
+</html>
