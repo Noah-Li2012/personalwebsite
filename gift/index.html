@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Christmas is here!</title>
+<title>🎄 Magical Christmas Gift</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Crimson+Text&display=swap');
 
   body {
     margin:0; padding:0;
-    background: url('https://cdn.jsdelivr.net/gh/Noah-Li2012/personalwebsite@refs/heads/main/gift/Christmas.png') no-repeat center center fixed;
+    background: url('Christmas.png') no-repeat center center fixed;
     background-size: cover;
     font-family: 'Crimson Text', serif;
     overflow: hidden;
@@ -57,6 +57,20 @@
     text-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
     animation: goldenShine 3s ease-in-out infinite;
     filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.6));
+  }
+
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 2em;
+      top: 15px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    h1 {
+      font-size: 1.3em;
+      top: 10px;
+    }
   }
 
   @keyframes goldenShine {
@@ -139,6 +153,36 @@
     text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
   }
 
+  /* Responsive adjustments for smaller screens */
+  @media (max-width: 768px) {
+    .input-card {
+      padding: 30px;
+      max-width: 90%;
+    }
+
+    .input-card h2 {
+      font-size: 1.8em;
+      margin: 0 0 20px 0;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .input-card {
+      padding: 20px 15px;
+      max-width: 95%;
+    }
+
+    .input-card h2 {
+      font-size: 1.5em;
+      margin: 0 0 15px 0;
+    }
+
+    .input-card p {
+      font-size: 0.8em;
+      margin-top: 10px !important;
+    }
+  }
+
   input, textarea, select {
     width: 85%;
     margin:12px auto;
@@ -216,6 +260,71 @@
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: none;
+  }
+
+  /* Responsive adjustments for smaller screens */
+  @media (max-width: 768px) {
+    .message-card {
+      width: 85%;
+      max-width: 95%;
+      padding: 35px 25px;
+      max-height: 85vh;
+    }
+
+    #receiverName {
+      font-size: 1.5em;
+    }
+
+    .message-card h4 {
+      font-size: 0.95em;
+    }
+
+    #giftMessage {
+      font-size: 1em;
+    }
+
+    .wax-seal {
+      width: 60px;
+      height: 60px;
+      font-size: 1.5em;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .message-card {
+      width: 88%;
+      max-width: 100%;
+      padding: 25px 15px;
+      max-height: 80vh;
+    }
+
+    #receiverName {
+      font-size: 1.3em;
+      margin: 0 0 10px 0;
+    }
+
+    .message-card h4 {
+      margin: 15px 0 5px 0;
+      font-size: 0.9em;
+    }
+
+    #giftDate {
+      font-size: 0.85em !important;
+      margin: 8px 0 !important;
+    }
+
+    #giftMessage {
+      font-size: 0.95em;
+      line-height: 1.6;
+      margin: 15px 0 0 0;
+    }
+
+    .wax-seal {
+      width: 50px;
+      height: 50px;
+      font-size: 1.2em;
+      margin-top: 15px;
+    }
   }
 
   .message-card::-webkit-scrollbar {
