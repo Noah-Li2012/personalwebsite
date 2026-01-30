@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NoahLi404</title>
+    <meta name="description" content="My name is Noah and I like coding (ik this is a simple greeding but anyway...)">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" href="channels4_profile.jpg" type="image/jpeg" />
+    <style>
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: linear-gradient(135deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.6) 100%);
+            transition: opacity 0.3s ease;
+        }
+
+        .dynamic-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            background: radial-gradient(circle at center, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 100%);
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        .hero-stars {
+            position: fixed;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .fade-in {
+            animation: fadeIn 2s ease-in-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .parallax-banner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.1;
+            z-index: 0;
+            will-change: transform;
+        }
+
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 3;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        nav, section, footer {
+            position: relative;
+            z-index: 10;
+        }
+        .navbar-glass {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transform: translateY(-100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+        }
+
+        .navbar-glass.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .particles-js-canvas-el {
+            filter: blur(0.5px);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #4fd1c5 0%, #81e6d9 50%, #ffffff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 20px rgba(79, 209, 197, 0.3));
+        }
+
+        .hover-scale {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hover-scale:hover {
+            transform: scale(1.05) translateY(-2px);
+            filter: brightness(1.1);
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-effect:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+
+        .skill-tag {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(79, 209, 197, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(79, 209, 197, 0.3);
+            animation: habit-glow 2s ease-in-out infinite, habit-bounce 3s ease-in-out infinite;
+        }
+
+        .skill-tag:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(79, 209, 197, 0.3);
+            background: rgba(79, 209, 197, 0.3);
+            border-color: rgba(79, 209, 197, 0.5);
+            animation-play-state: paused;
+        }
+
+        @keyframes habit-glow {
+            0%, 100% {
+                box-shadow: 0 0 10px rgba(79, 209, 197, 0.3), inset 0 0 10px rgba(79, 209, 197, 0.1);
+                background: rgba(79, 209, 197, 0.2);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(79, 209, 197, 0.6), inset 0 0 15px rgba(79, 209, 197, 0.2);
+                background: rgba(79, 209, 197, 0.25);
+            }
+        }
+
+        @keyframes habit-bounce {
+            0%, 100% { transform: translateY(0px); }
+            25% { transform: translateY(-3px); }
+            50% { transform: translateY(0px); }
+            75% { transform: translateY(-1px); }
+        }
+
+        .social-icon {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .social-icon:hover {
+            transform: translateY(-5px) scale(1.1);
+            filter: drop-shadow(0 5px 15px rgba(79, 209, 197, 0.4));
+        }
+
+        .hero-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(60px);
+            z-index: 5;
+            animation: pulse 6s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.2); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 15;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .planet-pfp {
+            position: absolute;
+            bottom: 15%;
+            left: 20%;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            box-shadow: 
+                0 0 60px rgba(59, 130, 246, 1),
+                0 0 120px rgba(59, 130, 246, 0.8),
+                0 0 200px rgba(59, 130, 246, 0.6),
+                0 0 300px rgba(59, 130, 246, 0.4),
+                0 0 400px rgba(59, 130, 246, 0.2),
+                inset 0 0 60px rgba(147, 197, 253, 0.8),
+                inset 0 0 120px rgba(59, 130, 246, 0.6);
+            border: 2px solid rgba(147, 197, 253, 0.8);
+            animation: float 8s ease-in-out infinite, pulse-glow 2s ease-in-out infinite;
+            z-index: 10;
+            filter: brightness(1.5) saturate(1.5);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { 
+                box-shadow: 
+                    0 0 60px rgba(59, 130, 246, 1),
+                    0 0 120px rgba(59, 130, 246, 0.8),
+                    0 0 200px rgba(59, 130, 246, 0.6),
+                    0 0 300px rgba(59, 130, 246, 0.4),
+                    0 0 400px rgba(59, 130, 246, 0.2),
+                    inset 0 0 60px rgba(147, 197, 253, 0.8),
+                    inset 0 0 120px rgba(59, 130, 246, 0.6);
+            }
+            50% { 
+                box-shadow: 
+                    0 0 80px rgba(59, 130, 246, 1),
+                    0 0 160px rgba(59, 130, 246, 0.9),
+                    0 0 240px rgba(59, 130, 246, 0.7),
+                    0 0 320px rgba(59, 130, 246, 0.5),
+                    0 0 450px rgba(59, 130, 246, 0.3),
+                    inset 0 0 80px rgba(147, 197, 253, 1),
+                    inset 0 0 140px rgba(59, 130, 246, 0.8);
+            }
+        }
+
+        @keyframes star-rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .galaxy-text {
+            position: absolute;
+            top: 20%;
+            right: 15%;
+            text-align: right;
+            z-index: 15;
+        }
+
+        .galaxy-name {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 900;
+            background: linear-gradient(
+                135deg,
+                #1e40af 0%,
+                #3b82f6 20%,
+                #60a5fa 40%,
+                #e5e7eb 60%,
+                #9ca3af 80%,
+                #1e40af 100%
+            );
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: galaxy-gradient 4s ease infinite;
+            filter: drop-shadow(0 0 30px rgba(59, 130, 246, 0.5));
+            text-shadow: 0 0 80px rgba(59, 130, 246, 0.3);
+        }
+
+        @keyframes galaxy-gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .galaxy-subtitle {
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 1rem;
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            animation: twinkle 3s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .stars {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite, move-stars 15s linear infinite;
+            z-index: 8;
+        }
+
+        @keyframes move-stars {
+            from {
+                transform: translateX(0) translateY(0);
+            }
+            to {
+                transform: translateX(100px) translateY(-50px);
+            }
+        }
+
+        /* Mobile background override */
+        @media only screen and (max-width: 768px) {
+            body {
+                background-position: left center !important;
+                background-size: cover !important;
+                background-repeat: no-repeat !important;
+                background-attachment: fixed !important;
+                min-height: 100vh !important;
+            }
+            
+            .planet-pfp {
+                width: 200px;
+                height: 200px;
+                bottom: 20%;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            
+            .galaxy-text {
+                position: relative;
+                top: auto;
+                right: auto;
+                text-align: center;
+                margin-top: 2rem;
+            }
+            
+            .galaxy-name {
+                font-size: clamp(2.5rem, 6vw, 4rem);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white font-sans"
+    style="
+        background: url('https://cdn.jsdelivr.net/gh/Noah-Li2012/personalwebsite/bg-img.png') no-repeat center center fixed;
+        background-size: 108vw 108vh;
+        transition: background-position 0.3s cubic-bezier(0.4,0,0.2,1);
+    ">
+    <div id="particles-js"></div>
+    <div class="dynamic-overlay" id="dynamic-overlay"></div>
+    <div class="hero-stars" id="hero-stars"></div>
+
+        <!-- Navbar -->
+    <nav class="navbar-glass shadow-lg fixed top-0 w-full z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold gradient-text">Noah Li</h1>
+            <div class="md:hidden">
+                <button id="menu-toggle" class="text-white text-3xl focus:outline-none">&#9776;</button>
+            </div>
+            <div id="nav-links" class="hidden md:flex space-x-4">
+                <a href="#home" class="hover:text-teal-400 transition">Home</a>
+                <a href="#about" class="hover:text-teal-400 transition">About</a>
+                <a href="#projects" class="hover:text-teal-400 transition">Projects</a>
+                <a href="https://www.youtube.com/@noahliNotFound" target="_blank" class="hover:text-teal-400 transition">YouTube</a>
+                <a href="#contact" class="hover:text-teal-400 transition">Contact</a>
+            </div>
+        </div>
+        <div id="mobile-menu" class="md:hidden hidden flex-col space-y-2 px-4 pb-4">
+            <a href="#home" class="block hover:text-teal-400 transition">Home</a>
+            <a href="#about" class="block hover:text-teal-400 transition">About</a>
+            <a href="#projects" class="block hover:text-teal-400 transition">Projects</a>
+            <a href="#contact" class="block hover:text-teal-400 transition">Contact</a>
+        </div>
+    </nav>
+
+    <!-- Home Section -->
+    <section id="home" class="h-screen relative overflow-hidden fade-in">
+        <div class="hero-glow"></div>
+        <div class="hero-content">
+            <!-- Planet Profile Picture -->
+            <img src="https://cdn.jsdelivr.net/gh/Noah-Li2012/personalwebsite@main/channels4_profile.jpg" alt="Profile Picture" class="planet-pfp">
+            
+            <!-- Galaxy Text -->
+            <div class="galaxy-text">
+                <h1 class="galaxy-name">Noah</h1>
+                <div class="galaxy-subtitle" this_statement="FALSE">This statement is false</div>
+            </div>
+            
+            <!-- Floating Stars -->
+            <div class="stars" style="top: 10%; left: 10%; animation-delay: 0s;"></div>
+            <div class="stars" style="top: 20%; right: 15%; animation-delay: 0.5s;"></div>
+            <div class="stars" style="top: 60%; left: 30%; animation-delay: 1s;"></div>
+            <div class="stars" style="top: 80%; right: 25%; animation-delay: 1.5s;"></div>
+            <div class="stars" style="top: 40%; right: 40%; animation-delay: 2s;"></div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 px-6 md:px-20 bg-gray-800 fade-in relative">
+        <h3 class="text-3xl font-semibold mb-6 gradient-text">About Me</h3>
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="glass-effect p-6 rounded-lg">
+                <p class="text-gray-300">
+                    I'm Noah, I love programming and creating videos on YouTube. (So Subscribe to my Channel @noahliNotFound if you like my content!)
+                </p>
+            </div>
+            <div class="glass-effect p-6 rounded-lg">
+                <h4 class="text-xl font-semibold mb-4">Habits</h4>
+                <div class="flex flex-wrap gap-3">
+                    <span class="skill-tag px-4 py-2 rounded-full text-sm font-medium">Coding</span>
+                    <span class="skill-tag px-4 py-2 rounded-full text-sm font-medium">Coding</span>
+                    <span class="skill-tag px-4 py-2 rounded-full text-sm font-medium">DON'T YOU HEAR ME I'M A CODER</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-20 px-6 md:px-20 fade-in relative">
+        <h3 class="text-3xl font-semibold mb-6 gradient-text">Projects</h3>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Project Card 1 -->
+            <div class="glass-effect p-6 rounded-lg hover-scale">
+                <h4 class="text-xl font-semibold mb-2">YouTube Channel</h4>
+                <p class="text-gray-300 mb-4">Sharing my programming adventure online!</p>
+                <div class="flex space-x-2">
+                    <a href="https://youtube.com/@noahliNotFound" target="_blank" class="text-teal-400 hover:underline">View Channel</a>
+                </div>
+            </div>
+            <!-- Project Card 2 -->
+            <div class="glass-effect p-6 rounded-lg hover-scale">
+                <h4 class="text-xl font-semibold mb-2">All Coding Projects</h4>
+                <p class="text-gray-300 mb-4">All my programs</p>
+                <div class="flex space-x-2">
+                    <a href="https://noahli404.pages.dev/projects" class="text-teal-400 hover:underline">Downloads</a>
+                </div>
+            </div>
+            <!-- Project Card 3 -->
+            <div class="glass-effect p-6 rounded-lg hover-scale">
+                <h4 class="text-xl font-semibold mb-2">More</h4>
+                <p class="text-gray-300 mb-4">View all projects</p>
+                <div class="flex space-x-2">
+                    <a href="https://noahli404.pages.dev/all" class="text-teal-400 hover:underline">View all</a>
+                </div>
+            </div>
+
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 px-6 md:px-20 fade-in relative">
+        <h3 class="text-3xl font-semibold mb-6 gradient-text">Contact</h3>
+        <div class="glass-effect p-6 rounded-lg max-w-2xl mx-auto">
+            <ul class="space-y-4 text-gray-300">
+                <li class="flex items-center space-x-2">
+                    <i class="fas fa-envelope text-teal-400 social-icon"></i>
+                    <a href="mailto:importnoahli404@gmail.com" class="text-teal-400 hover:underline">importnoahli404@gmail.com</a>
+                </li>
+                <li class="flex items-center space-x-2">
+                    <i class="fab fa-youtube text-teal-400 social-icon"></i>
+                    <a href="https://youtube.com/@noahliNotFound" target="_blank" class="text-teal-400 hover:underline">YouTube: @noahliNotFound</a>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <footer class="text-center py-6 bg-gray-800 text-gray-400 fade-in relative">
+        &copy; 2026 @noahliNotFound All rights reserved.
+    </footer>
+
+    <script>
+        // Dynamic overlay and stars system
+        const dynamicOverlay = document.getElementById('dynamic-overlay');
+        const heroStars = document.getElementById('hero-stars');
+        const particlesJs = document.getElementById('particles-js');
+        
+        // Generate random stars
+        function generateStars() {
+            const starCount = 150;
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = Math.random() * 3 + 'px';
+                star.style.height = star.style.width;
+                star.style.animationDelay = Math.random() * 3 + 's';
+                star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                heroStars.appendChild(star);
+            }
+        }
+        
+        generateStars();
+        
+        // Scroll-based overlay control
+        function handleScroll() {
+            const scrollY = window.scrollY;
+            const windowHeight = window.innerHeight;
+            const scrollPercent = Math.min(scrollY / windowHeight, 1);
+            
+            // Dark overlay fades out as user scrolls
+            const overlayOpacity = Math.max(1 - scrollPercent * 1.5, 0);
+            dynamicOverlay.style.opacity = overlayOpacity;
+            
+            // Stars and particles appear when overlay is dark
+            const starsOpacity = Math.max(1 - scrollPercent * 2, 0);
+            heroStars.style.opacity = starsOpacity;
+            particlesJs.style.opacity = starsOpacity;
+            
+            // Base background also gets lighter
+            document.body.style.setProperty('--bg-overlay', Math.max(0.6 - scrollPercent * 0.4, 0.2));
+            
+            // Navbar visibility control
+            const navbar = document.querySelector('.navbar-glass');
+            if (scrollY > 2) {
+                navbar.classList.add('visible');
+            } else {
+                navbar.classList.remove('visible');
+            }
+        }
+        
+        window.addEventListener('scroll', handleScroll);
+        handleScroll(); // Initialize
+        let bgAngle = 0;
+        function animateBgAuto() {
+            if (window.innerWidth <= 768) return; // skip animation on mobile
+            bgAngle += 0.0015; // speed
+            const radius = 24; // px, movement radius
+            const x = Math.cos(bgAngle) * radius;
+            const y = Math.sin(bgAngle) * radius;
+            document.body.style.backgroundPosition = `calc(50% + ${x}px) calc(50% + ${y}px)`;
+            requestAnimationFrame(animateBgAuto);
+        }
+        animateBgAuto();
+
+        // // Play Go brr.mp3 in a loop
+        // const goBrrAudio = document.getElementById('go-brr-audio');
+        // // Randomly select audio source
+        // const audioFiles = ["Devlopment - core.mp3", "development - technology.mp3"];
+        // goBrrAudio.src = audioFiles[Math.floor(Math.random() * audioFiles.length)];
+        // function playGoBrr(force) {
+        //     goBrrAudio.volume = 0.5;
+        //     // Try to force play
+        //     if (force) {
+        //         goBrrAudio.muted = false;
+        //         goBrrAudio.play().catch(() => {});
+        //     } else {
+        //         goBrrAudio.play().catch(() => {
+        //             // If autoplay is blocked, play on click
+        //             window.addEventListener('click', () => {
+        //                 goBrrAudio.play();
+        //             }, { once: true });
+        //         });
+        //     }
+        // Mobile menu toggle
+        const menuBtn = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Parallax effect (disabled on mobile)
+        document.addEventListener("mousemove", (e) => {
+            if (window.innerWidth <= 768) return; // skip parallax on mobile
+            const banner = document.querySelector(".parallax-banner");
+            if (banner) {
+                const x = (e.clientX / window.innerWidth - 0.5) * 20;
+                const y = (e.clientY / window.innerHeight - 0.5) * 20;
+                banner.style.transform = `translate(${x}px, ${y}px)`;
+            }
+        });
+
+        // Initialize particles
+        particlesJS('particles-js', {
+            particles: {
+                number: {
+                    value: 80,
+                    density: {
+                        enable: true,
+                        value_area: 800
+                    }
+                },
+                color: {
+                    value: '#4fd1c5'
+                },
+                shape: {
+                    type: 'circle'
+                },
+                opacity: {
+                    value: 0.5,
+                    random: false,
+                    anim: {
+                        enable: false
+                    }
+                },
+                size: {
+                    value: 3,
+                    random: true
+                },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: '#4fd1c5',
+                    opacity: 0.4,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 2,
+                    direction: 'none',
+                    random: false,
+                    straight: false,
+                    out_mode: 'out',
+                    bounce: false
+                }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: {
+                    onhover: {
+                        enable: true,
+                        mode: 'grab'
+                    },
+                    onclick: {
+                        enable: true,
+                        mode: 'push'
+                    },
+                    resize: true
+                },
+                modes: {
+                    grab: {
+                        distance: 140,
+                        line_linked: {
+                            opacity: 1
+                        }
+                    },
+                    push: {
+                        particles_nb: 4
+                    }
+                }
+            },
+            retina_detect: true
+        });
+    </script>
+</body>
+</html>
