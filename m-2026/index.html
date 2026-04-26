@@ -1,0 +1,1749 @@
+        <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+    <title>Happy Birthday Mom</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        :root {
+            --color-bg: #000;
+            --color-text: #fff;
+            --color-gold: #ffd700;
+            --color-card-cover: #f5f0e6;
+            --font-main: 'Noto Sans SC', 'Playfair Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --transition-slow: 2s ease;
+            --transition-medium: 1s ease;
+            --transition-fast: 0.5s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--color-bg);
+            color: var(--color-text);
+            font-family: var(--font-main);
+            overflow: hidden;
+            min-height: 100vh;
+            touch-action: manipulation;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        #start-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--color-bg);
+            z-index: 1000;
+            transition: opacity var(--transition-slow);
+        }
+
+        #start-btn {
+            padding: 20px 60px;
+            font-size: 24px;
+            font-family: 'Courier New', monospace;
+            background: transparent;
+            color: var(--color-text);
+            border: 2px solid var(--color-text);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        #start-btn:hover {
+            background: var(--color-text);
+            color: var(--color-bg);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+        }
+
+        #start-btn:focus-visible {
+            outline: 2px solid var(--color-gold);
+            outline-offset: 4px;
+        }
+
+        #content {
+            display: none;
+            opacity: 0;
+            transition: opacity var(--transition-slow);
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+            scroll-behavior: auto;
+        }
+
+        #content::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+        }
+
+        .section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            opacity: 1;
+            transform: none;
+        }
+
+        .whip-scroll {
+            animation: whip 0.28s cubic-bezier(0.2, 0.9, 0.1, 1) both;
+        }
+
+        @keyframes whip {
+            0% { filter: blur(0px); transform: translateZ(0); }
+            40% { filter: blur(10px); }
+            100% { filter: blur(0px); }
+        }
+
+        .typewriter-text {
+            font-size: 24px;
+            line-height: 1.8;
+            color: #e8e8e8;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 0 20px;
+            font-weight: 400;
+            font-family: 'Noto Sans SC', sans-serif;
+            white-space: pre-wrap;
+            min-height: 60px;
+        }
+
+        .zh {
+            font-size: 1em;
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .en-smaller {
+            font-size: 0.75em;
+            color: rgba(255, 255, 255, 0.7);
+            font-style: italic;
+            display: block;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .typewriter-text {
+                font-size: 20px;
+                line-height: 1.7;
+                min-height: 160px;
+            }
+
+            #birthday-message {
+                font-size: 46px;
+            }
+
+            #birthday-message-final {
+                font-size: 50px !important;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            #card-section {
+                padding: 20px 10px;
+            }
+        }
+
+        /* iPhone 15 Pro specific optimizations */
+        @media only screen and (device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait) {
+            .typewriter-text {
+                font-size: 18px;
+                min-height: 180px;
+            }
+
+            #start-btn {
+                padding: 18px 50px;
+                font-size: 22px;
+            }
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 12px;
+            height: 28px;
+            background: #fff;
+            animation: blink 0.7s infinite;
+            vertical-align: middle;
+            margin-left: 4px;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 40px;
+            font-size: 14px;
+            opacity: 0.5;
+            animation: pulse 2s infinite;
+        }
+
+        #tap-hint {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 28px;
+            text-align: center;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            opacity: 0;
+            z-index: 900;
+            pointer-events: none;
+            transition: opacity 0.6s ease;
+        }
+
+        #tap-hint.visible {
+            opacity: 0.65;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+
+        #birthday-message {
+            font-size: 64px;
+            font-weight: bold;
+            text-align: center;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #birthday-message.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .card-cover {
+            background: linear-gradient(135deg, var(--color-card-cover) 0%, #e8e0d0 50%, #f0e8d8 100%);
+            border: 1px solid rgba(139, 69, 19, 0.2);
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        #universe-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 40;
+            opacity: 0.65;
+            transition: opacity 1.2s ease;
+        }
+
+        #universe-canvas.dim {
+            opacity: 0.25;
+        }
+
+        #stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        #flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 45%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.3) 22%, rgba(0,0,0,0) 60%);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 700;
+            transition: opacity 0.25s ease;
+        }
+
+        #flash.visible {
+            opacity: 1;
+        }
+
+        #birthday-message-final {
+            text-shadow:
+                0 10px 30px rgba(0,0,0,0.35),
+                0 0 30px rgba(255,255,255,0.18);
+            font-family: 'Playfair Display', 'Noto Sans SC', serif;
+        }
+
+        #verses {
+            margin-top: 26px;
+            max-width: 900px;
+            width: 100%;
+            font-size: 18px;
+            line-height: 1.75;
+            color: rgba(10, 20, 30, 0.92);
+            background: rgba(255, 255, 255, 0.72);
+            border: 1px solid rgba(255, 255, 255, 0.55);
+            border-radius: 16px;
+            padding: 18px 18px;
+            backdrop-filter: blur(6px);
+            opacity: 0;
+            transform: translateY(14px);
+            transition: opacity 1.1s ease, transform 1.1s ease;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+
+        #verses.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #verses .ref {
+            display: block;
+            margin-top: 10px;
+            font-size: 14px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: rgba(10, 20, 30, 0.7);
+        }
+
+        @media (max-width: 600px) {
+            #verses {
+                font-size: 15px;
+                line-height: 1.65;
+                padding: 14px 14px;
+            }
+        }
+
+        #memory-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            position: relative;
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a1a 100%);
+            overflow: hidden;
+        }
+
+        #floating-words {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .floating-word {
+            position: absolute;
+            font-size: 24px;
+            font-weight: 500;
+            color: rgba(255, 215, 0, 0.9);
+            animation: float 8s ease-in-out infinite;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.8), 0 0 60px rgba(255, 215, 0, 0.4);
+            opacity: 0;
+            will-change: transform, opacity;
+            transform: translateZ(0);
+        }
+
+        .floating-word.visible {
+            opacity: 1;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(1);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(-40px) rotate(8deg) scale(1.1);
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-80px) rotate(-5deg) scale(0.9);
+                opacity: 0;
+            }
+        }
+
+        .memory-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 215, 0, 0.6);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particleFloat 6s ease-in-out infinite;
+            will-change: transform, opacity;
+            transform: translateZ(0);
+        }
+
+        @keyframes particleFloat {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            50% {
+                transform: translateY(-100px) translateX(20px);
+                opacity: 1;
+            }
+        }
+
+        .memory-glow {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+            animation: glowPulse 4s ease-in-out infinite;
+            will-change: transform, opacity;
+            transform: translateZ(0);
+        }
+
+        @keyframes glowPulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+            50% {
+                transform: scale(1.3);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes screenShake {
+            0%, 100% { transform: translate(0, 0); }
+            10% { transform: translate(-5px, -5px); }
+            20% { transform: translate(5px, 5px); }
+            30% { transform: translate(-5px, 5px); }
+            40% { transform: translate(5px, -5px); }
+            50% { transform: translate(-3px, -3px); }
+            60% { transform: translate(3px, 3px); }
+            70% { transform: translate(-2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            90% { transform: translate(-1px, -1px); }
+        }
+
+        .screen-shake {
+            animation: screenShake 0.6s ease-out;
+        }
+
+        @keyframes dramaticFlash {
+            0% { opacity: 0; }
+            10% { opacity: 1; }
+            20% { opacity: 0; }
+            30% { opacity: 0.8; }
+            100% { opacity: 0; }
+        }
+
+        .dramatic-flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            pointer-events: none;
+            z-index: 9999;
+            animation: dramaticFlash 0.8s ease-out forwards;
+        }
+
+        @keyframes cinematicClose {
+            0% {
+                transform: scale(1.05) translateY(-10px);
+                filter: brightness(1.2) contrast(1.1);
+            }
+            30% {
+                transform: scale(1.02) translateY(-5px);
+                filter: brightness(1.4) contrast(1.2);
+            }
+            60% {
+                transform: scale(0.98) translateY(0px);
+                filter: brightness(0.9) contrast(1.3);
+            }
+            100% {
+                transform: scale(1) translateY(0px);
+                filter: brightness(1) contrast(1);
+            }
+        }
+
+        .cinematic-close {
+            animation: cinematicClose 2.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes closingBurst {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 0.6;
+            }
+            100% {
+                transform: scale(3);
+                opacity: 0;
+            }
+        }
+
+        .closing-burst {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.4) 0%, rgba(255, 165, 0, 0.2) 40%, transparent 70%);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 5;
+            animation: closingBurst 1.8s ease-out forwards;
+        }
+
+        @keyframes dramaticCloseFlash {
+            0% { opacity: 0; }
+            15% { opacity: 0.9; }
+            30% { opacity: 0.2; }
+            45% { opacity: 0.7; }
+            60% { opacity: 0.1; }
+            75% { opacity: 0.4; }
+            100% { opacity: 0; }
+        }
+
+        .dramatic-close-flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.3) 0%, rgba(255, 255, 255, 0.5) 30%, transparent 70%);
+            pointer-events: none;
+            z-index: 9998;
+            animation: dramaticCloseFlash 2.2s ease-out forwards;
+        }
+
+        .closing-vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.95) 100%);
+            z-index: 9997;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+        }
+
+        .closing-vignette.active {
+            opacity: 1;
+        }
+
+        #card-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            position: relative;
+            perspective: 2000px;
+            background: linear-gradient(135deg, #2a2a3e 0%, #1a1a2e 100%);
+            overflow: hidden;
+            transition: background 2s ease;
+        }
+
+        #card-section.revealed {
+            background: radial-gradient(ellipse at center, #3a2a4e 0%, #1a1a2e 50%, #0a0a1a 100%);
+        }
+
+        .celebration-burst {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, rgba(255, 215, 0, 0.1) 30%, transparent 70%);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .celebration-burst.active {
+            animation: burstExpand 2s ease-out forwards;
+        }
+
+        @keyframes burstExpand {
+            0% {
+                width: 0;
+                height: 0;
+                opacity: 0.8;
+            }
+            100% {
+                width: 200vmax;
+                height: 200vmax;
+                opacity: 0;
+            }
+        }
+
+        #card-3d-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        #card-book {
+            position: relative;
+            width: 90vw;
+            max-width: 500px;
+            height: 80vw;
+            max-height: 450px;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1), margin 1.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        #card-book.open {
+            transform: scale(1.05) translateY(-10px);
+        }
+
+        .card-page {
+            position: absolute;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            transform-origin: right center;
+            transform-style: preserve-3d;
+            transition: transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+            will-change: transform;
+            transform: translateZ(0);
+        }
+
+        .card-page-front,
+        .card-page-back {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 0 8px 8px 0;
+            overflow: hidden;
+        }
+
+        .card-page-back {
+            transform: rotateY(180deg);
+        }
+
+        #card-left {
+            left: 0;
+            z-index: 2;
+        }
+
+        #card-right {
+            right: 0;
+            transform-origin: left center;
+            z-index: 1;
+        }
+
+        #card-book.open #card-left {
+            transform: rotateY(-180deg);
+        }
+
+        #card-book.open #card-right {
+            transform: rotateY(0deg);
+        }
+
+        .card-cover {
+            background: linear-gradient(135deg, #f5f0e6 0%, #e8e0d0 50%, #f0e8d8 100%);
+            border: 1px solid rgba(139, 69, 19, 0.2);
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .card-cover::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)" opacity="0.06"/></svg>');
+            pointer-events: none;
+        }
+
+        .card-cover h2 {
+            font-size: 36px;
+            color: #8b4513;
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-cover p {
+            font-size: 14px;
+            color: #6b5a4a;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-interior {
+            background: #fefefe;
+            background-image:
+                linear-gradient(90deg, transparent 50%, rgba(0,0,0,0.02) 50%),
+                linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px);
+            background-size: 20px 100%, 100% 20px;
+            padding: 30px 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.03);
+        }
+
+        .card-interior .verse {
+            font-size: 13px;
+            line-height: 1.8;
+            color: #333;
+            margin-bottom: 8px;
+            font-style: italic;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .card-interior .ref {
+            font-size: 10px;
+            color: #8b4513;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .card-interior .custom-msg {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #e8e0d0;
+            font-size: 16px;
+            color: #2a2a2a;
+            font-weight: 500;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+
+        @media (max-width: 600px) {
+            .card-interior {
+                padding: 15px 12px;
+            }
+
+            .card-interior .verse {
+                font-size: 10px;
+                line-height: 1.5;
+                margin-bottom: 6px;
+            }
+
+            .card-interior .ref {
+                font-size: 8px;
+                margin-bottom: 10px;
+            }
+
+            .card-interior .custom-msg {
+                margin-top: 12px;
+                padding-top: 12px;
+                font-size: 12px;
+            }
+        }
+
+        .card-spine {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(0,0,0,0.15), rgba(0,0,0,0.05));
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+
+        .card-shadow {
+            position: absolute;
+            bottom: -20px;
+            left: 10%;
+            width: 80%;
+            height: 20px;
+            background: radial-gradient(ellipse at center, rgba(0,0,0,0.3) 0%, transparent 70%);
+            filter: blur(10px);
+            transition: all 1.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+            will-change: transform, opacity, bottom, left, width;
+            transform: translateZ(0);
+        }
+
+        #card-book.open .card-shadow {
+            bottom: -30px;
+            left: 5%;
+            width: 90%;
+            opacity: 0.5;
+        }
+
+
+
+        .star {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-20px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+
+
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.8) 100%);
+            z-index: 50;
+        }
+
+        .film-grain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.05;
+            z-index: 51;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E");
+            animation: grain 0.5s steps(10) infinite;
+        }
+
+        @keyframes grain {
+            0%, 100% { transform: translate(0, 0); }
+            10% { transform: translate(-1%, -1%); }
+            20% { transform: translate(1%, 1%); }
+            30% { transform: translate(-1%, 1%); }
+            40% { transform: translate(1%, -1%); }
+            50% { transform: translate(-1%, 0); }
+            60% { transform: translate(1%, 0); }
+            70% { transform: translate(0, 1%); }
+            80% { transform: translate(0, -1%); }
+            90% { transform: translate(1%, 1%); }
+        }
+    </style>
+</head>
+<body>
+    <div id="start-screen">
+        <button id="start-btn" aria-label="Start birthday experience">Hi.</button>
+    </div>
+
+    <div id="content">
+        <audio id="bg-music" loop>
+            <source src="audio.mp3" type="audio/mpeg">
+        </audio>
+        <canvas id="universe-canvas"></canvas>
+        <div class="vignette"></div>
+        <div class="film-grain"></div>
+        <div id="stars-container"></div>
+        <div id="flash"></div>
+        <div id="tap-hint">Tap to continue</div>
+
+        <div class="section" id="intro-section">
+            <div class="typewriter-text">
+                <span id="text-output"></span><span class="cursor"></span>
+            </div>
+            <div class="scroll-hint" id="scroll-hint-1" style="display: none;">Tap</div>
+        </div>
+
+        <div class="section" id="date-section">
+            <div class="typewriter-text">
+                <span id="date-output"></span><span class="cursor"></span>
+            </div>
+            <div class="scroll-hint" id="scroll-hint-2" style="display: none;">Tap</div>
+        </div>
+
+        <div class="section" id="watching-section">
+            <div class="typewriter-text">
+                <span id="watching-output"></span><span class="cursor"></span>
+            </div>
+        </div>
+
+        <div class="section" id="memory-section">
+            <div id="floating-words"></div>
+            <div style="text-align: center; z-index: 10;">
+                <h2 style="font-size: 36px; color: #ffd700; margin-bottom: 20px; font-family: 'Playfair Display', serif;">Moments</h2>
+                <p style="font-size: 18px; color: rgba(255, 255, 255, 0.7);">Tap the card to open</p>
+            </div>
+        </div>
+
+        <div class="section" id="card-section">
+            <canvas id="card-3d-canvas"></canvas>
+            <div class="celebration-burst"></div>
+            <div id="card-book" class="open" role="button" tabindex="0" aria-label="Birthday card, tap to close">
+                <div class="card-shadow"></div>
+                <div class="card-spine"></div>
+                <div class="card-page" id="card-left">
+                    <div class="card-page-front card-cover">
+                        <h2>Happy Birthday</h2>
+                        <p>Happy Birthday Mom!</p>
+                    </div>
+                    <div class="card-page-back card-interior">
+                        <div class="verse">"Her children arise up, and call her blessed; her husband also, and he praiseth her."</div>
+                        <div class="ref">Proverbs 31:28</div>
+                        <div class="verse">"As one whom his mother comforteth, so will I comfort you."</div>
+                        <div class="ref">Isaiah 66:13</div>
+                        <div class="custom-msg">打开!</div>
+                    </div>
+                </div>
+                <div class="card-page" id="card-right">
+                    <div class="card-page-front card-interior">
+                        <div class="verse">"Her children arise up, and call her blessed; her husband also, and he praiseth her."</div>
+                        <div class="ref">Proverbs 31:28</div>
+                        <div class="verse">"As one whom his mother comforteth, so will I comfort you."</div>
+                        <div class="ref">Isaiah 66:13</div>
+                        <div class="custom-msg">妈妈，生日快乐！我们永远爱你。</div>
+                    </div>
+                    <div class="card-page-back card-cover">
+                        <h2>Happy Birthday</h2>
+                        <p>Tap to open</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        const TYPE_SPEED_MS = 200;
+
+        // Bilingual helper: Chinese types first, then English (smaller) on new line
+        function b(en, zh) {
+            return [zh, { html: '<br>' }, { html: `<span class="en-smaller">${en}</span>` }];
+        }
+
+        // 3D Card Background Effects
+        let card3DScene, card3DCamera, card3DRenderer, card3DParticles;
+        let card3DT = 0;
+        let card3DInitialized = false;
+
+        function initCard3D() {
+            if (card3DInitialized) return;
+            card3DInitialized = true;
+
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            const isMobile = width < 600;
+
+            card3DScene = new THREE.Scene();
+            card3DCamera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+            card3DCamera.position.z = 50;
+
+            card3DRenderer = new THREE.WebGLRenderer({ canvas: card3DCanvas, antialias: true, alpha: true });
+            card3DRenderer.setSize(width, height);
+            card3DRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            // Create floating hearts/stars (reduced for mobile)
+            const particleGeometry = new THREE.BufferGeometry();
+            const particleCount = isMobile ? 50 : 100;
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+            const sizes = new Float32Array(particleCount);
+
+            for (let i = 0; i < particleCount; i++) {
+                positions[i * 3] = (Math.random() - 0.5) * 100;
+                positions[i * 3 + 1] = (Math.random() - 0.5) * 100;
+                positions[i * 3 + 2] = (Math.random() - 0.5) * 50;
+
+                // Gold and warm colors
+                const colorChoice = Math.random();
+                if (colorChoice < 0.5) {
+                    colors[i * 3] = 1.0;
+                    colors[i * 3 + 1] = 0.84;
+                    colors[i * 3 + 2] = 0.0;
+                } else {
+                    colors[i * 3] = 1.0;
+                    colors[i * 3 + 1] = 0.9;
+                    colors[i * 3 + 2] = 0.7;
+                }
+
+                sizes[i] = Math.random() * 2 + 0.5;
+            }
+
+            particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            particleGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            particleGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+            const particleMaterial = new THREE.PointsMaterial({
+                size: 1,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8,
+                sizeAttenuation: true
+            });
+
+            card3DParticles = new THREE.Points(particleGeometry, particleMaterial);
+            card3DScene.add(card3DParticles);
+
+            // Add ambient light
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            card3DScene.add(ambientLight);
+
+            animateCard3D();
+        }
+
+        function animateCard3D() {
+            requestAnimationFrame(animateCard3D);
+            card3DT += 0.01;
+
+            if (card3DParticles) {
+                card3DParticles.rotation.y = card3DT * 0.1;
+                card3DParticles.rotation.x = Math.sin(card3DT * 0.2) * 0.1;
+
+                // Gentle floating motion
+                const positions = card3DParticles.geometry.attributes.position.array;
+                for (let i = 0; i < positions.length; i += 3) {
+                    positions[i + 1] += Math.sin(card3DT + positions[i] * 0.1) * 0.02;
+                }
+                card3DParticles.geometry.attributes.position.needsUpdate = true;
+            }
+
+            card3DRenderer.render(card3DScene, card3DCamera);
+        }
+
+        function resizeCard3D() {
+            if (!card3DCamera || !card3DRenderer) return;
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            card3DCamera.aspect = width / height;
+            card3DCamera.updateProjectionMatrix();
+            card3DRenderer.setSize(width, height);
+        }
+        function typeWriter(element, text, speed = 333, callback) {
+            let i = 0;
+            element.textContent = '';
+            
+            function type() {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                } else if (callback) {
+                    callback();
+                }
+            }
+            type();
+        }
+
+        function typeWriterCinematic(element, chunks, speed = 333, callback) {
+            let i = 0;
+            element.innerHTML = '';
+
+            function runChunk() {
+                if (i >= chunks.length) {
+                    if (callback) callback();
+                    return;
+                }
+
+                const chunk = chunks[i];
+
+                // Handle nested arrays (from b() helper)
+                if (Array.isArray(chunk)) {
+                    chunks.splice(i, 1, ...chunk);
+                    runChunk();
+                    return;
+                }
+
+                i++;
+
+                // Handle HTML chunks (from b() helper) - append all at once
+                if (chunk && typeof chunk === 'object' && chunk.html) {
+                    element.innerHTML += chunk.html;
+                    runChunk();
+                    return;
+                }
+
+                if (typeof chunk === 'string') {
+                    let j = 0;
+                    function type() {
+                        if (j < chunk.length) {
+                            element.innerHTML += chunk.charAt(j);
+                            j++;
+                            setTimeout(type, speed);
+                        } else {
+                            runChunk();
+                        }
+                    }
+                    type();
+                    return;
+                }
+
+                if (chunk && typeof chunk === 'object' && typeof chunk.pause === 'number') {
+                    setTimeout(runChunk, chunk.pause);
+                    return;
+                }
+
+                runChunk();
+            }
+
+            runChunk();
+        }
+
+        // Falling stars
+        function createStar() {
+            const container = document.getElementById('stars-container');
+            const star = document.createElement('div');
+            star.className = 'star';
+            
+            const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd'];
+            star.style.background = colors[Math.floor(Math.random() * colors.length)];
+            star.style.left = Math.random() * 100 + '%';
+            star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            star.style.width = (Math.random() * 10 + 5) + 'px';
+            star.style.height = star.style.width;
+            
+            // Random star shape
+            if (Math.random() > 0.5) {
+                star.style.clipPath = 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)';
+            } else {
+                star.style.borderRadius = '50%';
+            }
+            
+            container.appendChild(star);
+            
+            setTimeout(() => {
+                star.remove();
+            }, 5000);
+        }
+
+        function startStars() {
+            setInterval(createStar, 100);
+        }
+
+        let starsTimer;
+
+        function startStarsBurst() {
+            if (starsTimer) return;
+            starsTimer = setInterval(createStar, 60);
+            setTimeout(() => {
+                if (starsTimer) {
+                    clearInterval(starsTimer);
+                    starsTimer = null;
+                }
+            }, 4500);
+        }
+
+        function cleanup() {
+            // Clear intervals
+            if (starsTimer) {
+                clearInterval(starsTimer);
+                starsTimer = null;
+            }
+        }
+
+
+
+        const tapHint = document.getElementById('tap-hint');
+        const contentEl = document.getElementById('content');
+        const universeCanvas = document.getElementById('universe-canvas');
+        const flashEl = document.getElementById('flash');
+        const cardBook = document.getElementById('card-book');
+        const card3DCanvas = document.getElementById('card-3d-canvas');
+
+        let isTyping = false;
+        let introDone = false;
+        let dateDone = false;
+        let watchingDone = false;
+        let memoryDone = false;
+        let cardOpened = true;
+
+        function showTapHint(visible) {
+            if (visible) tapHint.classList.add('visible');
+            else tapHint.classList.remove('visible');
+        }
+
+        function fastScrollToSection(sectionEl) {
+            const start = contentEl.scrollTop;
+            const end = sectionEl.offsetTop;
+            const duration = 260;
+            const t0 = performance.now();
+            contentEl.classList.add('whip-scroll');
+
+            function easeOut(t) {
+                return 1 - Math.pow(1 - t, 3);
+            }
+
+            function step(now) {
+                const p = Math.min(1, (now - t0) / duration);
+                contentEl.scrollTop = start + (end - start) * easeOut(p);
+                if (p < 1) requestAnimationFrame(step);
+                else setTimeout(() => contentEl.classList.remove('whip-scroll'), 60);
+            }
+
+            requestAnimationFrame(step);
+        }
+
+        function runIntro() {
+            if (introDone || isTyping) return;
+            isTyping = true;
+            setCosmosIntensity(0.32);
+            universeCanvas.classList.remove('dim');
+            typeWriterCinematic(
+                document.getElementById('text-output'),
+                [
+                    b('April 29, of 1985', '1985年4月29日'),
+                    { pause: 1200 },
+                    b('A mom was born.', '一位老妈诞生了。'),
+                    { pause: 1000 },
+                    b('And that mom is you.', '而那位老妈，就是你。'),
+                    { pause: 1000 },
+                    b('The kind of mom that could win a beauty contest in any universe.', '那种能在任何宇宙中赢得选美比赛的老妈。'),
+                    { pause: 1500 },
+                    b('...', '……'),
+                ],
+                TYPE_SPEED_MS,
+                () => {
+                    isTyping = false;
+                    introDone = true;
+                    setTimeout(() => {
+                        const dateSection = document.getElementById('date-section');
+                        fastScrollToSection(dateSection);
+                    }, 380);
+                }
+            );
+        }
+
+        function runDate() {
+            if (dateDone || isTyping) return;
+            isTyping = true;
+            setCosmosIntensity(0.55);
+            typeWriterCinematic(
+                document.getElementById('date-output'),
+                [
+                    b('And today,', '而今天，'),
+                    { pause: 800 },
+                    b('April 29 of 2026.', '2026年4月29日。'),
+                    { pause: 1000 },
+                    b('it\s your birthday', '就是你的生日')
+                ],
+                TYPE_SPEED_MS,
+                () => {
+                    isTyping = false;
+                    dateDone = true;
+                    setTimeout(() => {
+                        const watchingSection = document.getElementById('watching-section');
+                        fastScrollToSection(watchingSection);
+                    }, 550);
+                }
+            );
+        }
+
+        function runWatching() {
+            if (watchingDone || isTyping) return;
+            isTyping = true;
+            setCosmosIntensity(0.7);
+            typeWriterCinematic(
+                document.getElementById('watching-output'),
+                [
+                    b('Take a deep breath with your medulla oblongata', '用您的延髓深呼吸'),
+                    { pause: 1000 },
+                    b('today.', '今天。'),
+                    { pause: 1200 },
+                    b("is your birthday", '就是您的生日')
+                ],
+                TYPE_SPEED_MS,
+                () => {
+                    isTyping = false;
+                    watchingDone = true;
+                    setTimeout(() => {
+                        const memorySection = document.getElementById('memory-section');
+                        if (memorySection) fastScrollToSection(memorySection);
+                    }, 520);
+                }
+            );
+        }
+
+        function runEarth() {
+            if (memoryDone) return;
+            memoryDone = true;
+            triggerWarpBoost(1);
+            setCosmosIntensity(0.25);
+            universeCanvas.classList.add('dim');
+            
+            // Stop music
+            if (gainNode) {
+                gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+            }
+            
+            // Create floating words
+            createFloatingWords();
+            
+            setTimeout(() => {
+                const cardSection = document.getElementById('card-section');
+                if (cardSection) fastScrollToSection(cardSection);
+            }, 3000);
+        }
+
+        function createFloatingWords() {
+            const container = document.getElementById('floating-words');
+            if (!container) return;
+            
+            const isMobile = window.innerWidth < 600;
+            const words = ['心想事成', 'love', '牛逼', 'joy', '生日快乐', 'grace'];
+            
+            // Create glowing orbs
+            for (let i = 0; i < (isMobile ? 1 : 2); i++) {
+                const glow = document.createElement('div');
+                glow.className = 'memory-glow';
+                glow.style.left = (25 + i * 40) + '%';
+                glow.style.top = (25 + i * 30) + '%';
+                glow.style.animationDelay = (i * 2) + 's';
+                container.appendChild(glow);
+            }
+            
+            // Create particles (reduced for mobile)
+            const particleCount = isMobile ? 10 : 20;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'memory-particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = (Math.random() * 3) + 's';
+                particle.style.animationDuration = (4 + Math.random() * 4) + 's';
+                container.appendChild(particle);
+            }
+            
+            // Create floating words with staggered animation
+            words.forEach((word, i) => {
+                const el = document.createElement('div');
+                el.className = 'floating-word';
+                el.textContent = word;
+                el.style.left = Math.random() * 80 + 10 + '%';
+                el.style.top = Math.random() * 80 + 10 + '%';
+                el.style.animationDelay = (i * 0.4) + 's';
+                el.style.animationDuration = (6 + Math.random() * 4) + 's';
+                el.style.fontSize = (18 + Math.random() * 16) + 'px';
+                container.appendChild(el);
+                
+                // Make visible after delay
+                setTimeout(() => el.classList.add('visible'), i * 300);
+            });
+        }
+
+        function runCard() {
+            if (cardOpened) return;
+            // Initialize 3D background when card section is visible
+            initCard3D();
+        }
+
+        function bindTapToContinue() {
+            const handler = (e) => {
+                if (e && typeof e.preventDefault === 'function') e.preventDefault();
+                if (isTyping) return;
+                const vh = window.innerHeight;
+                const next = Math.min(contentEl.scrollTop + vh, contentEl.scrollHeight);
+                contentEl.scrollTop = next;
+            };
+
+            document.addEventListener('pointerdown', handler, { passive: false });
+            document.addEventListener('keydown', (e) => {
+                if (e.code === 'Space' || e.code === 'Enter') {
+                    e.preventDefault();
+                    handler(e);
+                }
+            });
+        }
+
+        function setupObservers() {
+            const io = new IntersectionObserver(
+                (entries) => {
+                    for (const e of entries) {
+                        if (!e.isIntersecting) continue;
+                        const id = e.target.id;
+                        if (id === 'intro-section') runIntro();
+                        if (id === 'date-section') runDate();
+                        if (id === 'watching-section') runWatching();
+                        if (id === 'memory-section') runEarth();
+                        if (id === 'card-section') runCard();
+                    }
+                },
+                { root: contentEl, threshold: 0.6 }
+            );
+
+            ['intro-section', 'date-section', 'watching-section', 'memory-section', 'card-section'].forEach((id) => {
+                const el = document.getElementById(id);
+                if (el) io.observe(el);
+            });
+        }
+
+        function fitCanvasToScreen(canvas) {
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            canvas.width = Math.floor(window.innerWidth * dpr);
+            canvas.height = Math.floor(window.innerHeight * dpr);
+            const ctx = canvas.getContext('2d');
+            if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        let universeCtx;
+        let universeStars = [];
+        let universeMeteors = [];
+        let universeWarp = [];
+        let universeTime = 0;
+        let cosmosIntensity = 0.35;
+        let warpBoost = 0;
+
+
+        function initUniverse() {
+            fitCanvasToScreen(universeCanvas);
+            universeCtx = universeCanvas.getContext('2d');
+            if (!universeCtx) {
+                console.warn('Failed to get 2D context for universe canvas');
+                return;
+            }
+            universeStars = [];
+            universeMeteors = [];
+            universeWarp = [];
+            universeTime = 0;
+            const isMobile = window.innerWidth < 600;
+            const count = isMobile 
+                ? Math.floor(Math.min(80, Math.max(50, window.innerWidth / 8)))
+                : Math.floor(Math.min(220, Math.max(110, window.innerWidth / 6)));
+            for (let i = 0; i < count; i++) {
+                universeStars.push({
+                    x: Math.random() * window.innerWidth,
+                    y: Math.random() * window.innerHeight,
+                    z: Math.random() * 1,
+                    r: Math.random() * 1.6 + 0.2,
+                    s: Math.random() * 0.6 + 0.15,
+                    hue: 170 + Math.random() * 90
+                });
+            }
+
+            const warpCount = isMobile
+                ? Math.floor(Math.min(60, Math.max(40, window.innerWidth / 12)))
+                : Math.floor(Math.min(180, Math.max(90, window.innerWidth / 10)));
+            for (let i = 0; i < warpCount; i++) {
+                universeWarp.push({
+                    x: Math.random() * window.innerWidth,
+                    y: Math.random() * window.innerHeight,
+                    len: 10 + Math.random() * 50,
+                    sp: 3 + Math.random() * 8,
+                    a: Math.random() * Math.PI * 2,
+                    hue: 190 + Math.random() * 70
+                });
+            }
+        }
+
+        function renderUniverse() {
+            if (!universeCtx) return;
+            universeTime += 0.016;
+            universeCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+            const grad = universeCtx.createRadialGradient(
+                window.innerWidth * 0.5,
+                window.innerHeight * 0.5,
+                0,
+                window.innerWidth * 0.5,
+                window.innerHeight * 0.5,
+                Math.max(window.innerWidth, window.innerHeight)
+            );
+            const neb = 0.18 + 0.12 * Math.sin(universeTime * 0.35);
+            grad.addColorStop(0, `rgba(10, 25, 50, ${0.22 + neb * cosmosIntensity})`);
+            grad.addColorStop(0.35, `rgba(28, 10, 55, ${0.06 + 0.08 * cosmosIntensity})`);
+            grad.addColorStop(1, 'rgba(0, 0, 0, 0.0)');
+            universeCtx.fillStyle = grad;
+            universeCtx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+
+            // Warp streaks (B-heavy)
+            if (cosmosIntensity > 0.25) {
+                universeCtx.save();
+                universeCtx.globalCompositeOperation = 'lighter';
+                universeCtx.lineWidth = 1;
+                for (const w of universeWarp) {
+                    const boost = 1 + warpBoost * 2.4;
+                    const vx = Math.cos(w.a) * w.sp * (0.25 + cosmosIntensity) * boost;
+                    const vy = Math.sin(w.a) * w.sp * (0.25 + cosmosIntensity) * boost;
+                    w.x += vx;
+                    w.y += vy;
+                    if (w.x < -80 || w.x > window.innerWidth + 80 || w.y < -80 || w.y > window.innerHeight + 80) {
+                        w.x = Math.random() * window.innerWidth;
+                        w.y = Math.random() * window.innerHeight;
+                        w.a = Math.random() * Math.PI * 2;
+                    }
+                    const lx = -vx * (1 + cosmosIntensity) * (0.8 + Math.random() * 0.4);
+                    const ly = -vy * (1 + cosmosIntensity) * (0.8 + Math.random() * 0.4);
+                    universeCtx.strokeStyle = `hsla(${w.hue}, 95%, 70%, ${0.08 + 0.18 * cosmosIntensity + 0.22 * warpBoost})`;
+                    universeCtx.beginPath();
+                    universeCtx.moveTo(w.x, w.y);
+                    universeCtx.lineTo(w.x + lx * (w.len / 18), w.y + ly * (w.len / 18));
+                    universeCtx.stroke();
+                }
+                universeCtx.restore();
+            }
+
+            // Occasional meteors
+            if (Math.random() < (0.02 * cosmosIntensity + 0.045 * warpBoost) && universeMeteors.length < 14) {
+                const side = Math.random();
+                const startX = side < 0.5 ? -40 : window.innerWidth + 40;
+                const startY = Math.random() * window.innerHeight * 0.55;
+                const dir = side < 0.5 ? 1 : -1;
+                universeMeteors.push({
+                    x: startX,
+                    y: startY,
+                    vx: dir * (12 + Math.random() * 22) * (1 + warpBoost * 1.8),
+                    vy: (7 + Math.random() * 14) * (1 + warpBoost * 1.2),
+                    life: 1,
+                    hue: 40 + Math.random() * 120
+                });
+            }
+
+            if (universeMeteors.length) {
+                universeCtx.save();
+                universeCtx.globalCompositeOperation = 'lighter';
+                for (let i = universeMeteors.length - 1; i >= 0; i--) {
+                    const m = universeMeteors[i];
+                    m.x += m.vx;
+                    m.y += m.vy;
+                    m.life -= 0.018;
+                    const alpha = Math.max(0, m.life);
+                    universeCtx.strokeStyle = `hsla(${m.hue}, 95%, 70%, ${alpha * 0.7})`;
+                    universeCtx.lineWidth = 2;
+                    universeCtx.beginPath();
+                    universeCtx.moveTo(m.x, m.y);
+                    universeCtx.lineTo(m.x - m.vx * 2.2, m.y - m.vy * 2.2);
+                    universeCtx.stroke();
+                    if (m.life <= 0 || m.x < -200 || m.x > window.innerWidth + 200 || m.y > window.innerHeight + 200) {
+                        universeMeteors.splice(i, 1);
+                    }
+                }
+                universeCtx.restore();
+            }
+
+            for (const st of universeStars) {
+                st.y += st.s;
+                st.x += Math.sin((st.y + st.x) * 0.002) * 0.15;
+                if (st.y > window.innerHeight + 10) {
+                    st.y = -10;
+                    st.x = Math.random() * window.innerWidth;
+                }
+
+                universeCtx.beginPath();
+                universeCtx.fillStyle = `hsla(${st.hue}, 90%, 70%, ${0.55 * (0.2 + st.z) * (0.7 + cosmosIntensity)})`;
+                universeCtx.arc(st.x, st.y, st.r, 0, Math.PI * 2);
+                universeCtx.fill();
+            }
+
+            // Lens flare pulse
+            if (cosmosIntensity > 0.4) {
+                const fx = window.innerWidth * (0.2 + 0.6 * (0.5 + 0.5 * Math.sin(universeTime * 0.12)));
+                const fy = window.innerHeight * (0.25 + 0.2 * (0.5 + 0.5 * Math.cos(universeTime * 0.14)));
+                const r = Math.max(window.innerWidth, window.innerHeight) * (0.18 + 0.08 * Math.sin(universeTime * 0.4));
+                const flare = universeCtx.createRadialGradient(fx, fy, 0, fx, fy, r);
+                flare.addColorStop(0, `rgba(72, 219, 251, ${0.06 + 0.08 * cosmosIntensity})`);
+                flare.addColorStop(0.25, `rgba(254, 202, 87, ${0.02 + 0.04 * cosmosIntensity})`);
+                flare.addColorStop(1, 'rgba(0,0,0,0)');
+                universeCtx.fillStyle = flare;
+                universeCtx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+            }
+
+            warpBoost *= 0.965;
+
+            requestAnimationFrame(renderUniverse);
+        }
+
+        function setCosmosIntensity(value) {
+            cosmosIntensity = Math.max(0, Math.min(1, value));
+        }
+
+        function triggerWarpBoost(amount = 1) {
+            warpBoost = Math.max(warpBoost, Math.min(1.2, amount));
+            flashEl.classList.add('visible');
+            setTimeout(() => {
+                flashEl.classList.remove('visible');
+            }, 180);
+        }
+
+        function roundRect(ctx, x, y, w, h, r) {
+            const rr = Math.min(r, w / 2, h / 2);
+            ctx.beginPath();
+            ctx.moveTo(x + rr, y);
+            ctx.arcTo(x + w, y, x + w, y + h, rr);
+            ctx.arcTo(x + w, y + h, x, y + h, rr);
+            ctx.arcTo(x, y + h, x, y, rr);
+            ctx.arcTo(x, y, x + w, y, rr);
+            ctx.closePath();
+        }
+
+
+
+
+
+        // Start button
+        document.getElementById('start-btn').addEventListener('click', () => {
+            const bgMusic = document.getElementById('bg-music');
+            bgMusic.play().catch(e => console.warn('Audio play failed:', e));
+
+            const startScreen = document.getElementById('start-screen');
+            startScreen.style.opacity = '0';
+
+            setTimeout(() => {
+                startScreen.style.display = 'none';
+                const content = document.getElementById('content');
+                content.style.display = 'block';
+                setTimeout(() => {
+                    content.style.opacity = '1';
+                    initUniverse();
+                    renderUniverse();
+                    setupObservers();
+                    bindTapToContinue();
+                    setTimeout(() => {
+                        runIntro();
+                    }, 650);
+                }, 100);
+            }, 2000);
+
+        });
+
+        // Card click handler - Close the card
+        function closeCard() {
+            if (!cardOpened) return;
+            cardOpened = false;
+
+            // Add cinematic close animation
+            cardBook.classList.add('cinematic-close');
+
+            // Create closing burst effect
+            const closingBurst = document.createElement('div');
+            closingBurst.className = 'closing-burst';
+            cardBook.appendChild(closingBurst);
+
+            // Create dramatic close flash
+            const closeFlash = document.createElement('div');
+            closeFlash.className = 'dramatic-close-flash';
+            document.body.appendChild(closeFlash);
+
+            // Create closing vignette
+            const closingVignette = document.createElement('div');
+            closingVignette.className = 'closing-vignette';
+            document.body.appendChild(closingVignette);
+
+            // Trigger vignette after delay
+            setTimeout(() => {
+                closingVignette.classList.add('active');
+            }, 300);
+
+            // Remove celebration burst
+            const burst = document.querySelector('.celebration-burst');
+            if (burst) burst.classList.remove('active');
+
+            // Change background back
+            const cardSection = document.getElementById('card-section');
+            if (cardSection) cardSection.classList.remove('revealed');
+
+            // Actually close the card after animation
+            setTimeout(() => {
+                cardBook.classList.remove('open');
+                cardBook.classList.remove('cinematic-close');
+            }, 600);
+
+            // Cleanup effects
+            setTimeout(() => {
+                closingBurst.remove();
+                closeFlash.remove();
+                closingVignette.remove();
+            }, 2500);
+        }
+
+        cardBook.addEventListener('click', closeCard);
+        cardBook.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                closeCard();
+            }
+        });
+
+        // Handle window resize with debounce
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                fitCanvasToScreen(universeCanvas);
+                resizeCard3D();
+                initUniverse();
+            }, 150);
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', cleanup);
+    </script>
+</body>
+</html>
