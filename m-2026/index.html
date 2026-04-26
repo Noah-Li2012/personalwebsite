@@ -1338,15 +1338,10 @@
             triggerWarpBoost(1);
             setCosmosIntensity(0.25);
             universeCanvas.classList.add('dim');
-            
-            // Stop music
-            if (gainNode) {
-                gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-            }
-            
+
             // Create floating words
             createFloatingWords();
-            
+
             setTimeout(() => {
                 const cardSection = document.getElementById('card-section');
                 if (cardSection) fastScrollToSection(cardSection);
