@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no"
+      content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
     />
     <title>Happy Birthday Mom</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -41,6 +41,7 @@
         overflow: hidden;
         min-height: 100vh;
         touch-action: manipulation;
+        -webkit-text-size-adjust: 100%;
         padding: env(safe-area-inset-top) env(safe-area-inset-right)
           env(safe-area-inset-bottom) env(safe-area-inset-left);
       }
@@ -67,6 +68,10 @@
         background: var(--color-bg);
         z-index: 1000;
         transition: opacity var(--transition-slow);
+      }
+
+      #start-screen {
+        display: flex;
       }
 
       #start-btn {
@@ -698,17 +703,21 @@
       }
 
       #card-section {
-        min-height: 100vh;
+        width: 100vw;
+        height: 100vh;
         display: flex;
-        flex-direction: column;
         justify-content: center;
         align-items: center;
-        padding: 40px 20px;
+        padding: 0;
         position: relative;
         perspective: 2000px;
-        background: linear-gradient(135deg, #2a2a3e 0%, #1a1a2e 100%);
+        background: #1a1a1a;
         overflow: hidden;
-        transition: background 2s ease;
+      }
+
+      #card-3d-canvas,
+      .celebration-burst {
+        display: none;
       }
 
       #card-section.revealed {
@@ -768,21 +777,18 @@
 
       #card-book {
         position: relative;
-        width: 90vw;
-        max-width: 500px;
-        height: 80vw;
-        max-height: 450px;
+        width: 100vw;
+        height: 100vh;
         cursor: pointer;
         transform-style: preserve-3d;
         transition:
-          transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1),
-          margin 1.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+          transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1);
         min-height: 44px;
         min-width: 44px;
       }
 
       #card-book.open {
-        transform: scale(1.05) translateY(-10px);
+        transform: none;
       }
 
       .card-page {
@@ -795,6 +801,7 @@
         transition: transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1);
         will-change: transform;
         transform: translateZ(0);
+        backface-visibility: hidden;
       }
 
       .card-page-front,
@@ -805,7 +812,7 @@
         width: 100%;
         height: 100%;
         backface-visibility: hidden;
-        border-radius: 0 8px 8px 0;
+        border-radius: 0;
         overflow: hidden;
       }
 
@@ -833,112 +840,43 @@
       }
 
       .card-cover {
-        background: linear-gradient(
-          135deg,
-          #f5f0e6 0%,
-          #e8e0d0 50%,
-          #f0e8d8 100%
-        );
-        border: 1px solid rgba(139, 69, 19, 0.2);
-        box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.05);
+        background: #111 url('https://cdn.jsdelivr.net/gh/Noah-Li2012/personalwebsite@main/m-2026/card.png') center/contain no-repeat;
+        border: none;
+        box-shadow: none;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        padding: 20px;
+        padding: 0;
       }
 
-      .card-cover::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)" opacity="0.06"/></svg>');
-        pointer-events: none;
-      }
-
-      .card-cover h2 {
-        font-size: 36px;
-        color: #8b4513;
-        font-family: "Playfair Display", serif;
-        margin-bottom: 10px;
-        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-        position: relative;
-        z-index: 1;
-      }
-
+      .card-cover h2,
       .card-cover p {
-        font-size: 14px;
-        color: #6b5a4a;
-        position: relative;
-        z-index: 1;
+        display: none;
       }
 
       .card-interior {
-        background: #fefefe;
-        background-image:
-          linear-gradient(90deg, transparent 50%, rgba(0, 0, 0, 0.02) 50%),
-          linear-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 1px);
-        background-size:
-          20px 100%,
-          100% 20px;
-        padding: 30px 25px;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.03);
+        background: #111 url('https://cdn.jsdelivr.net/gh/Noah-Li2012/personalwebsite@main/m-2026/card.png') center/contain no-repeat;
+        padding: 0;
+        display: block;
+        box-shadow: none;
       }
 
       .card-interior .verse {
-        font-size: 13px;
-        line-height: 1.8;
-        color: #333;
-        margin-bottom: 8px;
-        font-style: italic;
-        font-family: "Playfair Display", serif;
+        display: none;
       }
 
       .card-interior .ref {
-        font-size: 10px;
-        color: #8b4513;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 16px;
-        font-weight: 600;
+        display: none;
       }
 
       .card-interior .custom-msg {
-        margin-top: 20px;
-        padding-top: 20px;
-        border-top: 2px solid #e8e0d0;
-        font-size: 16px;
-        color: #2a2a2a;
-        font-weight: 500;
-        font-family: "Noto Sans SC", sans-serif;
+        display: none;
       }
 
       @media (max-width: 600px) {
         .card-interior {
-          padding: 15px 12px;
-        }
-
-        .card-interior .verse {
-          font-size: 10px;
-          line-height: 1.5;
-          margin-bottom: 6px;
-        }
-
-        .card-interior .ref {
-          font-size: 8px;
-          margin-bottom: 10px;
-        }
-
-        .card-interior .custom-msg {
-          margin-top: 12px;
-          padding-top: 12px;
-          font-size: 12px;
+          padding: 0;
         }
       }
 
@@ -946,39 +884,19 @@
         position: absolute;
         left: 50%;
         top: 0;
-        width: 4px;
+        width: 2px;
         height: 100%;
-        background: linear-gradient(
-          90deg,
-          rgba(0, 0, 0, 0.15),
-          rgba(0, 0, 0, 0.05)
-        );
+        background: rgba(0, 0, 0, 0.1);
         transform: translateX(-50%);
         z-index: 10;
       }
 
-      .card-shadow {
-        position: absolute;
-        bottom: -20px;
-        left: 10%;
-        width: 80%;
-        height: 20px;
-        background: radial-gradient(
-          ellipse at center,
-          rgba(0, 0, 0, 0.3) 0%,
-          transparent 70%
-        );
-        filter: blur(10px);
-        transition: all 1.2s cubic-bezier(0.645, 0.045, 0.355, 1);
-        will-change: transform, opacity, bottom, left, width;
-        transform: translateZ(0);
+      .card-spine {
+        display: none;
       }
 
-      #card-book.open .card-shadow {
-        bottom: -30px;
-        left: 5%;
-        width: 90%;
-        opacity: 0.5;
+      .card-shadow {
+        display: none;
       }
 
       .star {
@@ -1129,10 +1047,10 @@
         <div class="celebration-burst"></div>
         <div
           id="card-book"
-          class="open"
+          class=""
           role="button"
           tabindex="0"
-          aria-label="Birthday card, tap to close"
+          aria-label="Birthday card, tap to open"
         >
           <div class="card-shadow"></div>
           <div class="card-spine"></div>
@@ -1457,7 +1375,7 @@
       let dateDone = false;
       let watchingDone = false;
       let memoryDone = false;
-      let cardOpened = true;
+      let cardOpened = false;
 
       function showTapHint(visible) {
         if (visible) tapHint.classList.add("visible");
@@ -1947,61 +1865,25 @@
         }, 2000);
       });
 
-      // Card click handler - Close the card
-      function closeCard() {
-        if (!cardOpened) return;
-        cardOpened = false;
-
-        // Add cinematic close animation
-        cardBook.classList.add("cinematic-close");
-
-        // Create closing burst effect
-        const closingBurst = document.createElement("div");
-        closingBurst.className = "closing-burst";
-        cardBook.appendChild(closingBurst);
-
-        // Create dramatic close flash
-        const closeFlash = document.createElement("div");
-        closeFlash.className = "dramatic-close-flash";
-        document.body.appendChild(closeFlash);
-
-        // Create closing vignette
-        const closingVignette = document.createElement("div");
-        closingVignette.className = "closing-vignette";
-        document.body.appendChild(closingVignette);
-
-        // Trigger vignette after delay
-        setTimeout(() => {
-          closingVignette.classList.add("active");
-        }, 300);
-
-        // Remove celebration burst
-        const burst = document.querySelector(".celebration-burst");
-        if (burst) burst.classList.remove("active");
-
-        // Change background back
-        const cardSection = document.getElementById("card-section");
-        if (cardSection) cardSection.classList.remove("revealed");
-
-        // Actually close the card after animation
-        setTimeout(() => {
-          cardBook.classList.remove("open");
-          cardBook.classList.remove("cinematic-close");
-        }, 600);
-
-        // Cleanup effects
-        setTimeout(() => {
-          closingBurst.remove();
-          closeFlash.remove();
-          closingVignette.remove();
-        }, 2500);
+      function setCardOpen(nextOpen) {
+        cardOpened = !!nextOpen;
+        cardBook.classList.toggle("open", cardOpened);
+        cardBook.setAttribute(
+          "aria-label",
+          cardOpened ? "Birthday card, tap to close" : "Birthday card, tap to open",
+        );
       }
 
-      cardBook.addEventListener("click", closeCard);
+      function toggleCard(e) {
+        if (e && typeof e.preventDefault === "function") e.preventDefault();
+        setCardOpen(!cardOpened);
+      }
+
+      cardBook.addEventListener("click", toggleCard);
       cardBook.addEventListener("keydown", (e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          closeCard();
+          toggleCard(e);
         }
       });
 
