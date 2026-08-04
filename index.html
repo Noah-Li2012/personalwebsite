@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<!-- saved from url=(0061)file:///C:/Users/noahli404/Videos/personal-website/index.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N, is for Noah.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #ffedd1;
+    --purple: #8169ff;
+    --gray: #d3d3d3;
+    --ink: #000000;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  body {
+    background:
+      radial-gradient(circle at top right, rgba(129, 105, 255, 0.12), transparent 30%),
+      linear-gradient(135deg, #fdf7eb 0%, var(--cream) 100%);
+    min-height: 100vh;
+    
+    font-family: 'Noto Serif', serif;
+    color: var(--ink);
+  }
+
+  /* Horizontal scroll track wrapper */
+  .viewport-wrapper {
+    display: flex;
+    width: 200vw;
+    height: 100vh;
+    position: relative;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: auto;
+    -ms-overflow-style: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    overscroll-behavior-x: contain;
+    touch-action: pan-x;
+  }
+
+  /* SECTION 1 & SECTION 2 BASE */
+  .section {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    flex-shrink: 0;
+    overflow: visible;
+    display: flex;
+    align-items: center;
+    scroll-snap-align: start;
+  }
+
+  /* SECTION 1: LANDING */
+  .circle {
+    position: absolute;
+    background: var(--gray);
+    z-index: 0;
+  }
+
+  .circle--top {
+    top: -18vw;
+    left: -12vw;
+    width: 55vw;
+    height: 55vw;
+    border-radius: 50%;
+  }
+
+  .circle--bottom {
+    bottom: -50vw;
+    right: -30vw;
+    width: 67vw;
+    height: 67vw;
+    border-radius: 50%;
+  }
+
+  .content {
+    position: relative;
+    z-index: 1;
+    padding: 8vw;
+    max-width: 900px;
+  }
+
+  .glyph {
+    font-family: 'Noto Serif', serif;
+    font-weight: 300;
+    color: var(--purple);
+    font-size: clamp(4.5rem, 15vw, 24rem);
+    line-height: 0.85;
+    margin: 0 0 0.35em 0;
+    letter-spacing: -0.01em;
+    text-shadow: 0px 5px 3px rgba(0, 0, 0, 0.25);
+  }
+
+  h1 {
+    font-family: 'Noto Serif', serif;
+    font-weight: 300;
+    font-size: clamp(1.9rem, 5vw, 8rem);
+    line-height: 1.15;
+    margin: 0 0 0.4em 0;
+    text-shadow: 0px 3px 3px rgba(0,0,0,0.25);
+  }
+
+  .name-word {
+    display: inline-block;
+    cursor: pointer;
+    color: var(--ink);
+    transition: color 0.2s ease, text-shadow 0.2s ease, transform 0.2s ease;
+    padding: 0 0.08em;
+    border-radius: 0.2em;
+  }
+
+  .name-word:hover {
+    color: var(--purple);
+    text-shadow: 0 0 12px rgba(129, 105, 255, 0.22);
+    transform: translateY(-1px);
+  }
+
+  .name-word.is-glitching {
+    color: var(--purple);
+    text-shadow: 0 0 10px rgba(129, 105, 255, 0.28);
+  }
+
+  p.tagline {
+    font-family: 'Noto Serif', serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: clamp(1rem, 2.2vw, 2.5rem);
+    line-height: 1.45;
+    margin: 0;
+    max-width: 30ch;
+  }
+
+  /* SECTION 2: ABOUT LAYOUT */
+  .about-container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 6vw;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .about-heading-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding-left: 4vw;
+  }
+
+  .about-title {
+    font-family: 'Noto Serif', serif;
+    color: var(--purple);
+    font-size: clamp(4rem, 10vw, 12rem);
+    font-weight: 400;
+    margin: 0;
+    line-height: 1;
+    text-shadow: 0px 5px 3px rgba(0, 0, 0, 0.25);
+  }
+
+  .about-subtitle {
+    font-size: clamp(1.5rem, 3vw, 3rem);
+    margin: 0.5rem 0 0 4rem;
+    font-weight: 400;
+    text-shadow: 0px 3px 3px rgba(0, 0, 0, 0.25);
+  }
+
+  .about-cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 1.5rem;
+    max-width: 700px;
+  }
+
+  /* Cards styling */
+  .card {
+    background: var(--gray);
+    border-radius: 28px;
+    padding: 1.75rem;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+  }
+
+  .card--bio {
+    grid-column: 1 / -1;
+  }
+
+  .card p {
+    margin: 0;
+    font-size: clamp(0.95rem, 1.2vw, 1.15rem);
+    line-height: 1.5;
+  }
+
+  .card h3 {
+    margin: 0 0 0.75rem 0;
+    font-size: clamp(1.1rem, 1.5vw, 1.4rem);
+    font-weight: 400;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .card ul {
+    margin: 0;
+    padding-left: 1.2rem;
+  }
+
+  .card li {
+    font-size: clamp(0.95rem, 1.2vw, 1.15rem);
+    margin-bottom: 0.4rem;
+  }
+
+  @media (min-width: 700px) {
+    p.tagline {
+      max-width: none;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="viewport-wrapper">
+    <div class="section">
+      <div class="circle circle--top"></div>
+      <div class="circle circle--bottom"></div>
+
+      <div class="content">
+        <p class="glyph">N,</p>
+        <h1>is for <span class="name-word" id="name-word">Noah</span>.</h1>
+        <p class="tagline">I just love coding, that's it</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="about-container">
+        <div class="about-heading-box">
+          <h2 class="about-title">About</h2>
+          <div class="about-subtitle">Noah Li</div>
+        </div>
+
+        <div class="about-cards-grid">
+          <div class="card card--bio">
+            <p>Name is Noah, a hobbyist developer. I love the entire process, from writing my first "hello world" to building SaaS projects that actually help people.</p>
+          </div>
+
+          <div class="card">
+            <h3><u>Hobbies</u> and <u>Interests</u></h3>
+            <ul>
+              <li>Coding</li>
+              <li>Technology</li>
+              <li>AI/ML</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3><u>Contacts</u></h3>
+            <ul>
+              <li style="list-style-type: disc;">Email: <span style="font-size: 0.85em;">importnoahli404+p@gmail.com</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const viewportWrapper = document.querySelector('.viewport-wrapper');
+    const nameWord = document.getElementById('name-word');
+    const positiveWords = [
+      'Nerdy',
+      'Nimble',
+      'Novel',
+      'Nexus',
+      'Navigator',
+      'Notable'
+    ];
+    const glitchChars = '@#$!%&?/\\|][{}]=+-_';
+    let typingTimer = null;
+
+    viewportWrapper.addEventListener('wheel', (event) => {
+      const canScrollHorizontally = viewportWrapper.scrollWidth > viewportWrapper.clientWidth;
+
+      if (!canScrollHorizontally) {
+        return;
+      }
+
+      const delta = event.deltaX || event.deltaY;
+
+      if (delta) {
+        event.preventDefault();
+        viewportWrapper.scrollLeft += delta;
+      }
+    }, { passive: false });
+
+    const clearTyping = () => {
+      if (typingTimer) {
+        clearInterval(typingTimer);
+      }
+    };
+
+    const animateWord = (targetWord, isReverse = false) => {
+      clearTyping();
+      nameWord.classList.add('is-glitching');
+
+      const startWord = isReverse ? targetWord : '';
+      const finalWord = isReverse ? 'Noah' : targetWord;
+      let step = 0;
+      const totalSteps = Math.max(finalWord.length + 4, 8);
+
+      typingTimer = setInterval(() => {
+        step += 1;
+
+        if (step >= totalSteps) {
+          clearInterval(typingTimer);
+          nameWord.textContent = finalWord;
+          nameWord.classList.remove('is-glitching');
+          return;
+        }
+
+        let display = '';
+        const progress = Math.min(step, finalWord.length);
+
+        for (let i = 0; i < finalWord.length; i += 1) {
+          if (i < progress) {
+            display += finalWord[i];
+          } else if (Math.random() < 0.28) {
+            display += glitchChars[Math.floor(Math.random() * glitchChars.length)];
+          } else {
+            display += ' ';
+          }
+        }
+
+        if (!isReverse && step > 1) {
+          nameWord.textContent = display.trimEnd();
+        } else {
+          nameWord.textContent = display.trimEnd() || startWord;
+        }
+      }, 36);
+    };
+
+    nameWord.addEventListener('mouseenter', () => {
+      const randomWord = positiveWords[Math.floor(Math.random() * positiveWords.length)];
+      animateWord(randomWord);
+    });
+
+    nameWord.addEventListener('mouseleave', () => {
+      animateWord('Noah', true);
+    });
+  </script>
+
+</body></html>
